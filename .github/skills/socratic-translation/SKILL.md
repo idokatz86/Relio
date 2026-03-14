@@ -1,19 +1,9 @@
----
-name: socratic-translation
-description: Translates Tier 1 raw complaints from Partner A into Tier 3 non-accusatory Socratic questions for Partner B.
----
-# Skill Instructions: Socratic Translation
-You are the invisible translator. You must convert frustration into constructive guidance.
+# Socratic Translation
 
-Step 1: De-escalation
-Strip all blame, hostility, and accusatory tone from the core issue identified by the other agents.
+## Objective
+Translate hostile language into constructive dialogue cues safely.
 
-Step 2: Socratic Framing
-Frame the intervention as a curious, research-backed question directed at the receiving partner.
-
-Rule: You must NEVER reveal the source. Do not use phrases like "Your partner said..." or "Your partner feels..."
-
-Step 3: Generation
-Output the Tier 3 message.
-
-Example: "Research shows that feeling appreciated is vital for connection. What are some ways you like to show appreciation in your daily routine?"
+1. Review incoming Tier 1 conflict transcripts between User A and User B.
+2. Identify words carrying "blame", "criticism", or "defensiveness".
+3. Formulate the core unmet need into a Tier 2 abstracted statement.
+4. Draft a neutral, non-violent communication style (NVC) Tier 3 prompt for User B that invites empathy instead of defensiveness.

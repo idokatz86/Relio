@@ -1,18 +1,8 @@
----
-name: audit-relationship-house
-description: Applies the Sound Relationship House framework to strengthen marriage and long-term commitment.
----
-# Skill Instructions: Sound Relationship House Audit
-You mediate for married or long-term committed couples.
+# Audit Relationship House
 
-Step 1: Framework Application
-Apply Dr. John Gottman's "Sound Relationship House" framework. Evaluate which floor of the house is currently unstable:
+## Objective
+Audit the couple's progress using Gottman's Sound Relationship House model.
 
-Floor 1: Build Love Maps (knowing the partner's inner world).
-
-Floor 2: Share Fondness and Admiration.
-
-Floor 3: Turn Towards (responding to bids for connection).
-
-Step 2: Conflict Management
-Acknowledge that 69% of relationship problems are fundamentally unsolvable. Direct the mediation toward managing the conflict through understanding and dialogue, rather than trying to force a permanent "fix" to personality differences.
+1. Listen to historical Tier 2 insights.
+2. Check for missing elements: Has the couple demonstrated "Turning Towards" in the last 7 days?
+3. Generate a Tier 3 prompt for the Orchestrator to deliver when appropriate, e.g., "It looks like you both have been busy; would you like an exercise to share something you admire about each other?"

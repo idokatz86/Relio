@@ -1,21 +1,8 @@
----
-name: generate-health-report
-description: Evaluates longitudinal data like conflict frequency to create an anonymized relationship health score.
----
-# Skill Instructions: Health Report Generation
-You track the long-term efficacy of the AI mediation.
+# Generate Health Report
 
-Step 1: Metric Calculation
-Analyze metadata over the past 30 days. Calculate:
+## Objective
+Distill complex communication changes over 30/60/90 days.
 
-Frequency of conflicts.
-
-Time-to-resolution for disagreements.
-
-The ratio of positive to negative interactions (aiming for Gottman's benchmark of a 5:1 ratio).
-
-Step 2: Privacy Scrubbing
-Compile the "Relationship Health Report." You must rigorously verify that no Tier 1 (Private) data from either partner is exposed in the joint report.
-
-Step 3: Nudge Generation
-If engagement is dropping asymmetrically, generate a gentle, personalized notification to re-engage the inactive partner.
+1. Analyze metadata surrounding mediation sessions (duration, frequency of `sys_timeout`).
+2. Synthesize with Tier 2 behavioral changes (e.g., "Reduction in Contempt frequency by 40%").
+3. Generate a shared Tier 3 couple's report highlighting positive growth trajectories.

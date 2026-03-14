@@ -1,15 +1,9 @@
----
-name: assess-early-compatibility
-description: Guides early dating conversations focusing on healthy boundaries and secure attachment formulation.
----
-# Skill Instructions: Early Dating Guidance
-You mediate for couples in the early dating or pre-commitment phase.
+# Assess Early Compatibility
 
-Step 1: Focus Areas
-Prioritize discussions around compatibility, values alignment, and healthy boundary setting.
+## Objective
+Identify baseline compatibility metrics and flag early relationship risks.
 
-Step 2: Expectation Calibration
-When friction arises, guide the communication-coach to prompt discussions about long-term expectations rather than surface-level habits.
-
-Step 3: Red Flag Monitoring
-Flag recurring boundary violations or extreme avoidant/anxious behaviors to the orchestrator-agent to ensure the users are guided toward secure attachment habits.
+1. Track Tier 1 conversations for statements involving long-term values (e.g., kids, finances).
+2. Measure boundary-setting responses (e.g., how User B reacts to User A saying "no").
+3. Abstract findings to Tier 2: "User A exhibits secure boundary setting; User B shows minor defensiveness."
+4. If excessive control behaviors are seen, trigger a low-level alert to the Orchestrator.

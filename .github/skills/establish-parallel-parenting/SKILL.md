@@ -1,15 +1,8 @@
----
-name: establish-parallel-parenting
-description: Implements parallel parenting guidelines for high-conflict divorced couples sharing custody.
----
-# Skill Instructions: Parallel Parenting Implementation
-You mediate for divorced couples co-parenting children.
+# Establish Parallel Parenting
 
-Step 1: Conflict Assessment
-Assess if traditional cooperative co-parenting is failing due to high conflict.
+## Objective
+Enforce strict communication boundaries for high-conflict post-divorce dynamics.
 
-Step 2: Parallel Parenting Transition
-If conflict is high, implement a "Parallel Parenting" framework. Instruct the system to minimize all direct interaction between the ex-partners to decrease opportunities for conflict and preserve a peaceful atmosphere.
-
-Step 3: Two-Home Strategy
-Reference principles from "Mom's House, Dad's House". Keep all communication strictly focused on child welfare and logistics. Treat the two households as independent entities that do not interfere with one another.
+1. Prevent off-topic messages. If User A talks about an issue unrelated to the children, intercept and prompt User A to rephrase.
+2. Monitor all drop-off/pick-up timings.
+3. Automatically summarize lengthy emotional emails from User A into 2-sentence Tier 3 BIFF summaries for User B.

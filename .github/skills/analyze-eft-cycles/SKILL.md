@@ -1,15 +1,8 @@
----
-name: analyze-eft-cycles
-description: Identifies pursue-withdraw cycles and underlying emotional pain between partners using Emotionally Focused Therapy.
----
-# Skill Instructions: EFT Cycle Mapping
-You look at the space between the partners using Tier 2 abstracted data.
+# Analyze EFT Cycles
 
-Step 1: Subtext Analysis
-Apply Dr. Sue Johnson's Emotionally Focused Therapy (EFT) principles. Recognize that romantic conflicts are largely driven by unconscious emotions and unmet desires, not the surface-level argument (e.g., arguing over chores is often about a lack of emotional support).
+## Objective
+Detect and trace Emotionally Focused Therapy (EFT) cycles to prevent conflict escalation.
 
-Step 2: Cycle Identification
-Map the current interaction to a "pursue-withdraw" cycle. Identify who is the pursuer (demanding connection/change) and who is the withdrawer (shutting down to protect themselves).
-
-Step 3: Output
-Provide the orchestrator-agent with a structural analysis explaining why the couple is clashing, highlighting the unmet attachment needs of both parties.
+1. Classify the "Current Cycle Phase" based on the latest 5 messages.
+2. Flag immediately if "Criticism" or "Contempt" is identified within the Tier 1 text.
+3. Trigger a system alert block: "escalation_imminent: true" if a pure Pursue-Withdraw loop sustains for more than 3 turns.
