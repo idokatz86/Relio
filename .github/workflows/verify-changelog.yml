@@ -1,0 +1,32 @@
+name: Verify Changelog
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+    branches:
+      - main
+
+jobs:
+  verify-changelog:
+    name: Verify CHANGELOG.md is updated
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Check for CHANGELOG updates
+        id: check-changelog
+        run: |
+          # Fetch base branch
+          git fetch origin ${{ github.base_ref }}
+          
+          # Check if CHANGELOG.md changed
+          CHANGES=$(git diff --name-only origin/${{ github.base_ref }} HEAD | grep "CHANGELOG.md" || true)
+          
+          if [ -z "$CHANGES" ]; then
+            echo "::error::CHANGELOG.md was not updated in this pull request."
+            exit 1
+          fi
+          echo "CHANGELOG.md was updated successfully."

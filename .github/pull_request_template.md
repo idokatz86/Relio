@@ -13,5 +13,6 @@ Why is this change required? What problem does it solve?
 ## Checklist:
 - [ ] My code follows the code style of this project.
 - [ ] I have updated the documentation accordingly.
+- [ ] I have updated the CHANGELOG.md file with a summary of my changes.
 - [ ] I have added tests to cover my changes.
 - [ ] All new and existing tests passed.
