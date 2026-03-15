@@ -1,0 +1,36 @@
+{
+  "expo": {
+    "name": "Relio",
+    "slug": "relio",
+    "version": "0.1.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "light",
+    "splash": {
+      "image": "./assets/splash.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#F5EFE7"
+    },
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.relio.app",
+      "infoPlist": {
+        "NSFaceIDUsageDescription": "Relio uses Face ID to protect your private journal entries."
+      }
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#F5EFE7"
+      },
+      "package": "com.relio.app",
+      "permissions": ["USE_BIOMETRIC", "USE_FINGERPRINT"]
+    },
+    "scheme": "relio",
+    "plugins": [
+      "expo-router",
+      "expo-secure-store",
+      "expo-local-authentication"
+    ]
+  }
+}
