@@ -9,7 +9,7 @@ Step 1: Threat Modeling
 Identify the specific threat (e.g., unauthorized cross-tenant database access or an exposed API key).
 
 Step 2: Containment Steps
-Output a step-by-step technical playbook for immediate containment. Include exact commands for isolating the affected database subnet or rotating the compromised keys.
+Output a step-by-step technical playbook for immediate containment. Include exact commands for isolating the affected Azure VNet subnet via NSG rules, rotating Azure Key Vault secrets, and triggering Microsoft Defender for Cloud incident response.
 
 Step 3: Communication Protocol
 Draft the mandatory regulatory notification steps required if personally identifiable information (PII) is exposed.

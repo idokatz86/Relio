@@ -12,4 +12,4 @@ Step 2: Human-in-the-Loop Enforcement
 If the workflow generates code or modifies architecture, configure it to propose changes only via Draft Pull Requests. Never allow direct pushes to the main branch.
 
 Step 3: Security Scanning
-Embed steps to run CodeQL or similar static application security testing (SAST) tools on all generated code to scan for exposed secrets or broken authorization logic.
+Embed steps to run CodeQL + Microsoft Defender for DevOps. Scan for exposed secrets, broken auth, and Azure RBAC misconfigurations. Push images to Azure Container Registry (ACR) with vulnerability scanning.

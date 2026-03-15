@@ -8,11 +8,13 @@ You are designing the core technical moat of the platform.
 Step 1: Silo Definition
 Design distinct schemas for three separate states:
 
-User A's Private State: Contains raw inputs and Tier 1 disclosures.
+User A's Private State: Azure PostgreSQL Flexible Server — raw inputs and Tier 1 disclosures. Row-Level Security + separate schemas.
 
-User B's Private State: Contains raw inputs and Tier 1 disclosures.
+User B's Private State: Azure PostgreSQL Flexible Server — raw inputs and Tier 1 disclosures. Row-Level Security + separate schemas.
 
-Shared Room State: Contains only the AI's Tier 3 translations and explicit shared messages.
+Shared Room State: Azure PostgreSQL Flexible Server (separate instance) — AI Tier 3 translations only.
+
+Tier 2 Clinical State: Azure Cosmos DB — abstracted psychological profiles, attachment mappings. Medical Pod internal only.
 
 Step 2: Isolation Rules
 Mandate that no foreign keys directly link a user's Private State table to the Shared Room table to prevent accidental SQL JOIN leakages.

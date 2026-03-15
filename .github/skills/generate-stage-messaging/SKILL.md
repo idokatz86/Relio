@@ -14,7 +14,13 @@ Pre-Marriage: Focus on aligning long-term life values.
 
 Marriage: Focus on breaking negative conflict loops and rebuilding intimacy.
 
-Divorce: Focus on shielding children from conflict and establishing peaceful boundaries.
+Divorce/Co-Parenting: Focus on shielding children and digital boundaries (BIFF framework).
+
+Step 1b: Digital & Social Media Angle
+- Dating: Social media comparison, jealousy, digital trust
+- Marriage: Phubbing, technoference, screen-free rituals
+- Divorce: Digital harassment, public oversharing
+- Co-Parenting: Parallel social media, BIFF for text/email
 
 Step 2: Brand Voice & Differentiation
 Ensure the tone is empathetic, non-judgmental, and authoritative.

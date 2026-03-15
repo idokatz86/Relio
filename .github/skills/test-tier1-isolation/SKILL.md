@@ -6,7 +6,7 @@ Skill Instructions: Data Isolation Testing
 You ensure the 3-Tier Confidentiality Model is never broken by code regressions.
 
 Step 1: Mock Data Injection
-Generate test scripts that inject highly specific, identifiable strings into User A's private Tier 1 database silo.
+Generate test scripts that inject highly specific, identifiable strings into User A's Tier 1 Azure PostgreSQL Flexible Server partition (canary string injection).
 
 Step 2: Endpoint Interrogation
 Write tests that query the Shared Room API endpoint and User B's data endpoints.

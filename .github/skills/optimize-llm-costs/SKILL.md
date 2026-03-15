@@ -15,9 +15,21 @@ High Complexity: Deep psychological profiling, Tier 1 abstraction, or emotional 
 Step 2: Routing Optimization
 Recommend the most cost-effective LLM routing strategy.
 
-Mandate the use of fast, inexpensive models (e.g., Claude 3.5 Haiku or GPT-4o-mini) for Low Complexity tasks.
+Mandate the use of fast, inexpensive models (e.g., GPT-5.3-Codex (via Azure OpenAI)) for Low Complexity tasks.
 
-Reserve expensive reasoning models (e.g., Claude 3 Opus or GPT-4o) exclusively for High Complexity mediation tasks.
+Reserve expensive reasoning models (e.g., Claude Opus 4.6 or GPT-5.4 (via Azure OpenAI)) exclusively for High Complexity mediation tasks.
 
 Step 3: Burn Rate Output
 Calculate the projected API cost per 1,000 messages using the recommended routing and highlight the projected savings.
+
+
+## Model Cascading (v1.3.0)
+
+Step 4: Implement complexity classifier in LLM Gateway (Azure API Management):
+- Simple (40%): GPT-5.3-Codex @ $0.002/call
+- Medium (30%): Claude Sonnet 4.6 @ $0.008/call
+- Complex (20%): Claude Opus 4.6 @ $0.025/call
+- Safety (10%): Gemini 3.1 Pro @ $0.004/call
+- Blended CPI: $0.012 → $0.006 → $0.004
+
+Step 5: Azure OpenAI PTUs for 30-40% reserved capacity discount.

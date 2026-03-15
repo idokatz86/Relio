@@ -8,7 +8,7 @@ version: 2.5.0
 # 🧬 Scaffold-Agent-Skill
 
 ## Objective
-This skill provides the comprehensive algorithmic framework your `skills-builder` engine must use to scaffold, generate, and rewrite optimal `SKILL.md` capabilities for the 36 downstream relationship mediation agents.
+This skill provides the comprehensive algorithmic framework your `skills-builder` engine must use to scaffold, generate, and rewrite optimal `SKILL.md` capabilities for the 38 downstream relationship mediation agents.
 
 ## Core Directives for Agent Generation
 
