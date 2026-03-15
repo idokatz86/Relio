@@ -1,10 +1,10 @@
 # Relio — Unified Product Requirements Document
 
-**Version:** v1.1.0
+**Version:** v1.2.0
 **Date:** March 15, 2026
-**Authors:** `chief-executive-officer` (GPT-5.4), `chief-product-officer` (Claude Sonnet 4.6), `chief-strategy-officer` (GPT-5.4)
+**Authors:** `chief-executive-officer` (GPT-5.4), `chief-product-officer` (Claude Sonnet 4.6), `chief-strategy-officer` (GPT-5.4), `chief-technology-officer` (GPT-5.4), `chief-finance-officer` (GPT-5.2)
 **Classification:** Confidential — Board & Executive Leadership
-**Status:** REVISED — Founder Review Integrated
+**Status:** REVISED — Founder + CTO/CFO Review Integrated
 
 ---
 
@@ -23,6 +23,12 @@
 11. **Lean headcount.** AI-first operating model: 8 humans Y1 → 14 Y2 → 22 Y3. Agents do 90% of the work; humans supervise, audit, and handle edge cases.
 12. **Anonymized data monetization.** Opt-in, k-anonymized relationship wellness insights sold to researchers, insurers, and EAP providers. Revenue: $500K Y2, $2M Y3, $5M Y4.
 13. **Burn rate cut 57%.** Y1 $2.04M, Y2 $4.3M, Y3 $8M. Break-even moved to Q3 Y3 (from Q1 Y4). Lean headcount + Azure cost optimization + AI-first ops.
+
+### Changes from v1.1.0
+
+14. **LLM Infrastructure Transition Roadmap.** Three-phase plan: Phase 0 (pre-funding) uses GitHub Models API + PAT for development/testing with synthetic data only. Phase 1 (post-Series A) transitions to BYOK architecture on Azure OpenAI Service + Anthropic API + Vertex AI. Phase 2 (Month 12+) implements Model Cascading for cost-optimized inference.
+15. **Model Cascading & CPI Management.** Added complexity classifier in LLM Gateway that routes 60% of traffic to cheapest models. Blended Cost Per Inference targets: $0.012 (Phase 1) → $0.006 (Phase 2) → $0.004 (Phase 3). Provider-agnostic gateway abstraction enables config-only provider swap.
+16. **GitHub Models SDK for MVP.** Documented boundaries between free developmental usage (synthetic data, prompt engineering, investor demos) and required paid production usage (real user data). Hard line: real PII NEVER transits GitHub Models — BYOK required from first real user.
 
 ---
 
@@ -686,12 +692,147 @@ Single point of egress for all AI model interactions. No service may call an LLM
 - Post-flight: Verify LLM response doesn't reconstruct redacted entities
 - Azure AI Language entity recognition + Microsoft Presidio custom analyzers for relationship-specific PII
 
-**Cost-Optimized Routing:**
-- Simple acknowledgment → GPT-5.3-Codex (cheapest)
-- Pattern recognition → Claude Sonnet 4.6
-- Deep abstraction → Claude Opus 4.6 (highest nuance)
-- Safety-critical → Gemini 3.1 Pro
-- Emergency execution → GPT-5.4
+#### 5.6.1 Infrastructure Transition Roadmap: GitHub Models → Azure BYOK
+
+The LLM Gateway is built as a **provider-agnostic abstraction** from day one. Application code calls `callLLM("orchestrator", messages)` — the gateway decides the backend provider based on a config flag. This makes provider transitions a deployment config change, not a code rewrite.
+
+**Phase 0: Pre-Funding / MVP Development (Now → Month 3)**
+
+```
+Developer PAT → GitHub Models API (free tier)
+                └── GPT-4o, Claude 3.5 Sonnet, Llama, Mistral
+                    (rate-limited: ~150 req/min GPT-4o, ~10 req/min large models)
+
+Use for:     Prompt engineering, agent integration testing, investor demos (synthetic data)
+DO NOT use:  Production user traffic, real PII, customer-facing API calls
+```
+
+- All development uses **synthetic test data only** — no real user PII ever transits GitHub Models
+- `@github/models` SDK with Personal Access Token for rapid experimentation:
+
+```typescript
+import ModelClient from "@github/models";
+
+const client = new ModelClient(process.env.GITHUB_TOKEN);
+
+const response = await client.chat.completions.create({
+  model: "gpt-4o",
+  messages: [
+    { role: "system", content: orchestratorSystemPrompt },
+    { role: "user", content: syntheticUserMessage }
+  ],
+  temperature: 0.3
+});
+```
+
+- Gateway config: `LLM_PROVIDER=github`
+
+**Phase 1: Post-Series A / First Real Users (Month 3 → Month 12)**
+
+Transition to Bring Your Own Key (BYOK) on enterprise-grade providers:
+
+```
+Relio App → Azure API Management (LLM Gateway)
+                │
+                ├── Azure OpenAI Service (GPT-5.4, GPT-5.3-Codex)
+                │   └── Your Azure subscription, your keys, your quota
+                │   └── HIPAA BAA eligible, zero data retention, data stays in-region
+                │
+                ├── Anthropic API (Claude Opus 4.6, Claude Sonnet 4.6)
+                │   └── Enterprise agreement, zero-retention clause
+                │
+                └── Google Vertex AI (Gemini 3.1 Pro)
+                    └── Your GCP project, Gemini-only, safety-critical monitoring
+```
+
+- Gateway config: `LLM_PROVIDER=azure` (single config change from Phase 0)
+- PII redaction active on all requests before any LLM API call
+- Zero-retention agreements with all providers (contractual + technical)
+- Azure HIPAA BAA in place before first real user
+
+**Provider Selection Rationale:**
+
+| Provider | Service | Models | Why BYOK |
+|----------|---------|--------|----------|
+| OpenAI | Azure OpenAI Service | GPT-5.4, GPT-5.3-Codex | Data residency, SLA, no training on Relio data, HIPAA BAA |
+| Anthropic | Anthropic API (direct) | Claude Opus 4.6, Sonnet 4.6 | Zero-retention agreement, superior empathetic language generation |
+| Google | Vertex AI | Gemini 3.1 Pro | Managed Gemini, low latency for always-on safety monitoring |
+
+**Hard Boundary — Free vs. Paid:**
+
+| Usage | GitHub Models (Free PAT) | BYOK (Paid Enterprise) |
+|-------|--------------------------|------------------------|
+| Internal dev/testing | Allowed | Not needed yet |
+| Investor demos (synthetic data) | Allowed (low volume) | Recommended |
+| Beta users (<100) | NOT recommended | Required if real data |
+| Production (100+ users) | **Prohibited** (ToS violation) | **Required** |
+| Real user PII in prompts | **NEVER** — GitHub sees data | Use Azure OpenAI (your keys) |
+
+> **Non-negotiable:** The moment real users send real relationship data, all traffic MUST flow through BYOK providers. GitHub Models free tier is for exploration and experimentation only. Tier 1 data through a third-party dev tool = catastrophic trust violation.
+
+#### 5.6.2 Model Cascading & Cost Per Inference (CPI) Management
+
+**Phase 2: Scale Optimization (Month 12+)**
+
+The LLM Gateway implements a **Complexity Classifier** that routes each request to the cheapest model capable of handling it, strictly managing Cost Per Inference (CPI).
+
+```
+User Message Arrives
+    │
+    ▼
+[Complexity Classifier] ── Simple (greeting, ack, scheduling) ──► GPT-5.3-Codex ($)
+    │                                                                ~$0.002/call
+    ├── Medium (profiling, cycle detection) ──► Claude Sonnet 4.6 ($$$)
+    │                                              ~$0.008/call
+    ├── Complex (Socratic translation, crisis) ──► Claude Opus 4.6 ($$$$)
+    │                                                  ~$0.025/call
+    └── Safety-critical (DV, abuse, suicidal) ──► Gemini 3.1 Pro ($$)
+                                                      ~$0.004/call
+```
+
+**Traffic Distribution (Model Cascading at scale):**
+
+| Complexity | % of Traffic | Model | Cost/Call | Weighted CPI |
+|------------|-------------|-------|-----------|---------------|
+| Simple | 40% | GPT-5.3-Codex | $0.002 | $0.0008 |
+| Medium | 30% | Claude Sonnet 4.6 | $0.008 | $0.0024 |
+| Complex | 20% | Claude Opus 4.6 | $0.025 | $0.0050 |
+| Safety | 10% | Gemini 3.1 Pro | $0.004 | $0.0004 |
+| **Blended** | **100%** | | | **$0.0086** |
+
+**CPI Reduction Roadmap:**
+
+| Phase | Blended CPI | Monthly LLM Spend (100K MAU) | Strategy |
+|-------|-------------|------------------------------|----------|
+| Phase 1 (no cascading) | ~$0.012 | ~$96,000 | Single model per agent |
+| Phase 2 (cascading live) | ~$0.006 | ~$48,000 | Complexity routing, 60% to cheapest |
+| Phase 3 (+ caching + fine-tuning) | ~$0.004 | ~$32,000 | Tier 2 cache, response templates, fine-tuned models |
+
+**Cost optimization levers stacked:**
+
+| Strategy | Savings | Owner | Timeline |
+|----------|---------|-------|----------|
+| Model Cascading (complexity routing) | 40–50% | `vp-rnd` | Month 12 |
+| Cosmos DB Tier 2 caching (stable profiles) | 10–15% | `backend-developer` | Month 8 |
+| Response templating (timeout, exercises) | 5–8% | `skills-builder` | Month 10 |
+| Progressive context windowing | 15–20% | `vp-rnd` | Month 12 |
+| Azure OpenAI Provisioned Throughput Units (PTUs) | 30–40% on committed volume | `cloud-architect` | Month 14 |
+| Fine-tuned smaller models per agent | 25–40% per task | `vp-rnd` | Month 18 |
+
+#### 5.6.3 Implementation Action Items
+
+| Week | Action | Owner |
+|------|--------|-------|
+| Now | Use GitHub Models API + PAT for all agent development and prompt tuning (synthetic data only) | `backend-developer` |
+| Now | Build LLM Gateway abstraction: `callLLM(agent, messages)` routes to GitHub Models now, Azure OpenAI later via config | `backend-developer` |
+| W1–2 | Implement provider-agnostic interface with `LLM_PROVIDER` env var | `cloud-architect` |
+| W3 (post-funding) | Provision Azure OpenAI Service, Anthropic enterprise account, Vertex AI project | `cloud-architect` |
+| W3 | Flip config: `LLM_PROVIDER=github` → `LLM_PROVIDER=azure` | `backend-developer` |
+| W4 | PII redaction pipeline live (Azure AI Language + Presidio) | `data-privacy-officer` |
+| W8 | Tier 2 caching + response templating implemented | `backend-developer` |
+| W12 | Model Cascading complexity classifier live in LLM Gateway | `vp-rnd` |
+| W14 | Negotiate Azure OpenAI PTU reserved capacity based on usage data | `chief-finance-officer` |
+| M18 | First fine-tuned models deployed for high-volume agents | `vp-rnd` |
 
 ### 5.7 Mobile Architecture
 
@@ -1382,7 +1523,7 @@ Integrating Medical Pod (34 weeks), Tech Pod (48 weeks), and Ops Pod quarterly m
 
 | Week | Tech Pod | Medical Pod | Ops Pod |
 |------|----------|-------------|---------|
-| 1–2 | Azure VNet, subnets, NSGs, Managed Identities, AKS private cluster, Azure Key Vault, Azure Container Registry | Safety Guardian MVP training on adversarial corpus | Brand positioning; external counsel retained; fundraise prep materials |
+| 1–2 | Azure VNet, subnets, NSGs, Managed Identities, AKS private cluster, Azure Key Vault, Azure Container Registry. **LLM Gateway abstraction layer built** (`LLM_PROVIDER=github` for dev, swappable to `azure` post-funding). GitHub Models API + PAT for all agent dev/testing (synthetic data only). | Safety Guardian MVP training on adversarial corpus | Brand positioning; external counsel retained; fundraise prep materials |
 | 3–4 | **Investor Mockup Sprint:** High-fidelity UI mockups (Figma), live demo environment on AKS (synthetic data), interactive prototype of 3-way mediation flow, Privacy/Shared Mode visual demo | **Investor Mockup Sprint:** Safety Guardian + Communication Coach live demo with synthetic conversations; adversarial testing gate pass | **Investor Mockup Sprint:** Series A pitch deck finalized; demo script; competitive battlecards v1.0; financial model v1.0; legal framework v1.0 (ToS, disclaimers) |
 | 5–6 | Azure PostgreSQL Flexible Server (Tier 1 ×2, Tier 3), Azure Cosmos DB (Tier 2), Azure Cache for Redis, Azure Service Bus, CI/CD pipeline (GitHub Actions + Azure Container Registry), CodeQL | Safety Guardian passes red-team gate (≥99.5% sensitivity, ≥95% specificity on test corpus) | **Series A fundraise active ($6M target).** Regulatory landscape analysis finalized |
 
@@ -1397,7 +1538,7 @@ Integrating Medical Pod (34 weeks), Tech Pod (48 weeks), and Ops Pod quarterly m
 
 | Week | Tech Pod | Medical Pod | Ops Pod |
 |------|----------|-------------|---------|
-| 7–10 | Auth service (Azure AD B2C), WebSocket server (Socket.io + Azure Cache for Redis Pub/Sub), Intercept & Hold, REST API (Fastify on AKS) | Orchestrator, Individual Profiler, Relationship Dynamics training + integration | Partnership pipeline (25+ leads, 5 LOIs); Series A close (target Month 3) |
+| 7–10 | Auth service (Azure AD B2C), WebSocket server (Socket.io + Azure Cache for Redis Pub/Sub), Intercept & Hold, REST API (Fastify on AKS). **Post-Series A: Flip `LLM_PROVIDER=azure`** — provision Azure OpenAI Service, Anthropic enterprise account, Vertex AI. PII redaction pipeline live. | Orchestrator, Individual Profiler, Relationship Dynamics training + integration | Partnership pipeline (25+ leads, 5 LOIs); Series A close (target Month 3) |
 | 11–14 | Azure Cosmos DB Tier 2 integration, Medical Pod service mesh on AKS, Azure Service Bus topic/subscription wiring | All 5 phase agents + transition logic; Emergency Response Agent v1.0 | Pricing validated with 200+ survey responses; product roadmap v1.0 published |
 | 15–18 | LLM Gateway via Azure API Management (unified routing, cost tracking, circuit breaker), PII redaction (Azure AI Language + Presidio), response validation pipeline | Communication Coach, Psychoeducation Agent, Proactive Engagement Engine v1.0 (pattern detection + scheduled check-ins) | GTM Phase 1 (Awareness) launched — content marketing, therapist network seeding |
 | 19–26 | iOS + Android clients (auth, WSS, Privacy/Shared Mode, biometric gating, offline sync, push notifications via Azure Notification Hubs), Azure Communication Services integration for emergency routing | Progress Tracker, CPO meta-audit layer, Emergency Response Agent integration with Azure Communication Services tested (staging environment, synthetic emergencies) | Freemium launch prep; first 3 partnerships signed; data monetization consent framework designed |
