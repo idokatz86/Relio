@@ -1,10 +1,10 @@
 # Relio Operations Pod — Product Requirements Document (PRD)
 
-**Version:** v1.0.0
+**Version:** v1.3.0
 **Date:** March 15, 2026
 **Author:** `chief-revenue-officer` (GPT-5.2) — Operations Pod Lead
 **Contributing Agents:** `chief-executive-officer` (GPT-5.4), `chief-finance-officer` (GPT-5.2), `chief-marketing-officer` (Claude Sonnet 4.6), `chief-compete-officer` (GPT-5.4), `chief-alliance-officer` (Claude Opus 4.6), `chief-legal-officer` (Claude Opus 4.6), `chief-product-officer` (Claude Sonnet 4.6), `chief-strategy-officer` (GPT-5.4)
-**Status:** DRAFT — Pending CEO & Board Review
+**Status:** Aligned with Unified PRD v1.3.0
 **Classification:** Confidential — Internal Use Only
 
 ---
@@ -97,7 +97,7 @@ Relio operates a **freemium-to-premium subscription model** optimized for couple
 #### Premium Tier — "Grow" ($19.99/month or $149.99/year)
 
 **Target user:** Committed couples (dating through marriage) seeking active AI-mediated communication support.
-**Value proposition:** The full power of 37-agent AI mediation, personalized to your relationship stage.
+**Value proposition:** The full power of 38-agent AI mediation, personalized to your relationship stage.
 
 | Feature | Description |
 |---------|-------------|
@@ -186,12 +186,52 @@ The following monetization practices are **explicitly prohibited** to protect th
 
 | Prohibited Practice | Rationale |
 |---------------------|-----------|
+| Selling raw user data (ANY tier) to ANY third party | Non-negotiable. RAW DATA IS NEVER SOLD. |
 | Selling or sharing Tier 1/2/3 data to advertisers | Destroys trust moat; regulatory liability |
 | Tier 1 data as conversion lever ("Upgrade to see what your partner said") | Violates confidentiality architecture |
 | Paywalling safety features (Safety Guardian, crisis resources) | Ethical obligation; regulatory risk |
 | Dark patterns in subscription management | App Store compliance; trust erosion |
 | AI-generated urgency ("Your relationship is at risk — upgrade now!") | Manipulative; contradicts clinical values |
 | Partner-specific upselling ("Your partner said something concerning...") | Coercive; Tier 1 violation |
+
+### 2.5 Anonymized Data Monetization
+
+**Core principle: RAW DATA IS NEVER SOLD. Non-negotiable.**
+
+Relio generates anonymized aggregate insights after k-anonymity (k≥50) and differential privacy (ε=0.5) enforcement:
+
+| Data Product | Description | Revenue Model | Timeline |
+|-------------|-------------|---------------|----------|
+| **Relationship Health Index** | Quarterly published aggregate trends on communication patterns, conflict drivers, resolution effectiveness | Sponsored research + media licensing | Y2-Q1 |
+| **Research Partnerships** | IRB-approved, opt-in anonymized datasets for academic relationship science research | Per-study licensing ($50K–200K/study) | Y2-Q2 |
+| **Enterprise EAP Aggregate Metrics** | Anonymized workforce relationship wellness metrics for EAP provider partners | Included in EAP PEPM pricing; premium analytics tier | Y2-Q3 |
+| **Insurance Actuarial Data** | Aggregated relationship health correlations for insurance risk modeling | Annual licensing ($500K–2M/carrier) | Y3-Q1 |
+
+**Revenue projection:**
+
+| Year | Data Revenue | Margin | Notes |
+|------|-------------|--------|-------|
+| Year 1 | $0 | — | Building consent framework and data pipeline |
+| Year 2 | $500,000 | 90%+ | Research partnerships + EAP aggregate data |
+| Year 3 | $2,000,000 | 92%+ | Insurance actuarial + expanded research |
+| Year 4 | $5,000,000 | 95%+ | High-margin, zero marginal cost at scale |
+
+**User consent model:**
+- Explicit, granular, opt-in consent required for any data inclusion
+- Users can opt out at ANY time without losing ANY features
+- Consent dashboard in Settings shows exactly what is shared
+- Annual re-consent required
+- Under-18 data NEVER included (app is 18+ only)
+
+### 2.6 Platform Strategy
+
+| Platform | Role | Tier Enforcement | Phase |
+|----------|------|-------------------|-------|
+| **iOS + Android Native App** | PRIMARY platform | Full 3-Tier enforcement | Launch (Phase 1) |
+| **WhatsApp / Telegram** | Tier 3 notification channels only | Tier 3 outbound only — no mediation | Phase 2 (Y2) |
+| **WeChat** | Notification channel for APAC expansion | Tier 3 outbound only | Phase 3 (Y3) |
+
+Standalone native app = PRIMARY. All mediation, journaling, and clinical features require the native app. Messaging platforms serve as lightweight notification and engagement nudges only.
 
 ---
 
@@ -221,7 +261,9 @@ The following monetization practices are **explicitly prohibited** to protect th
 | **Blended ARPU (Monthly)** | $21.50 | $22.80 | $24.10 |
 | **MRR (End of Year)** | $90,300 | $565,440 | $1,908,720 |
 | **ARR (End of Year)** | $1,083,600 | $6,785,280 | $22,904,640 |
-| **Gross Revenue (Annual)** | $632,000 | $3,840,000 | $13,200,000 |
+| **Gross Subscription Revenue (Annual)** | $632,000 | $3,840,000 | $13,200,000 |
+| **Data Monetization Revenue** | $0 | $500,000 | $2,000,000 |
+| **Total Gross Revenue (Annual)** | **$632,000** | **$4,340,000** | **$15,200,000** |
 | **LTV (per paid user)** | $215 | $342 | $498 |
 | **CAC (blended)** | $48 | $38 | $29 |
 | **LTV:CAC Ratio** | 4.5:1 | 9.0:1 | 17.2:1 |
@@ -410,7 +452,7 @@ Conversion prompt: "Continue your journey — unlock unlimited mediation"
 | Competitor | Category | Model | Pricing | Strengths | Weaknesses | Our Advantage |
 |-----------|----------|-------|---------|-----------|------------|---------------|
 | **Lasting** | Couples therapy app | Guided exercises, Gottman-based | $11.99/mo | Strong Gottman framework; established brand; insurance partnerships | No real-time mediation; no AI mediator; no privacy tiers; exercise-only (passive) | Live 3-way AI mediation; 3-Tier confidentiality; adaptive phase routing |
-| **Paired** | Couples wellness app | Daily questions & quizzes | $9.99/mo | Gamified engagement; simple UX; large user base (2M+) | Surface-level content; no conflict resolution; no real-time communication support | Clinical depth; conflict resolution (not avoidance); 37-agent specialization |
+| **Paired** | Couples wellness app | Daily questions & quizzes | $9.99/mo | Gamified engagement; simple UX; large user base (2M+) | Surface-level content; no conflict resolution; no real-time communication support | Clinical depth; conflict resolution (not avoidance); 38-agent specialization |
 | **Relish** | Relationship coaching | Human coach + content | $16.99/mo | Human coaches add perceived credibility; personalized plans | Expensive to scale (human labor); limited availability; no real-time crisis support | 24/7 availability; scalable AI; lower cost; real-time mediation |
 | **Replika** | AI companion chatbot | 1-on-1 AI conversation | $7.99/mo (Pro) | Large AI user base; strong emotional connection | Not relationships-focused; parasocial risk; no couples features; no clinical framework | Purpose-built for couples; clinical grounding; anti-parasocial safeguards |
 | **Character.ai** | AI roleplay/chat | Multi-persona AI chat | Free / $9.99/mo | Massive scale; flexible personas | No clinical validation; no confidentiality model; entertainment-focused | Clinical seriousness; privacy architecture; relationship-specific agents |
@@ -424,7 +466,7 @@ Conversion prompt: "Continue your journey — unlock unlimited mediation"
 |----------------|---------------------|-------------------|-------|
 | **3-Tier Confidentiality Model** | 5 | 12–18 months | Architectural, not a feature toggle. Requires purpose-built DB architecture, LLM pipeline, and trust UX. |
 | **3-Way AI Mediation** | 4 | 8–12 months | Novel UX paradigm. Competitors would need to rebuild their interaction model. |
-| **37-Agent Specialization** | 4 | 12+ months | Deep clinical orchestration. Each agent encodes specific therapeutic framework knowledge. |
+| **38-Agent Specialization** | 4 | 12+ months | Deep clinical orchestration. Each agent encodes specific therapeutic framework knowledge. |
 | **Phase-Specific Modules** | 3 | 6–9 months | Content + routing logic. Moderately defensible through quality depth. |
 | **Asymmetric Funnel Design** | 3 | 6 months | GTM innovation. Easily studied but requires tight product-marketing alignment. |
 | **Clinical Framework Integration** (Gottman, EFT, Attachment Theory) | 3 | 6 months | Knowledge is public; integration depth is the moat. |
@@ -433,7 +475,7 @@ Conversion prompt: "Continue your journey — unlock unlimited mediation"
 
 | Threat Scenario | Trigger | Counter-Play |
 |-----------------|---------|-------------|
-| Lasting adds "AI mediator" feature | Press release or app update | Emphasize depth: "An AI chat widget ≠ 37 specialized agents with confidentiality isolation." Accelerate Phase-Crisis module marketing. |
+| Lasting adds "AI mediator" feature | Press release or app update | Emphasize depth: "An AI chat widget ≠ 38 specialized agents with confidentiality isolation." Accelerate Phase-Crisis module marketing. |
 | BetterHelp launches couples AI tool | Product announcement | Position as complementary: "Use Relio daily, BetterHelp weekly." Accelerate therapy referral partnerships. |
 | Replika pivots to couples | Feature update | Hit hard on clinical credibility: "Built by therapists, not entertainment engineers." Publish clinical validation data. |
 | Apple/Google releases native relationship feature | WWDC/Google I/O | Differentiate on depth and privacy: platform features are surface-level. Accelerate enterprise/EAP partnerships as alternative distribution. |
@@ -755,7 +797,7 @@ Privacy is not a compliance checkbox — it is Relio's **primary brand different
 |---|------|-----------------|-------------------|------------|-------|---------------------|
 | R1 | **Regulatory reclassification** — State/federal regulators classify Relio as a medical device or healthcare provider | 5 | 2 | 10 | `chief-legal-officer` | Maintain strict wellness positioning; proactive engagement with regulators; medical disclaimer saturation; legal opinion letters from health law counsel |
 | R2 | **User trust erosion** — Data breach, privacy incident, or viral negative press about AI in relationships | 5 | 3 | 15 | `data-privacy-officer` + `chief-info-security-officer` | SOC 2 certification; annual third-party security audits; bug bounty program; transparent incident response playbook; proactive privacy communications |
-| R3 | **Competitor feature parity** — Major player (BetterHelp, Apple, Google) launches similar 3-way AI mediation | 4 | 3 | 12 | `chief-compete-officer` | Accelerate moat depth (37-agent specialization, 3-Tier Model); lock in partnership exclusives; build switching costs through longitudinal data; first-mover brand advantage |
+| R3 | **Competitor feature parity** — Major player (BetterHelp, Apple, Google) launches similar 3-way AI mediation | 4 | 3 | 12 | `chief-compete-officer` | Accelerate moat depth (38-agent specialization, 3-Tier Model); lock in partnership exclusives; build switching costs through longitudinal data; first-mover brand advantage |
 | R4 | **LLM cost volatility** — Significant price increase from OpenAI, Anthropic, or Google | 4 | 3 | 12 | `chief-finance-officer` | Multi-provider diversification; model distillation for high-volume low-complexity tasks; reserved capacity agreements; develop internal fine-tuned models long-term |
 | R5 | **Legal liability incident** — User follows AI guidance and suffers harm; lawsuit claiming malpractice | 5 | 2 | 10 | `chief-legal-officer` | E&O insurance ($5M coverage); medical disclaimers; arbitration clause; AI accuracy disclaimers; no diagnostic or treatment language in any agent output |
 | R6 | **Partner activation failure** — Partner B rejection rate exceeds 70%, making couples features underutilized | 4 | 4 | 16 | `chief-revenue-officer` + `chief-product-officer` | Robust solo-subscriber value; privacy-first Partner B invitation UX; free trial for Partner B; continuously A/B test invitation flows; alternative couples entry points (therapist-recommended) |
@@ -919,7 +961,7 @@ l  5  │    │    │    │ R7 │R11 │
 | Partnership pipeline built | CAO | Brand positioning complete | 25+ qualified leads; 5 LOIs signed |
 | Pricing model validated | CRO, CFO | Competitive analysis; unit economics model | A/B test plan; pricing page live |
 | Competitive battlecards v1.0 | CCO | Market research complete | Battlecards for top 5 competitors published |
-| Series A closed | CEO, CFO | Pitch deck, financial model | $8–12M raised at $40–60M pre-money |
+| Series A closed | CEO, CFO | Pitch deck, financial model | $6M raised at $30–40M pre-money |
 | Product roadmap v1.0 | CPO | Cross-pod input | Prioritized backlog with user stories for Dating + Commitment modules |
 
 #### Q2 (Months 4–6): Freemium Launch
@@ -960,12 +1002,13 @@ l  5  │    │    │    │ R7 │R11 │
 
 | Milestone | Target Quarter | Owner |
 |-----------|---------------|-------|
-| Series B fundraise ($25–35M) | Y2-Q2 | CEO, CFO |
-| UK/EU launch | Y2-Q3 | CSO, CLO, CMO |
+| Series B fundraise ($15–20M) | Y2-Q2 | CEO, CFO |
+| UK/AU launch (Azure UK South, Australia East) | Y2-Q3 | CSO, CLO, CMO |
 | First EAP enterprise contract signed | Y2-Q2 | CAO |
 | SOC 2 Type II certification achieved | Y2-Q3 | CLO, CISO |
 | Research partnership publishes first efficacy study | Y2-Q4 | CAO, CMO |
 | Insurance reimbursement pilot | Y3-Q1 | CAO, CLO |
+| EU expansion (Azure West Europe) | Y3-Q1 | CSO, CLO, CMO |
 | LATAM expansion (Spanish localization) | Y3-Q2 | CSO, CMO |
 | 79,200 paid subscribers | Y3-Q4 | CRO |
 | $22.9M ARR | Y3-Q4 | CRO, CFO |
@@ -992,16 +1035,13 @@ Markets are ranked on a weighted scoring model:
 
 | Priority | Market | Score | Launch Timing | Key Considerations |
 |----------|--------|-------|---------------|-------------------|
-| **P0** | United States | 95 | Launch (Q2 Y1) | Primary market; largest TAM; most competitive |
-| **P0** | Canada | 90 | Q4 Y1 | English + French; PIPEDA compliance; US-adjacent |
-| **P1** | United Kingdom | 88 | Q2 Y2 | English-speaking; strong therapy culture; UK GDPR |
-| **P1** | Australia | 85 | Q3 Y2 | English-speaking; high smartphone penetration; similar cultural norms |
-| **P2** | Germany | 72 | Q1 Y3 | EU's largest market; GDPR-compliant infra already built; requires German localization |
-| **P2** | Netherlands | 70 | Q1 Y3 | High English proficiency; strong digital adoption |
-| **P3** | Mexico | 65 | Q2 Y3 | Large Spanish-speaking market; growing smartphone adoption; family-centric culture maps well to co-parenting |
-| **P3** | Brazil | 62 | Q4 Y3 | Massive market; Portuguese localization needed; LGPD compliance |
-| **P4** | Japan | 55 | Y4+ | Unique cultural dynamics; requires deep localization; high smartphone adoption |
-| **P4** | India | 52 | Y4+ | Massive TAM; complex cultural landscape; price sensitivity; Hindi/regional languages |
+| **P0** | United States | 95 | Launch (Q2 Y1) | Primary market; largest TAM; most competitive — **Azure East US** |
+| **P0** | Canada | 90 | Q4 Y1 | English + French; PIPEDA compliance; US-adjacent — Azure East US (cross-border) |
+| **P1** | United Kingdom | 88 | Q2 Y2 | English-speaking; strong therapy culture; UK GDPR — **Azure UK South** |
+| **P1** | Australia | 85 | Q3 Y2 | English-speaking; high smartphone penetration — **Azure Australia East** |
+| **P2** | EU (Germany, Netherlands, France) | 72 | Q1 Y3 | GDPR-compliant infra; requires localization — **Azure West Europe** |
+| **P3** | LATAM (Mexico, Brazil) | 65 | Q2 Y3 | Spanish + Portuguese; family-centric culture; growing smartphone adoption |
+| **P4** | APAC (Japan, India) | 55 | Y4+ | Massive TAM; deep localization required; price sensitivity |
 
 ### 14.3 Localization Requirements
 
@@ -1093,7 +1133,7 @@ Each battlecard is maintained by `chief-compete-officer` and updated monthly.
 
 | If they... | We... |
 |-----------|-------|
-| Launch an AI feature | Emphasize depth: 37 specialized agents vs. a generic chatbot. Publish comparison content. |
+| Launch an AI feature | Emphasize depth: 38 specialized agents vs. a generic chatbot. Publish comparison content. |
 | Cut pricing | Hold pricing; emphasize clinical quality and privacy architecture. Value ≠ price. |
 | Announce partnership with [X] | Accelerate our own partnership pipeline. Counter-position through content marketing. |
 | Get negative press | Distance carefully; publish our own safety/privacy transparency report. |
@@ -1173,11 +1213,11 @@ Each battlecard is maintained by `chief-compete-officer` and updated monthly.
 | Field | Value |
 |-------|-------|
 | **Document Title** | Relio Operations Pod — Product Requirements Document |
-| **Version** | v1.0.0 |
+| **Version** | v1.3.0 |
 | **Date** | March 15, 2026 |
 | **Author** | `chief-revenue-officer` (GPT-5.2) |
 | **Review Board** | `chief-executive-officer` (GPT-5.4), `chief-strategy-officer` (GPT-5.4), `chief-legal-officer` (Claude Opus 4.6) |
-| **Status** | DRAFT |
+| **Status** | Aligned with Unified PRD v1.3.0 |
 | **Next Review** | April 15, 2026 |
 | **Classification** | Confidential — Internal Use Only |
 

@@ -1,10 +1,10 @@
 # Relio Medical Pod — Comprehensive Blueprint PRD
 
-**Version:** 1.0.0
+**Version:** 1.3.0
 **Date:** March 15, 2026
 **Author:** Chief Psychology Officer (CPO) Agent — Claude Opus 4.6
 **Classification:** Internal — Engineering & Clinical Leadership
-**Status:** Draft for Review
+**Status:** Aligned with Unified PRD v1.3.0
 
 ---
 
@@ -326,7 +326,7 @@ This architecture ensures Safety Guardian evaluation is never gated behind Orche
 | **Model** | Gemini 3.1 Pro |
 | **Purpose** | Deliver personalized, clinically-informed exercises and micro-learnings adapted to each user's engagement level and psychological state. |
 | **Inputs** | Tier 2 diagnostic state (attachment profiles, active cycles, phase context), user engagement metrics (completion rates, response patterns). |
-| **Processing Logic** | (1) Match exercise to current clinical state. Examples: Anxious attachment → grounding exercises, journaling prompts about self-worth. Avoidant partner → low-friction, gamified check-ins (3-question max). Four Horsemen detected → targeted antidote exercises (e.g., "The Antidote to Criticism: Gentle Startup"). (2) Handle **asymmetric engagement**: if Partner A completes 80% of exercises and Partner B completes 10%, deliver bite-sized, optional content to Partner B. Never shame non-engagement. (3) Translate ALL clinical jargon into accessible language. "Anxious attachment activation" becomes "That feeling of needing reassurance when things feel uncertain." (4) Progressive difficulty: start with awareness exercises, advance to behavioral experiments, then relational practices. |
+| **Processing Logic** | (1) Match exercise to current clinical state. Examples: Anxious attachment → grounding exercises, journaling prompts about self-worth. Avoidant partner → low-friction, gamified check-ins (3-question max). Four Horsemen detected → targeted antidote exercises (e.g., "The Antidote to Criticism: Gentle Startup"). (2) Handle **asymmetric engagement**: if Partner A completes 80% of exercises and Partner B completes 10%, deliver bite-sized, optional content to Partner B. Never shame non-engagement. (3) Translate ALL clinical jargon into accessible language. "Anxious attachment activation" becomes "That feeling of needing reassurance when things feel uncertain." (4) Progressive difficulty: start with awareness exercises, advance to behavioral experiments, then relational practices. (5) **Digital Psychoeducation Module** (7 micro-lessons): "The 93% You're Missing" (how text strips emotional signaling), "Phubbing: The Silent Killer" (technoference and bids for connection), "Social Media ≠ Real Life" (curated reality vs. actual relationships), "The Screen-Free Ritual" (building device-free connection habits), "Digital Boundaries Agreement" (co-creating tech rules as a couple), "Text Fighting Rules" (structured digital conflict protocol), "Co-Parenting Communication Protocol" (BIFF-based digital co-parenting). |
 | **Outputs** | Personalized exercises (Tier 3 — safe for shared room), individual journaling prompts (Tier 1 — private), engagement tracking data to Progress Tracker. |
 | **Failure Modes** | Overwhelming an avoidant user with too much content (MEDIUM), exercises that are culturally inappropriate (MEDIUM), clinical jargon leaking into user-facing content (LOW). |
 | **Interactions** | Receives from: Phase Agents (exercise requests), Orchestrator (Tier 2 context). Sends to: Progress Tracker (engagement data), Orchestrator (Tier 3 exercise delivery). |
@@ -354,6 +354,18 @@ This architecture ensures Safety Guardian evaluation is never gated behind Orche
 | **Outputs** | Audit verdicts (approve/flag/override), bias correction directives, parasocial dependency alerts, Safety Guardian effectiveness reports, system-wide clinical quality scores. |
 | **Failure Modes** | Over-correcting and making outputs too generic (LOW), missing systemic bias that builds slowly across many sessions (MEDIUM), itself developing blind spots (mitigated by periodic external clinical review). |
 | **Interactions** | Audits: Orchestrator, Communication Coach, all Phase Agents. Reviews: Safety Guardian decisions. Monitors: Progress Tracker trends. Reports to: External clinical advisory board (human oversight). |
+
+### 3.14 emergency-response-agent
+
+| Field | Detail |
+|-------|--------|
+| **Model** | GPT-5.4 |
+| **Purpose** | Executes emergency protocols when `SAFETY_HALT` is triggered. Separates detection (Safety Guardian) from action (this agent). Safety Guardian detects — Emergency Response Agent acts. |
+| **Inputs** | `SAFETY_HALT` signals from Safety Guardian, severity level (tiered: T1-advisory, T2-urgent, T3-critical), user locale, session context, user emergency contact preferences. |
+| **Processing Logic** | (1) **Severity Triage**: T1 (advisory) → deliver localized mental health resources passively. T2 (urgent) → active resource delivery + scheduled follow-up. T3 (critical — imminent harm) → route to real emergency numbers (911/112/999) via Azure Communication Services, initiate duty-to-warn legal execution. (2) **Localized Emergency Routing**: Maintain emergency services database by locale. Deliver culturally appropriate crisis resources (hotline numbers, chat services, local shelters). Support 40+ locales at launch. (3) **Duty-to-Warn Legal Execution**: When legally mandated (Tarasoff obligations), coordinate with CLO agent for jurisdiction-specific compliance. Document all actions for legal audit trail. (4) **Post-Crisis Follow-Up Scheduling**: Automated check-ins at 24h, 72h, and 7d post-incident. Escalate if user does not respond to 72h check-in. (5) **Session Lockout Management**: Enforce session lock after T2/T3 events. Only human clinical reviewer can clear lockout. |
+| **Outputs** | Emergency resource delivery (Tier 3 — localized hotlines, shelters, chat services), real-time escalation to emergency services (T3), session lockout enforcement, duty-to-warn legal packets to CLO, post-crisis follow-up schedule, complete audit trail for CPO post-incident review. |
+| **Failure Modes** | False positive escalation — mitigated by tiered severity (T1 actions are low-cost/reversible) (LOW). Locale mismatch delivering wrong emergency numbers (MEDIUM — mitigated by locale validation + fallback to international resources). Latency in emergency routing exceeding 2-second SLA (MEDIUM — mitigated by pre-cached locale data and Azure Communication Services SLA). Follow-up fatigue if user receives too many check-ins (LOW). |
+| **Interactions** | Receives from: Safety Guardian (`SAFETY_HALT` + severity), Orchestrator (session context). Sends to: CLO agent (duty-to-warn legal packets), affected user (emergency resources), CPO (post-incident audit trail). Reports to: CPO (all incidents for meta-audit), external clinical advisory board (T3 critical incidents). |
 
 ---
 
@@ -444,6 +456,70 @@ Based on Gottman's research on Diffuse Physiological Arousal (DPA) — when hear
 3. Lock shared room input for 20 minutes (UI enforcement).
 4. Offer individual Tier 1 calming exercises during cooldown.
 5. Post-timeout: structured re-entry with repair attempt facilitation.
+
+### 4.7 Digital Communication & Social Media Psychology
+
+Digital-mediated conflict is qualitatively different from in-person conflict. Relio must account for the unique psychological dynamics of text-based relationship interactions.
+
+**Cyberspace Flooding:**
+Text-based conflict removes approximately 93% of emotional signaling (Mehrabian, 1971). No facial expressions, no vocal tone, no body language. This creates a uniquely hostile environment for conflict resolution:
+- No structural pauses — partners can send messages continuously without the natural turn-taking of spoken conversation.
+- Ambiguity amplification — neutral statements are interpreted negatively during conflict (negativity bias × communication channel poverty).
+- Leads to continuous Diffuse Physiological Arousal (DPA) without the partner even being physically present.
+
+**Digital-Specific Flooding Markers** (detected by `safety-guardian` and `relationship-dynamics`):
+| Marker | Detection Signal | Severity |
+|--------|-----------------|----------|
+| Rapid-fire messaging | >5 messages in 60 seconds from same user | HIGH |
+| Late-night conflict | Heated exchanges between 11 PM – 4 AM user-local time | MEDIUM |
+| Cross-platform spillover | User references arguments happening on other platforms ("you tweeted...", "your Instagram...") | MEDIUM |
+| Message length explosion | Single message >500 words during active conflict | HIGH |
+| Screenshot/evidence-gathering | Language indicating collection of "proof" ("I have screenshots", "I saved all your messages") | HIGH |
+| Read-receipt anxiety | Repeated references to being "left on read", message delivery status | LOW |
+| Online disinhibition effect | Language significantly more aggressive than user's baseline (Suler, 2004) — the screen removes social inhibition | HIGH |
+
+**Social Media Friction: Surface vs. Depth Protocol:**
+Social media arguments almost never represent the actual conflict. `communication-coach` maps surface social media complaints to deeper EFT attachment needs:
+
+| Surface Argument | Deeper Attachment Need | EFT Frame |
+|-----------------|----------------------|----------|
+| "You liked their photo" | Trust insecurity, fear of replacement | Anxious attachment — bid for reassurance of commitment |
+| Phubbing (phone snubbing) | Unmet bid for connection | Partner's bid was ignored — Gottman Turn Away event |
+| "You're always on your phone" | Feeling deprioritized, invisible | Attachment injury — "Am I important to you?" |
+| Posting about relationship online | Boundary violation, control | Autonomy need vs. connection need conflict |
+| Comparing relationship to others' posts | Idealization gap, inadequacy | Unmet expectation anchored to curated social media reality |
+| Following/unfollowing as signal | Passive-aggressive protest behavior | Indirect bid for attention — fear of direct vulnerability |
+
+**Stage-Specific Digital Impacts:**
+| Relationship Stage | Digital Friction Points | Agent Response |
+|-------------------|------------------------|----------------|
+| Dating (`phase-dating`) | Jealousy over social media activity, comparison to others' relationships, texting frequency anxiety | Normalize digital anxiety. Psychoeducate on curated vs. real. |
+| Marriage (`phase-commitment`) | Phubbing/technoference, emotional affairs via DMs, porn discovery, financial secrecy via apps | Address through Sound Relationship House Level 3 (Turn Towards). |
+| Separation (`phase-separation`) | Oversharing separation on social media, digital harassment, monitoring ex's profiles | Gray Rock + BIFF for digital communication. Boundary exercises. |
+| Co-Parenting (`phase-post-divorce`) | Parental alienation via social media, children weaponized in online posts, co-parenting app misuse | Strict BIFF protocol. Flag child welfare concerns to Safety Guardian. |
+
+### 4.8 Proactive Engagement Engine
+
+Relio does not wait for conflict to occur. The Medical Pod implements a proactive engagement model that detects patterns before they escalate.
+
+**Pattern-Based Interventions:**
+Longitudinal Tier 2 analysis enables pre-emptive action:
+- Declining positive:negative ratio over 7-day window → trigger Communication Coach to deliver a "relationship check-in" Socratic prompt before next conflict.
+- Increasing session frequency with decreasing shared room engagement → CPO parasocial dependency alert + gentle redirect exercises.
+- Four Horsemen frequency trending upward → Psychoeducation agent delivers targeted antidote micro-lessons proactively.
+- Exercise completion rate dropping for one partner → adapt content format (shorter, gamified) before disengagement becomes entrenched.
+
+**Scheduled Check-Ins:**
+| Cadence | Type | Content | Delivered By |
+|---------|------|---------|-------------|
+| Daily | Micro check-in | Single reflection question ("What's one thing your partner did today that you appreciated?") | `psychoeducation-agent` |
+| Weekly | Summary | Non-shaming progress readout + one targeted exercise | `progress-tracker` + `psychoeducation-agent` |
+| Monthly | Deep-dive | Relationship health dashboard, trend analysis, personalized recommendations | `progress-tracker` + `chief-psychology-officer` |
+
+**Crisis Prevention:**
+- Pre-emptive de-escalation: When `relationship-dynamics` detects emerging negative cycle patterns (e.g., criticism frequency rising but not yet at crisis threshold), the system delivers a proactive Tier 3 intervention before flooding occurs.
+- Anniversary/trigger date awareness: Track known relationship stress points (dates of past arguments, anniversaries of losses) and prepare supportive content in advance.
+- Seasonal pattern detection: Some couples show cyclical conflict patterns (holidays, tax season, back-to-school). Proactive engagement adapts to these rhythms.
 
 ---
 
@@ -635,6 +711,7 @@ Based on Gottman's research on Diffuse Physiological Arousal (DPA) — when hear
 | `psychoeducation-agent` | **Gemini 3.1 Pro** | Content generation for exercises and micro-learnings at scale. Gemini's long context window helps with generating varied, non-repetitive educational content. Cost-effective for high-volume content delivery. |
 | `progress-tracker` | **GPT-5.2** | Metric calculation and summarization. Lower-complexity analytical task. GPT-5.2 generates clean, structured numeric summaries at the lowest cost tier in the Medical Pod. |
 | `chief-psychology-officer` | **Claude Opus 4.6** | Meta-audit requires the highest reasoning capability. Must evaluate nuance in Tier 3 outputs, detect subtle bias across many sessions, and identify parasocial dependency patterns. Opus 4.6 is the only model with sufficient analytical depth for this role. |
+| `emergency-response-agent` | **GPT-5.4** | Fast structured output for emergency protocol execution. Requires low-latency classification (severity triage), structured API calls (Azure Communication Services for emergency routing), and deterministic action sequencing. GPT-5.4's function-calling precision and speed make it optimal for time-critical emergency workflows where the 2-second SLA is non-negotiable. |
 
 ### Model Cost Tiers (Relative)
 
@@ -815,6 +892,7 @@ Relationship stages are NOT strictly linear. The system supports:
 | psychoeducation-agent | Gemini 3.1 Pro | 5 | 300 | 400 | $0.004 |
 | progress-tracker | GPT-5.2 | 2 | 500 | 300 | $0.003 |
 | chief-psychology-officer | Claude Opus 4.6 | 20 | 400 | 150 | $0.055 |
+| emergency-response-agent | GPT-5.4 | 0.5 | 200 | 150 | $0.001 |
 | **TOTAL PER SESSION** | | | | | **~$0.25** |
 
 ### 11.2 Monthly Cost at Scale
@@ -846,7 +924,7 @@ Relationship stages are NOT strictly linear. The system supports:
 | Agent | Sends To | Receives From | Handoff Trigger |
 |-------|----------|---------------|-----------------|
 | **orchestrator-agent** | All Medical Pod agents | User input, Safety Guardian signals, all agent outputs | Every message (always active) |
-| **safety-guardian** | Orchestrator (SAFETY_HALT), CPO (all flags) | Tier 1 shadow feed (all messages) | Threat detected (continuous passive monitoring) |
+| **safety-guardian** | Orchestrator (SAFETY_HALT), Emergency Response Agent (SAFETY_HALT + severity), CPO (all flags) | Tier 1 shadow feed (all messages) | Threat detected (continuous passive monitoring) |
 | **communication-coach** | Orchestrator (Tier 3 output) | Orchestrator (Tier 1 + Tier 2 context) | Tier 3 translation needed |
 | **individual-profiler** | Orchestrator (Tier 2 profiles), Relationship Dynamics, Phase Agents, Communication Coach | Orchestrator (Tier 1 data) | Every message (continuous profiling) |
 | **relationship-dynamics** | Phase Agents, Communication Coach, Progress Tracker, CPO | Individual Profiler (Tier 2), Orchestrator (interaction data) | Every interaction pair (both users active) |
@@ -858,6 +936,7 @@ Relationship stages are NOT strictly linear. The system supports:
 | **psychoeducation-agent** | Progress Tracker (engagement data), Orchestrator (Tier 3 exercises) | Phase Agents (exercise requests), Orchestrator (Tier 2 context) | Exercise delivery triggered by phase agent or schedule |
 | **progress-tracker** | Orchestrator (Tier 3 summaries), CPO (trend data), Psychoeducation (gaps) | Relationship Dynamics, phase-crisis, Psychoeducation | Periodic (end of session, weekly roll-up) |
 | **chief-psychology-officer** | Orchestrator (override), External clinical board (reports) | All agents (audit feed) | Continuous meta-audit on all Tier 3 outputs |
+| **emergency-response-agent** | Affected user (emergency resources), CLO (duty-to-warn packets), CPO (audit trail), external clinical board (T3 incidents) | Safety Guardian (`SAFETY_HALT` + severity), Orchestrator (session context + locale) | `SAFETY_HALT` signal received from Safety Guardian |
 
 ### 12.2 Data Flow Diagram
 
@@ -922,7 +1001,10 @@ SAFETY_HALT Signal
     ├──► Orchestrator: STOP all pipeline processing
     ├──► All Phase Agents: FREEZE current state
     ├──► Communication Coach: QUARANTINE pending Tier 3 outputs
-    ├──► Affected User: DELIVER emergency resources immediately
+    ├──► Emergency Response Agent: EXECUTE emergency protocol (severity-tiered)
+    │       ├── T1: Deliver localized mental health resources
+    │       ├── T2: Active resource delivery + schedule follow-ups (24h/72h/7d)
+    │       └── T3: Route to emergency services (911/112/999) + duty-to-warn to CLO
     ├──► CPO: ALERT for post-incident review
     └──► Session: LOCK until manual clinical review clears resumption
 ```
@@ -936,11 +1018,11 @@ No agent in the Medical Pod — including the Orchestrator and CPO — has autho
 | Field | Value |
 |-------|-------|
 | Document Title | Relio Medical Pod — Comprehensive Blueprint PRD |
-| Version | 1.0.0 |
+| Version | 1.3.0 |
 | Date | March 15, 2026 |
 | Author | Chief Psychology Officer (CPO) Agent |
 | Model | Claude Opus 4.6 |
-| Status | Draft for Review |
+| Status | Aligned with Unified PRD v1.3.0 |
 | Next Review | April 15, 2026 |
 | Approvers | CTO, CLO, External Clinical Advisory Board |
 | Classification | Internal — Engineering & Clinical Leadership |

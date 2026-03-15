@@ -1,7 +1,8 @@
 # Relio — Tech Pod: Product Requirements Document (Blueprint)
 
-**Version:** v1.0.0
+**Version:** v1.3.0
 **Date:** March 15, 2026
+**Status:** Aligned with Unified PRD v1.3.0
 **Author:** `chief-technology-officer` (GPT-5.4)
 **Classification:** Internal — Engineering Confidential
 **Contributing Agents:** `backend-developer`, `cloud-architect`, `github-architect`, `native-mobile-developer`, `mobile-qa`, `fullstack-qa`, `penetration-tester`, `ui-ux-expert`, `chief-info-security-officer`, `data-privacy-officer`, `app-store-certifier`, `skills-builder`, `scrum-master`, `vp-rnd`
@@ -33,7 +34,7 @@
 
 ### Mission
 
-The Tech Pod exists to design, build, operate, and defend the secure, scalable, privacy-first infrastructure that powers Relio's 37-agent multi-agent architecture and real-time 3-way mediation system for millions of concurrent couples.
+The Tech Pod exists to design, build, operate, and defend the secure, scalable, privacy-first infrastructure that powers Relio's 38-agent multi-agent architecture and real-time 3-way mediation system for millions of concurrent couples.
 
 ### Technical North Star
 
@@ -83,7 +84,7 @@ The Tech Pod owns 15 specialized AI agents spanning backend infrastructure, clou
 │         └────────┬───────────┘                                             │
 │                  ▼                                                          │
 │  ┌───────────────────────────────────┐                                     │
-│  │         CDN / WAF / DDoS          │   ← Cloudflare / AWS Shield        │
+│  │         CDN / WAF / DDoS          │   ← Azure Front Door + WAF         │
 │  └───────────────┬───────────────────┘                                     │
 │                  ▼                                                          │
 │  ┌───────────────────────────────────┐                                     │
@@ -153,13 +154,13 @@ The Tech Pod owns 15 specialized AI agents spanning backend infrastructure, clou
 │  │                                                                  │      │
 │  │  ┌──────────────────┐  ┌──────────────────┐  ┌──────────────┐  │      │
 │  │  │  Redis Cluster   │  │  Event Bus       │  │  Blob Store  │  │      │
-│  │  │  (Session/Cache) │  │  (NATS/Kafka)    │  │  (S3/GCS)    │  │      │
+│  │  │  (Session/Cache) │  │  (Azure Svc Bus) │  │  (Az Blob)   │  │      │
 │  │  └──────────────────┘  └──────────────────┘  └──────────────┘  │      │
 │  └──────────────────────────────────────────────────────────────────┘      │
 │                                                                             │
 │  ┌──────────────────────────────────────────────────────────────────┐      │
 │  │                    OBSERVABILITY TIER                            │      │
-│  │  Datadog / Grafana │ PagerDuty │ Sentry │ OpenTelemetry         │      │
+│  │  Azure Monitor / App Insights │ PagerDuty │ Sentry │ OpenTelemetry │   │
 │  └──────────────────────────────────────────────────────────────────┘      │
 └─────────────────────────────────────────────────────────────────────────────┘
 ```
@@ -249,7 +250,7 @@ CREATE TABLE user_profile (
     onboarding_phase TEXT NOT NULL DEFAULT 'dating'
         CHECK (onboarding_phase IN ('dating','commitment','marriage',
                                      'separation','post_divorce')),
-    encryption_key_ref TEXT NOT NULL -- Reference to KMS key, not the key itself
+    encryption_key_ref TEXT NOT NULL -- Reference to Azure Key Vault key, not the key itself
 );
 
 -- Raw private journal entries (Tier 1 — NEVER shared)
@@ -417,16 +418,16 @@ User A types raw complaint ──→ Tier 1 Private Store (User A)
 
 ## 4. Infrastructure Design
 
-### VPC Architecture
+### Azure VNet Architecture
 
 ```
 ┌─────────────────────────────────────────────────────────────────────┐
-│                         VPC: relio-prod (10.0.0.0/16)              │
+│                      Azure VNet: relio-prod (10.0.0.0/16)          │
 │                                                                     │
 │  ┌───────────────────────────────────────────────────────────────┐  │
 │  │  PUBLIC SUBNET (10.0.1.0/24) — AZ-a                         │  │
 │  │  ┌─────────────┐  ┌──────────────┐  ┌───────────────────┐   │  │
-│  │  │ ALB / NLB   │  │ NAT Gateway  │  │ API Gateway       │   │  │
+│  │  │ Azure LB    │  │ NAT Gateway  │  │ Azure APIM        │   │  │
 │  │  │ (WebSocket  │  │ (outbound    │  │ (REST endpoints)  │   │  │
 │  │  │  + REST)    │  │  only)       │  │                   │   │  │
 │  │  └─────────────┘  └──────────────┘  └───────────────────┘   │  │
@@ -437,7 +438,7 @@ User A types raw complaint ──→ Tier 1 Private Store (User A)
 │  │  ┌─────────────┐  ┌──────────────┐  ┌───────────────────┐   │  │
 │  │  │ WebSocket   │  │ REST API     │  │ Auth Service      │   │  │
 │  │  │ Servers     │  │ Servers      │  │ (JWT issuance)    │   │  │
-│  │  │ (ECS/K8s)   │  │ (ECS/K8s)   │  │                   │   │  │
+│  │  │ (AKS)       │  │ (AKS)       │  │                   │   │  │
 │  │  └─────────────┘  └──────────────┘  └───────────────────┘   │  │
 │  │  ┌─────────────┐  ┌──────────────┐  ┌───────────────────┐   │  │
 │  │  │ Intercept & │  │ LLM Gateway  │  │ PII Redaction     │   │  │
@@ -449,13 +450,13 @@ User A types raw complaint ──→ Tier 1 Private Store (User A)
 │  │  PRIVATE SUBNET: TIER 3 DATA (10.0.20.0/24) — AZ-a,b        │  │
 │  │  ┌──────────────────┐  ┌──────────────┐  ┌───────────────┐  │  │
 │  │  │ PostgreSQL       │  │ Redis Cluster│  │ Event Bus     │  │  │
-│  │  │ (Shared Room)    │  │ (Sessions)   │  │ (NATS/Kafka)  │  │  │
+│  │  │ (Shared Room)    │  │ (Sessions)   │  │ (Az Svc Bus)  │  │  │
 │  │  └──────────────────┘  └──────────────┘  └───────────────┘  │  │
 │  └───────────────────────────────────────────────────────────────┘  │
 │                                                                     │
 │  ┌───────────────────────────────────────────────────────────────┐  │
 │  │  ISOLATED PRIVATE SUBNET: TIER 1 DATA (10.0.30.0/24)        │  │
-│  │  *** NO INTERNET GATEWAY — NO NAT — NO VPC PEERING ***      │  │
+│  │  *** NO INTERNET GATEWAY — NO NAT — NO VNet PEERING ***     │  │
 │  │  Access ONLY via internal service mesh from Application tier  │  │
 │  │                                                               │  │
 │  │  ┌───────────────────┐  ┌───────────────────┐                │  │
@@ -478,17 +479,17 @@ All infrastructure is defined in Terraform with the following module structure:
 ```
 infra/
 ├── modules/
-│   ├── vpc/                  # VPC, subnets, NACLs, security groups
-│   ├── ecs/                  # ECS cluster, task definitions, auto-scaling
-│   ├── rds-tier1/            # Tier 1 isolated PostgreSQL instances
-│   ├── rds-tier3/            # Tier 3 shared room PostgreSQL
+│   ├── vnet/                 # Azure VNet, subnets, NSGs, route tables
+│   ├── aks/                  # AKS cluster, node pools, auto-scaling
+│   ├── pg-tier1/             # Tier 1 isolated Azure Database for PostgreSQL Flexible Server
+│   ├── pg-tier3/             # Tier 3 shared room Azure Database for PostgreSQL Flexible Server
 │   ├── redis/                # Redis cluster for sessions/cache
-│   ├── alb/                  # Application load balancer (WebSocket + REST)
+│   ├── lb/                   # Azure Load Balancer (WebSocket + REST)
 │   ├── waf/                  # Web Application Firewall rules
-│   ├── iam/                  # Least-privilege IAM roles and policies
-│   ├── kms/                  # KMS keys for at-rest encryption
-│   ├── monitoring/           # CloudWatch, Datadog integration
-│   └── cdn/                  # CloudFront for static assets
+│   ├── rbac/                 # Azure RBAC + Managed Identities (least-privilege)
+│   ├── keyvault/             # Azure Key Vault for secrets and at-rest encryption
+│   ├── monitoring/           # Azure Monitor + Application Insights integration
+│   └── frontdoor/            # Azure Front Door + WAF for CDN and DDoS protection
 ├── environments/
 │   ├── dev/
 │   ├── staging/
@@ -499,31 +500,33 @@ infra/
 └── terraform.tfvars
 ```
 
-### IAM Least-Privilege Policy
+### Azure RBAC Least-Privilege Policy
 
 ```hcl
-# Example: WebSocket server can ONLY access Tier 3 shared room DB
+# Example: WebSocket server Managed Identity can ONLY access Tier 3 shared room DB
 # and the internal LLM gateway. CANNOT access Tier 1 databases.
-resource "aws_iam_policy" "websocket_server" {
-  name = "relio-websocket-server"
-  policy = jsonencode({
-    Version = "2012-10-17"
-    Statement = [
-      {
-        Effect   = "Allow"
-        Action   = ["rds-db:connect"]
-        Resource = [aws_db_instance.tier3_shared_room.arn]
-      },
-      {
-        Effect   = "Deny"
-        Action   = ["rds-db:connect"]
-        Resource = [
-          aws_db_instance.tier1_private_a.arn,
-          aws_db_instance.tier1_private_b.arn
-        ]
-      }
+resource "azurerm_role_assignment" "websocket_tier3_access" {
+  scope                = azurerm_postgresql_flexible_server.tier3_shared_room.id
+  role_definition_name = "Contributor"
+  principal_id         = azurerm_user_assigned_identity.websocket_server.principal_id
+}
+
+# Explicit deny via custom role — no access to Tier 1 databases
+resource "azurerm_role_definition" "deny_tier1_access" {
+  name  = "relio-deny-tier1-db-access"
+  scope = data.azurerm_subscription.current.id
+
+  permissions {
+    not_actions = [
+      "Microsoft.DBforPostgreSQL/flexibleServers/databases/read",
+      "Microsoft.DBforPostgreSQL/flexibleServers/databases/write"
     ]
-  })
+  }
+
+  assignable_scopes = [
+    azurerm_postgresql_flexible_server.tier1_private_a.id,
+    azurerm_postgresql_flexible_server.tier1_private_b.id
+  ]
 }
 ```
 
@@ -542,7 +545,7 @@ Relio traffic exhibits predictable spikes during **evenings (6PM–11PM)** and *
 
 ### CDN & Static Assets
 
-- CloudFront distribution for mobile app static assets (images, fonts, exercise templates)
+- Azure Front Door distribution for mobile app static assets (images, fonts, exercise templates)
 - Edge caching for public content (help articles, legal disclaimers)
 - **No caching** for any API response — all dynamic content bypasses CDN
 
@@ -925,6 +928,70 @@ Incoming Request
         • If all providers down → return graceful timeout message
 ```
 
+### LLM Infrastructure Transition Roadmap
+
+The LLM Gateway uses a provider-agnostic abstraction layer (`callLLM` interface) enabling config-only provider swaps with zero code changes.
+
+#### Phase 0: Pre-Funding (Current — Development Only)
+
+| Setting | Value |
+|---|---|
+| Provider | GitHub Models API |
+| Auth | Personal Access Token (PAT) |
+| SDK | `@github/models` |
+| Config | `LLM_PROVIDER=github` |
+| Data | **Synthetic data ONLY** — no real PII under any circumstances |
+| Models | GPT-5.4, GPT-5.3-Codex, Claude Sonnet 4.6, Gemini 3.1 Pro (via GitHub marketplace) |
+
+#### Phase 1: Post-Series A (BYOK on Azure)
+
+| Setting | Value |
+|---|---|
+| Provider | Azure OpenAI Service (primary) + Anthropic API (direct) + Vertex AI (Gemini) |
+| Config | `LLM_PROVIDER=azure` (config flip, no code change) |
+| Models | GPT-5.4 + GPT-5.3-Codex (Azure OpenAI), Claude Opus/Sonnet 4.6 (Anthropic API), Gemini 3.1 Pro (Vertex AI) |
+| PII | Presidio + Azure AI Language redaction **active** on all calls |
+| Compliance | HIPAA BAA signed with Azure, Anthropic, Google Cloud |
+| Keys | Stored in Azure Key Vault, rotated every 90 days |
+
+#### Phase 2: Month 12+ (Model Cascading)
+
+Complexity classifier routes traffic to cost-optimal models:
+
+| Traffic % | Complexity | Model | Cost per 1K tokens |
+|---|---|---|---|
+| 40% | Simple (acknowledgments, echoes) | GPT-5.3-Codex | $0.002 |
+| 30% | Medium (pattern recognition, reframes) | Claude Sonnet 4.6 | $0.008 |
+| 20% | Complex (deep abstraction, crisis mediation) | Claude Opus 4.6 | $0.025 |
+| 10% | Safety-critical (DV/abuse, mandatory reporting) | Gemini 3.1 Pro | $0.004 |
+
+**Blended Cost Per Interaction (CPI):** $0.012 (Phase 1) → $0.006 (Phase 2 initial) → $0.004 (Phase 2 optimized)
+
+#### Provider-Agnostic Gateway Interface
+
+```typescript
+// callLLM interface — provider swap is config-only, zero code changes
+interface LLMGatewayConfig {
+  provider: 'github' | 'azure' | 'anthropic' | 'vertex';
+  model: string;
+  maxTokens: number;
+  temperature: number;
+}
+
+async function callLLM(config: LLMGatewayConfig, input: RedactedInput): Promise<ValidatedOutput>;
+```
+
+#### GitHub Models SDK Usage Boundaries
+
+| Usage Scenario | Free (GitHub PAT) | Paid (BYOK on Azure) |
+|---|---|---|
+| Internal development & testing | ✅ Allowed | ✅ Allowed |
+| Beta users (synthetic data only) | ⚠️ Not recommended | ✅ Allowed |
+| Production traffic | 🚫 **Prohibited** | ✅ Required |
+| Real PII in prompts | 🚫 **NEVER** | ✅ After Presidio redaction |
+| Load testing | ⚠️ Rate-limited | ✅ Allowed |
+| CI/CD pipeline tests | ✅ Allowed (mocked preferred) | ✅ Allowed |
+
 ### PII Redaction Pipeline
 
 ```
@@ -960,9 +1027,9 @@ Step 5: Post-flight — Verify LLM response doesn't reconstruct redacted entitie
 | Cross-tenant DB access | **Tampering** | SQL injection to read partner's private store | CRITICAL | Network-isolated DBs, parameterized queries, no cross-DB JOINs |
 | Prompt injection reveals Tier 1 | **Information Disclosure** | Crafted messages trick AI into repeating private context | CRITICAL | System prompt hardening, output validation, Tier 1 phrase blocklist |
 | Session hijacking | **Spoofing** | Stolen JWT used to impersonate user | HIGH | Short-lived tokens (15 min), device binding, refresh rotation |
-| DDoS on WebSocket | **Denial of Service** | Flood connections during partner crisis | HIGH | WAF rate limiting, CloudFlare DDoS protection, connection pooling |
+| DDoS on WebSocket | **Denial of Service** | Flood connections during partner crisis | HIGH | WAF rate limiting, Azure Front Door DDoS protection, connection pooling |
 | Insider threat (engineer) | **Elevation of Privilege** | Engineer queries Tier 1 DB directly | HIGH | No admin access to Tier 1 DBs, audit logging, role separation |
-| API key exposure | **Information Disclosure** | LLM API keys committed to repo | HIGH | Secrets in Vault/KMS, CodeQL scanning, no env files in repo |
+| API key exposure | **Information Disclosure** | LLM API keys committed to repo | HIGH | Secrets in Azure Key Vault, CodeQL scanning, no env files in repo |
 | Man-in-the-middle | **Tampering** | Intercept WebSocket traffic | MEDIUM | TLS 1.3 mandatory, certificate pinning on mobile |
 | Analytics exfiltration | **Information Disclosure** | Tier 1 content in analytics events | MEDIUM | Analytics service has NO access to Tier 1 subnet; only Tier 3 metrics |
 
@@ -1042,7 +1109,7 @@ OWNER: github-architect
 1. CodeQL or secret scanning alert fires
 2. Immediately rotate the exposed key via provider dashboard
 3. Audit all API calls made with the exposed key in the last 72 hours
-4. Update secrets in HashiCorp Vault / AWS Secrets Manager
+4. Update secrets in Azure Key Vault
 5. Git history rewrite (if in commit history) via BFG Repo Cleaner
 6. Post-mortem: Why was the key in code? Fix the process gap.
 ```
@@ -1061,15 +1128,35 @@ OWNER: github-architect
 | Audit logging | Immutable audit trail for all Tier 1 data access (who, when, what — never content) | `cloud-architect` |
 | Differential privacy | Analytics aggregated with ε=1.0 differential privacy noise | `data-privacy-officer` |
 
+### Emergency Response Agent Infrastructure
+
+The `emergency-response-agent` (agent #38) requires dedicated infrastructure for crisis escalation:
+
+| Component | Service | Configuration |
+|---|---|---|
+| Emergency Routing | Azure Communication Services | Locale-based emergency number lookup (112 EU, 911 US, 999 UK, etc.) |
+| Voice/SMS Gateway | Azure Communication Services SMS + Voice | Outbound crisis notifications to emergency contacts |
+| Post-Crisis Scheduling | Azure Service Bus (delayed messages) | Scheduled followup check-in at +1h, +24h, +72h post-crisis |
+| Audit Trail | Azure Blob Storage (immutable) | WORM-compliant storage for all emergency escalation records |
+| Latency SLO | < 1s p99 | AKS pod with dedicated node pool, no bin-packing with other services |
+| Availability | 99.99% target | Active-active across 2 Azure regions, failover via Azure Front Door |
+
+**Integration Flow:**
+1. `safety-guardian` detects DV/abuse signal → escalates to `emergency-response-agent`
+2. Agent determines user locale → looks up local emergency number via Azure Communication Services
+3. Presents user with one-tap emergency dialing (native deep link to phone dialer)
+4. Logs escalation event to immutable audit store (never logs conversation content)
+5. Schedules post-crisis followup messages via Azure Service Bus delayed delivery
+
 ### Encryption Standards
 
 | Data State | Algorithm | Key Management |
 |---|---|---|
-| In transit | TLS 1.3 (ECDHE + AES-256-GCM) | AWS ACM managed certificates |
-| At rest (DB) | AES-256-GCM (application layer) | KMS with automatic key rotation (90 days) |
+| In transit | TLS 1.3 (ECDHE + AES-256-GCM) | Azure-managed certificates (App Service / Front Door) |
+| At rest (DB) | AES-256-GCM (application layer) | Azure Key Vault with automatic key rotation (90 days) |
 | At rest (mobile) | AES-256 (Secure Enclave / Keystore) | Hardware-bound, non-exportable |
-| At rest (disk) | AES-256 (EBS/volume encryption) | KMS customer-managed keys |
-| Backups | AES-256-GCM | Separate KMS key, cross-region replication |
+| At rest (disk) | AES-256 (Azure Managed Disk encryption) | Azure Key Vault customer-managed keys |
+| Backups | AES-256-GCM | Separate Key Vault key, geo-redundant replication |
 | LLM API calls | TLS 1.3 | Provider-managed certificates |
 
 ---
@@ -1333,12 +1420,12 @@ Owned by `app-store-certifier`.
 | **Mobile — Android** | Kotlin 2.0+, Jetpack Compose, Room, Kotlin Flow | Modern declarative UI, Android Keystore integration, Coroutines for async |
 | **Backend — Runtime** | Node.js 22 LTS (TypeScript) | WebSocket-native (Socket.io), async I/O for high concurrency |
 | **Backend — Framework** | Fastify (REST), Socket.io (WebSocket) | Fastify: fastest Node.js HTTP framework; Socket.io: proven WS reliability |
-| **API Gateway** | AWS API Gateway / Kong | Rate limiting, auth, request routing, WAF integration |
-| **Database — Tier 1** | PostgreSQL 16 (RDS, isolated instances) | ACID compliance, row-level security, battle-tested encryption |
-| **Database — Tier 3** | PostgreSQL 16 (RDS, separate instance) | Same engine, separate network, no cross-instance access |
-| **Cache / Sessions** | Redis 7 (ElastiCache cluster mode) | Sub-ms latency, Pub/Sub for WebSocket horizontal scaling |
-| **Event Bus** | NATS JetStream | Lightweight, at-least-once delivery, ordered messaging |
-| **Object Storage** | AWS S3 (encrypted buckets) | Exercise attachments, exported data, backup storage |
+| **API Gateway** | Azure API Management (APIM) Premium | Rate limiting, auth, request routing, WAF integration, LLM Gateway policies |
+| **Database — Tier 1** | PostgreSQL 16 (Azure Database for PostgreSQL Flexible Server, isolated instances) | ACID compliance, row-level security, battle-tested encryption |
+| **Database — Tier 3** | PostgreSQL 16 (Azure Database for PostgreSQL Flexible Server, separate instance) | Same engine, separate network, no cross-instance access |
+| **Cache / Sessions** | Redis 7 (Azure Cache for Redis, cluster mode) | Sub-ms latency, Pub/Sub for WebSocket horizontal scaling |
+| **Event Bus** | Azure Service Bus Premium | At-least-once delivery, ordered messaging, AMQP 1.0 |
+| **Object Storage** | Azure Blob Storage (encrypted containers) | Exercise attachments, exported data, backup storage |
 | **LLM — Strategic** | Claude Opus 4.6 (Anthropic) | Highest empathy and nuance for mediation core |
 | **LLM — Reasoning** | GPT-5.4 (OpenAI) | Strong structured reasoning for pattern detection |
 | **LLM — Code/Speed** | GPT-5.3-Codex (OpenAI) | Code generation, fast inference for operational agents |
@@ -1347,13 +1434,15 @@ Owned by `app-store-certifier`.
 | **IaC** | Terraform 1.8+ | Multi-cloud ready, mature module ecosystem, state locking |
 | **CI/CD** | GitHub Actions | Native GitHub integration, reusable workflows, OIDC auth |
 | **Security Scanning** | CodeQL, Dependabot, Snyk | SAST, SCA, dependency vulnerability monitoring |
-| **Observability** | Datadog (metrics + APM + logs) | Unified platform, WebSocket monitoring, custom dashboards |
+| **Observability** | Azure Monitor + Application Insights | Unified platform, WebSocket monitoring, KQL dashboards, native Azure integration |
 | **Error Tracking** | Sentry | Real-time error capture with source maps (mobile + backend) |
 | **Alerting** | PagerDuty | On-call rotation, escalation policies, incident management |
-| **Tracing** | OpenTelemetry → Datadog | Distributed tracing across microservices and LLM calls |
-| **Secrets Management** | AWS Secrets Manager + HashiCorp Vault | Rotation, audit, least-privilege access |
-| **CDN** | CloudFront | Edge caching for static assets, DDoS protection |
-| **WAF** | AWS WAF + Cloudflare | Layer 7 attack protection, bot mitigation |
+| **Tracing** | OpenTelemetry → Application Insights | Distributed tracing across microservices and LLM calls |
+| **Secrets Management** | Azure Key Vault | Rotation, audit, least-privilege access, Managed Identity integration |
+| **CDN + DDoS** | Azure Front Door + WAF | Edge caching for static assets, global load balancing, L7 DDoS protection |
+| **Emergency Routing** | Azure Communication Services | Locale-based emergency number routing, post-crisis followup scheduling |
+| **PII Redaction (Enhanced)** | Azure AI Language + Presidio | Cloud-native NER, relationship-domain fine-tuned, HIPAA-compliant |
+| **LLM Gateway** | Azure API Management Premium | Centralized LLM routing, token rate limiting, cost metering, semantic caching |
 | **Feature Flags** | LaunchDarkly | Gradual rollouts, kill switches, A/B testing |
 | **Push Notifications** | APNS (iOS) + FCM (Android) | Platform-native delivery with metadata-only payloads |
 | **Analytics** | PostHog (self-hosted) | Privacy-first analytics, no third-party data sharing |
@@ -1366,11 +1455,11 @@ Owned by `app-store-certifier`.
 |---|---|---|---|---|---|---|
 | R1 | Tier 1 data leaks into Tier 3 payloads | **CRITICAL** | Low | Company-ending trust breach | Network-isolated DBs, canary testing, output validation, fail-fast CI | `chief-info-security-officer` |
 | R2 | Prompt injection extracts private context | **CRITICAL** | Medium | Privacy violation, potential legal action | 4-layer defense (system prompt, output validation, canary, behavioral), weekly red-team | `penetration-tester` |
-| R3 | Cross-tenant database access | **CRITICAL** | Low | Mass privacy violation | Physical DB isolation, no cross-DB JOINs, network ACLs, IAM deny policies | `cloud-architect` |
+| R3 | Cross-tenant database access | **CRITICAL** | Low | Mass privacy violation | Physical DB isolation, no cross-DB JOINs, NSGs, Azure RBAC deny policies | `cloud-architect` |
 | R4 | Abusive partner gains access to Tier 1 data via device theft | **HIGH** | Medium | Physical safety risk | Biometric gating, local data wipe after 3 failures, encrypted local storage | `native-mobile-developer` |
 | R5 | WebSocket failure during active crisis conversation | **HIGH** | Medium | User harm during emotional emergency | Reconnection with state replay, offline buffer, graceful degradation to REST polling | `backend-developer` |
 | R6 | LLM latency spikes during high-traffic periods | **HIGH** | High | Degraded user experience during critical moments | Multi-model fallback, circuit breaker, pre-warmed capacity, caching for common patterns | `vp-rnd` |
-| R7 | API key exposure in repository | **HIGH** | Low | Unauthorized API access, financial exposure | CodeQL + secret scanning, Vault-managed rotation, no env files in repo | `github-architect` |
+| R7 | API key exposure in repository | **HIGH** | Low | Unauthorized API access, financial exposure | CodeQL + secret scanning, Azure Key Vault-managed rotation, no env files in repo | `github-architect` |
 | R8 | Mobile data theft via malware/root | **HIGH** | Low | Tier 1 journal content exposed | Root/jailbreak detection, cert pinning, FLAG_SECURE, encrypted SQLite | `native-mobile-developer` |
 | R9 | LLM hallucination generates harmful mediation advice | **HIGH** | Medium | User harm, liability | Response validation, safety guardian override, hallucination detection prompts | `vp-rnd` |
 | R10 | Scaling bottleneck at LLM Gateway | **MEDIUM** | High | Increased latency for all users | Horizontal scaling, request queuing, model tiering, token budget management | `cloud-architect` |
@@ -1383,19 +1472,23 @@ Owned by `app-store-certifier`.
 
 ## 14. Cost Projections
 
+### Scale Path
+
+**Stage 1:** 100K MAU → **Stage 2:** 500K MAU → **Stage 3:** 1M MAU → **Stage 4:** 5M MAU. All Azure-native (AKS, Azure Database for PostgreSQL Flexible Server, Azure Cache for Redis, Azure Service Bus, Azure Front Door).
+
 ### Monthly Infrastructure Cost Estimates (USD)
 
 | Component | 10K Users | 50K Users | 100K Users | 500K Users |
 |---|---|---|---|---|
-| **Compute (ECS/K8s)** | $2,400 | $8,500 | $16,000 | $65,000 |
+| **Compute (AKS)** | $2,400 | $8,500 | $16,000 | $65,000 |
 | **Database — Tier 1 (PostgreSQL × 2)** | $1,200 | $4,800 | $12,000 | $48,000 |
 | **Database — Tier 3 (PostgreSQL)** | $600 | $2,400 | $6,000 | $24,000 |
-| **Redis (ElastiCache)** | $400 | $1,200 | $3,000 | $12,000 |
-| **Networking (NAT, ALB, bandwidth)** | $800 | $2,800 | $6,000 | $28,000 |
-| **CDN (CloudFront)** | $200 | $600 | $1,200 | $5,000 |
-| **Monitoring (Datadog)** | $500 | $1,500 | $3,000 | $10,000 |
-| **Secrets Management (Vault)** | $200 | $200 | $500 | $1,500 |
-| **WAF + DDoS (Cloudflare/AWS)** | $300 | $500 | $1,000 | $4,000 |
+| **Redis (Azure Cache for Redis)** | $400 | $1,200 | $3,000 | $12,000 |
+| **Networking (NAT, Azure LB, bandwidth)** | $800 | $2,800 | $6,000 | $28,000 |
+| **CDN (Azure Front Door)** | $200 | $600 | $1,200 | $5,000 |
+| **Monitoring (Azure Monitor + App Insights)** | $500 | $1,500 | $3,000 | $10,000 |
+| **Secrets Management (Azure Key Vault)** | $200 | $200 | $500 | $1,500 |
+| **WAF + DDoS (Azure Front Door WAF)** | $300 | $500 | $1,000 | $4,000 |
 | **Subtotal: Infrastructure** | **$6,600** | **$22,500** | **$48,700** | **$197,500** |
 
 ### Monthly LLM API Cost Estimates (USD)
@@ -1438,8 +1531,8 @@ Assumptions: Average 3 mediation sessions/week per active couple, ~4K tokens per
 
 ```
 PHASE 1: INFRASTRUCTURE FOUNDATION (Sprints 1-3, Weeks 1-6)
-├─ Sprint 1: VPC, subnets, security groups, IAM roles
-├─ Sprint 2: PostgreSQL instances (Tier 1 × 2 + Tier 3), Redis, NATS
+├─ Sprint 1: Azure VNet, subnets, NSGs, Azure RBAC + Managed Identities
+├─ Sprint 2: Azure Database for PostgreSQL Flexible Server (Tier 1 × 2 + Tier 3), Azure Cache for Redis, Azure Service Bus
 ├─ Sprint 3: CI/CD pipeline, CodeQL, Docker registry, IaC validation
 └─ Milestone: Infrastructure ready for application deployment
 
@@ -1497,7 +1590,7 @@ Infrastructure → Backend APIs → LLM Gateway → Mobile Clients
 
 | Item | Dependency | Risk if Delayed |
 |---|---|---|
-| Tier 1 DB isolation | VPC setup complete | Blocks ALL other development |
+| Tier 1 DB isolation | Azure VNet setup complete | Blocks ALL other development |
 | WebSocket server | Auth service live | Blocks mobile client integration |
 | LLM Gateway | PII redaction engine | Blocks mediation pipeline |
 | Mobile clients | All backend services | Blocks user-facing testing |
@@ -1533,13 +1626,14 @@ These Medical Pod agents run on the production hot path and require dedicated, a
 
 | Agent | Compute | Latency SLO | Scaling Trigger |
 |---|---|---|---|
-| `orchestrator-agent` | ECS Fargate (2 vCPU, 4GB) | < 2s p99 | Active rooms > 1K |
-| `safety-guardian` | ECS Fargate (1 vCPU, 2GB) | < 500ms p99 | All messages (1:1 with throughput) |
-| `communication-coach` | ECS Fargate (2 vCPU, 4GB) | < 3s p99 | Active rooms > 1K |
-| `individual-profiler` | ECS Fargate (1 vCPU, 2GB) | < 2s p99 | New sessions |
-| `relationship-dynamics` | ECS Fargate (1 vCPU, 2GB) | < 2s p99 | Active rooms > 1K |
-| `phase-*` agents | ECS Fargate (1 vCPU, 2GB) | < 2s p99 | Active rooms > 500 per phase |
-| `progress-tracker` | ECS Fargate (0.5 vCPU, 1GB) | < 5s p99 (async) | Hourly batch |
+| `orchestrator-agent` | AKS pod (2 vCPU, 4GB) | < 2s p99 | Active rooms > 1K |
+| `safety-guardian` | AKS pod (1 vCPU, 2GB) | < 500ms p99 | All messages (1:1 with throughput) |
+| `communication-coach` | AKS pod (2 vCPU, 4GB) | < 3s p99 | Active rooms > 1K |
+| `individual-profiler` | AKS pod (1 vCPU, 2GB) | < 2s p99 | New sessions |
+| `relationship-dynamics` | AKS pod (1 vCPU, 2GB) | < 2s p99 | Active rooms > 1K |
+| `emergency-response-agent` | AKS pod (1 vCPU, 2GB) | < 1s p99 | Safety-guardian escalation |
+| `phase-*` agents | AKS pod (1 vCPU, 2GB) | < 2s p99 | Active rooms > 500 per phase |
+| `progress-tracker` | AKS pod (0.5 vCPU, 1GB) | < 5s p99 (async) | Hourly batch |
 
 ### Model Routing Resource Budget
 
@@ -1558,15 +1652,15 @@ These Medical Pod agents run on the production hot path and require dedicated, a
 | Field | Value |
 |---|---|
 | Document ID | RELIO-TECH-PRD-001 |
-| Version | v1.0.0 |
-| Status | APPROVED |
+| Version | v1.3.0 |
+| Status | APPROVED — Aligned with Unified PRD v1.3.0 |
 | Author | `chief-technology-officer` (GPT-5.4) |
 | Contributors | All 15 Tech Pod agents |
 | Created | March 15, 2026 |
 | Last Updated | March 15, 2026 |
 | Review Cycle | Bi-weekly (aligned with sprint cadence) |
 | Classification | Internal — Engineering Confidential |
-| Supersedes | N/A (initial version) |
+| Supersedes | v1.0.0 |
 
 ---
 
