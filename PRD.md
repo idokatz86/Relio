@@ -215,6 +215,19 @@ Relio's 38 agents are organized into three pods, each with distinct authority an
 | **Tech Pod** | Design, build, operate, and defend the secure, scalable, privacy-first Azure infrastructure. | 15 | Infrastructure decisions enforce the 3-Tier Model as a hard invariant. |
 | **Ops Pod** | Transform clinical capabilities into sustainable, legally compliant, commercially dominant business. | 9 | Revenue never degrades the 3-Tier Model. Monetization reinforces the moat. |
 
+### Agent Runtime Classification
+
+> **Important:** 38 agents does not mean 38 LLM calls per user message. Agent definitions are markdown configuration files that cost $0 until invoked. At runtime, a single user message invokes 5-7 agents in a serial pipeline. The remaining agents serve development, strategic planning, or conditional clinical functions at zero per-user-message cost.
+
+| Runtime Category | Agents | Invoked Per User Message | Token Cost Per Message | Purpose |
+|-----------------|--------|-------------------------|----------------------|---------|
+| **Core Pipeline** (every message) | Safety Guardian, Orchestrator, Individual Profiler, Relationship Dynamics, 1 Phase Agent, Communication Coach, CPO | 5-7 calls | ~$0.006-0.012 | The clinical mediation loop |
+| **Conditional Clinical** (event-triggered) | Psychoeducation, Progress Tracker, Emergency Response Agent | 0-2 calls (when triggered) | $0 most messages | Exercises, metrics, emergencies |
+| **Ops Pod — Strategic Advisory** | CEO, CRO, CFO, CMO, CCO, CAO, CLO, CPO, CSO | **0** — never per user message | $0 per user | Business planning, competitive analysis, legal drafting |
+| **Tech Pod — Development Tools** | CTO, Backend Dev, Cloud Architect, GitHub Architect, Mobile Dev, Mobile QA, Fullstack QA, Pen Tester, UX Expert, CISO, DPO, App Store Certifier, Skills Builder, Scrum Master, VP R&D | **0** — never per user message | $0 per user | Code generation, testing, security scanning, CI/CD |
+
+**Why specialization saves tokens:** A monolithic agent with all instructions in one system prompt requires ~5,000 tokens loaded on every call. Specialized agents carry ~400-600 token prompts each. The serial pipeline of 5-7 focused agents consumes comparable or fewer total input tokens than one monolith — while producing better output because each prompt is unambiguous about its task.
+
 ### Combined System Diagram
 
 ```
