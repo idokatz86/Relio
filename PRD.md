@@ -1,10 +1,10 @@
 # Relio — Unified Product Requirements Document
 
-**Version:** v1.2.0
+**Version:** v1.3.0
 **Date:** March 15, 2026
-**Authors:** `chief-executive-officer` (GPT-5.4), `chief-product-officer` (Claude Sonnet 4.6), `chief-strategy-officer` (GPT-5.4), `chief-technology-officer` (GPT-5.4), `chief-finance-officer` (GPT-5.2)
+**Authors:** `chief-executive-officer` (GPT-5.4), `chief-product-officer` (Claude Sonnet 4.6), `chief-strategy-officer` (GPT-5.4), `chief-technology-officer` (GPT-5.4), `chief-finance-officer` (GPT-5.2), `chief-psychology-officer` (Claude Opus 4.6)
 **Classification:** Confidential — Board & Executive Leadership
-**Status:** REVISED — Founder + CTO/CFO Review Integrated
+**Status:** REVISED — Founder + CTO/CFO + Clinical Review Integrated
 
 ---
 
@@ -29,6 +29,13 @@
 14. **LLM Infrastructure Transition Roadmap.** Three-phase plan: Phase 0 (pre-funding) uses GitHub Models API + PAT for development/testing with synthetic data only. Phase 1 (post-Series A) transitions to BYOK architecture on Azure OpenAI Service + Anthropic API + Vertex AI. Phase 2 (Month 12+) implements Model Cascading for cost-optimized inference.
 15. **Model Cascading & CPI Management.** Added complexity classifier in LLM Gateway that routes 60% of traffic to cheapest models. Blended Cost Per Inference targets: $0.012 (Phase 1) → $0.006 (Phase 2) → $0.004 (Phase 3). Provider-agnostic gateway abstraction enables config-only provider swap.
 16. **GitHub Models SDK for MVP.** Documented boundaries between free developmental usage (synthetic data, prompt engineering, investor demos) and required paid production usage (real user data). Hard line: real PII NEVER transits GitHub Models — BYOK required from first real user.
+
+### Changes from v1.2.0
+
+17. **Digital Communication & Social Media Clinical Framework.** New Section 4.6 — comprehensive clinical integration of how digital conflict ("cyberspace flooding"), social media friction, and screen-mediated communication impact relationships across all 4 life stages. Updated `phase-crisis`, `relationship-dynamics`, and `psychoeducation-agent` agents and skills.
+18. **Cyberspace Flooding Detection.** `phase-crisis` agent now detects when conflict occurs digitally (text/app-based) and enforces structural pauses — acknowledging that text-based fighting prevents reading facial expressions, tone, and body language, leading to continuous emotional flooding and gridlock.
+19. **Social Media Surface vs. Depth Analysis.** `relationship-dynamics` agent now identifies when arguments about social media (screen time, phubbing, online interactions) mask deeper unmet emotional bids for connection or autonomy vs. connection struggles.
+20. **Digital Boundaries Psychoeducation.** `psychoeducation-agent` now delivers stage-specific micro-lessons on healthy digital boundaries, social media meaning-making, and screen-time agreements.
 
 ---
 
@@ -499,7 +506,85 @@ Proactive Engagement Engine — Crisis Prevention Pipeline
     └── Refine pattern models with outcome data
 ```
 
-### 4.5 Relationship Stage Lifecycle
+### 4.5 Digital Communication & Social Media Clinical Framework
+
+**Clinical Reality:** Relio is a text-based mediation platform. The medium itself creates clinical risks that must be explicitly addressed. When couples fight via text or messaging apps, they cannot read facial expressions, vocal tone, or body language — the primary channels through which empathy is communicated. This strips away 93% of emotional signaling (Mehrabian), creating a uniquely dangerous environment for conflict escalation.
+
+#### 4.5.1 Cyberspace Flooding — Text-Based Conflict Amplification
+
+Digital conflict ("cyberspace flooding") is qualitatively different from in-person conflict:
+
+| Factor | In-Person Conflict | Text/Digital Conflict | Clinical Risk |
+|--------|-------------------|----------------------|---------------|
+| Emotional signaling | Full (face, tone, body) | Near-zero (text only) | Misinterpretation escalates conflict |
+| Structural pauses | Natural (breathing, silence, walking away) | **Absent** — can send messages 24/7 | No physiological reset; DPA persists indefinitely |
+| Partner presence | Physical co-regulation possible | Alone with device — catastrophizing amplified | Anxious attachment spirals unchecked |
+| Response timing | Immediate, organic rhythm | Asynchronous — delays interpreted as stonewalling | Avoidant's silence = perceived abandonment |
+| Message permanence | Spoken words fade | Written words are re-read, screenshot, obsessed over | Rumination loops; evidence-gathering |
+| Disinhibition effect | Social filter present | Online disinhibition (Suler, 2004) — people say things they'd never say face-to-face | More hostile language, more contempt |
+
+**`phase-crisis` Detection Protocol — Cyberspace Flooding:**
+
+The `phase-crisis` agent now detects text-specific flooding markers beyond the standard 20-Minute Timeout:
+
+| Marker | Detection Method | Intervention |
+|--------|-----------------|---------------|
+| Rapid-fire messaging (>5 messages in <60s) | Message frequency analysis | Immediate timeout enforcement |
+| Late-night conflict (messages after 11pm local time) | Timestamp analysis | Prompt: *"Difficult conversations tend to escalate late at night. Consider pausing until tomorrow when you're both rested."* |
+| Cross-platform spillover (user references external app fights) | NLP keyword detection: "your text", "what you posted", "your story" | Redirect: *"It sounds like this started outside our space. Let's process what's happening here, where both perspectives can be heard safely."* |
+| Message length explosion (>500 chars after previously short exchanges) | Length delta analysis | Prompt: *"It seems like there's a lot you need to express right now. Would it help to use your private journal first?"* |
+| Screenshot references / evidence-gathering language | NLP detection: "I have proof", "look at this", "you said on..." | Hard redirect: *"Our focus here is on understanding each other's feelings, not building a case."* |
+| Read-receipt anxiety ("I know you read it", "why aren't you responding") | Pattern matching | Normalize: *"Silence doesn't always mean what we fear. Your partner may need time to process."* |
+
+**Structural Pause Enforcement:** Because text removes natural pauses, the system MUST create artificial ones. When cyberspace flooding is detected:
+1. Shared room input locked for 20 minutes (standard timeout)
+2. Both partners offered private calming exercises in Tier 1
+3. Post-timeout: guided re-entry specifically addressing the digital medium: *"Text can make things feel worse because we can't hear each other's tone. Before continuing, what's one thing you want your partner to know you're feeling right now?"*
+
+#### 4.5.2 Social Media Friction — Surface Arguments, Deeper Needs
+
+The `relationship-dynamics` agent now applies a **Surface vs. Depth analysis** when social media is the topic of conflict:
+
+| Surface Argument | Deeper Unmet Need (EFT Analysis) | Attachment Dynamic |
+|------------------|----------------------------------|--------------------|
+| "You're always on your phone" | Unmet bid for connection; feeling deprioritized | Anxious → pursuing connection vs. avoidant → withdrawing into device |
+| "You liked their photo" | Trust insecurity; fear of emotional/sexual infidelity | Anxious → hypervigilance; partner's autonomy feels threatening |
+| "You post our fights online" | Boundary violation; private life exposed | Both → safety breach; trust rupture |
+| "You spend more time scrolling than talking to me" (phubbing) | Partner phubbing = micro-rejection. Accumulated = erosion of intimacy | Pursuer escalates; withdrawer retreats further into device |
+| "Why do you follow your ex?" | Unresolved jealousy; comparison; perceived emotional infidelity | Anxious → need for exclusive attachment; avoidant → need for autonomy |
+| "Our relationship looks nothing like those couples online" | Social comparison; unrealistic expectations; idealization of others | Both → external benchmarking replaces internal satisfaction |
+
+**`relationship-dynamics` Protocol:** When social media conflict is detected, the agent:
+1. Tags the argument as `DIGITAL_FRICTION` in Tier 2
+2. Identifies the **surface topic** (specific social media behavior)
+3. Maps to the **deeper attachment need** using EFT framework
+4. Passes the depth analysis to `communication-coach` for Tier 3 formulation that addresses the NEED, not the behavior
+5. Example: Surface: *"Stop liking her photos!"* → Depth: *Fear of losing exclusive connection* → Tier 3: *"Feeling like you're your partner's priority is important. What does feeling secure in this relationship look like for each of you?"*
+
+#### 4.5.3 Stage-Specific Social Media Impacts
+
+| Stage | Key Digital/Social Media Issues | Agent Response | Psychoeducation Module |
+|-------|-------------------------------|----------------|------------------------|
+| **Dating / Pre-Marriage** | Jealousy over online interactions; trust violations (DM'ing others); social comparison to "perfect couples" on Instagram; love bombing via excessive texting; using social media to surveil partner | `phase-dating` flags surveillance behavior as potential red flag (coercive control precursor). `relationship-dynamics` identifies comparison-driven dissatisfaction. | **Module: "Digital Trust"** — What healthy online boundaries look like in early relationships. When to have the "social media talk." Why comparing your relationship to curated online content is harmful. |
+| **Commitment / Marriage** | Phubbing (phone snubbing during quality time); erosion of presence; "technoference" — device use interrupting meaningful moments; emotional affairs via messaging apps; neglecting in-person intimacy for screen time | `phase-commitment` evaluates "Turn Towards" bids — is the partner turning toward their phone instead of their partner? Phubbing = failed bid for connection. | **Module: "Reclaiming Presence"** — Screen-free rituals (device-free dinners, phone curfews). The concept of "technoference" (technology interfering with couple interaction). How bid-response ratios change when devices are present vs. absent. |
+| **Separation / Divorce** | Public oversharing of relationship problems; digital harassment; screenshot weaponization; using social media to control the narrative; mutual friends drawn into conflict via posts | `phase-separation` strictly blocks any reference to partner's social media behavior from Tier 3 outputs. `safety-guardian` monitors for digital harassment patterns. | **Module: "Digital Boundaries in Separation"** — Why posting about your ex harms you more than them. How to set social media boundaries during separation. What constitutes digital harassment. |
+| **Co-Parenting / Post-Divorce** | Using children's social media to monitor ex; disparaging ex online (parental alienation); scheduling conflicts conducted publicly; exposing children to post-divorce conflict online | `phase-post-divorce` applies BIFF framework to ALL digital communication about the ex. `safety-guardian` flags parental alienation language in online contexts. | **Module: "Co-Parenting in the Digital Age"** — Keeping children out of digital conflict. Parallel social media presence. The BIFF method for text/email communication. |
+
+#### 4.5.4 Psychoeducation — Digital Boundaries Micro-Lessons
+
+The `psychoeducation-agent` delivers the following digital-specific content, adapted to relationship stage and engagement level:
+
+| Lesson | Target Stage | Format | Key Takeaway |
+|--------|-------------|--------|-------------|
+| "The 93% You're Missing" | All stages | 2-min read + reflection | When you fight over text, you lose 93% of emotional context. Your partner's silence might be hurt, not indifference. |
+| "Phubbing: The Silent Relationship Killer" | Commitment | 3-min interactive | Every time you check your phone during a conversation, your partner experiences a micro-rejection. Calculate your daily "bid response rate." |
+| "Social Media ≠ Real Life" | Dating | 2-min video + quiz | Curated feeds create impossible comparisons. Your relationship is real — theirs is a highlight reel. |
+| "The Screen-Free Ritual" | Commitment | Guided exercise (for both) | Design a daily 30-min device-free ritual together. Track how it changes your connection over 2 weeks. |
+| "Digital Boundaries Agreement" | All stages | Structured worksheet | Collaboratively define: What's okay to post? Who can you follow? How do we handle disagreements about online behavior? |
+| "Text Fighting Rules" | All stages | 1-min rule card | 5 rules: No ALL CAPS. No fighting after 10pm. If it takes >3 messages, call or wait. No screenshots to friends. Take 10 minutes before replying when angry. |
+| "Co-Parenting Communication Protocol" | Post-Divorce | BIFF template pack | Templates for scheduling, logistics, and boundary-setting that follow the BIFF framework. |
+
+### 4.6 Relationship Stage Lifecycle
 
 ```
                     ┌──────────────────────────┐
