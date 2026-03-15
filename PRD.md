@@ -2195,17 +2195,17 @@ The foundational thesis: **38 AI agents handle 90% of the operational workload.*
 | Field | Value |
 |-------|-------|
 | Document Title | Relio — Unified Product Requirements Document |
-| Version | v1.1.0 |
+| Version | v1.3.0 |
 | Date | March 15, 2026 |
-| Authors | `chief-executive-officer` (GPT-5.4), `chief-product-officer` (Claude Sonnet 4.6), `chief-strategy-officer` (GPT-5.4) |
+| Authors | Ido Katz (Founder & CEO) with AI Advisory: `chief-executive-officer`, `chief-product-officer`, `chief-strategy-officer`, `chief-technology-officer`, `chief-finance-officer`, `chief-psychology-officer` |
 | Classification | Confidential — Board & Executive Leadership |
-| Status | REVISED — Founder Review Integrated |
-| Supersedes | v1.0.0 (March 15, 2026) |
+| Status | REVISED — Founder + CTO/CFO + Clinical Review Integrated |
+| Supersedes | v1.2.0, v1.1.0, v1.0.0 (all March 15, 2026) |
 | Next Review | April 15, 2026 |
 | Review Board | CTO, CRO, CLO, External Clinical Advisory Board |
 | Source Documents | [docs/PRD-medical-pod.md](docs/PRD-medical-pod.md), [docs/PRD-tech-pod.md](docs/PRD-tech-pod.md), [docs/PRD-ops-pod.md](docs/PRD-ops-pod.md) |
-| Change Log | v1.0.0 → v1.1.0: Added emergency-response-agent (#38); migrated all infrastructure to Azure; added Proactive Engagement Engine; added anonymized data monetization; reduced burn rate 57% (AI-first model: 8→14→22 humans); added funding allocation detail (Series A $6M, Series B $15–20M); added false positive handling tiers; added emergency number escalation framework; break-even moved from Q1 Y4 to Q3 Y3 |
+| Change Log | v1.0.0: Initial 37-agent architecture. v1.1.0: Azure-native, emergency agent #38, lean headcount, data monetization. v1.2.0: LLM transition roadmap (GitHub Models→Azure BYOK→Model Cascading). v1.3.0: Digital Communication & Social Media Clinical Framework, cyberspace flooding, stage-specific digital impacts. |
 
 ---
 
-*This is the master product document for Relio. All pod-level PRDs are subordinate to this unified document. In case of conflict, this document prevails. Changes require joint approval from the CEO, CTO, and CPsychO (or Clinical Advisor for human oversight).*
+*This is the master product vision document for Relio. All pod-level PRDs are subordinate to this unified document. In case of conflict, this document prevails. Changes require joint approval from the Founder (CEO) and Clinical Advisor.*
