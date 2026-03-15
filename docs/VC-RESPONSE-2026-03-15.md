@@ -215,6 +215,42 @@ Phase-Crisis is Agent #6, deployed immediately after the 5-agent MVP validates r
 
 The 38-agent design is not abandoned — it is the blueprint. The 5 MVP agents are extracted from the full architecture with their skill definitions, system prompts, and inter-agent handoff protocols intact. When we add Agent #6 (Phase-Crisis), it slots into the existing Orchestrator routing table without re-architecture. The 38-agent plan ensures we never paint ourselves into a corner.
 
+### Clarification: 38 Agents ≠ 38x Compute Cost
+
+**The VC assessment conflated agent definitions with runtime compute. This is a critical distinction we must correct in investor conversations.**
+
+The 38 agent `.agent.md` files in our repository are **markdown configuration files that cost $0.** They have zero token consumption until individually invoked. At runtime, a single user message invokes **5-7 agents in a serial pipeline**, not all 38:
+
+```
+User Message → Safety Guardian → Orchestrator → Individual Profiler →
+               Relationship Dynamics → Phase Agent (1 of 5) →
+               Communication Coach → [CPO audit]
+
+= 5-7 LLM calls per message. Always. Whether 5 or 38 definitions exist.
+```
+
+**Agent category breakdown by compute impact:**
+
+| Category | Agents | When They Run | Token Cost Per User Message |
+|----------|--------|---------------|---------------------------|
+| Runtime pipeline (Medical) | Safety Guardian, Orchestrator, Profiler, Dynamics, 1 Phase Agent, Coach, CPO | Every message | ~$0.006-0.012 (5-7 calls) |
+| Conditional clinical | Psychoeducation, Progress Tracker, Emergency Response | Periodic/triggered | $0 most messages |
+| Ops Pod (CEO, CRO, CFO, CMO, etc.) | 9 agents | **Never per user message** — strategic planning only | $0 per user |
+| Tech Pod (Backend Dev, QA, Pen Tester, etc.) | 15 agents | **Never per user message** — development-time only | $0 per user |
+
+**Why specialization SAVES tokens vs. a monolithic agent:**
+
+| Approach | System Prompt Tokens Per Call | Calls Per Message | Total Input Tokens |
+|----------|-------------------------------|-------------------|--------------------|
+| 1 monolithic agent (all instructions in one prompt) | ~5,000 | 1 | ~5,000 + message |
+| 5-7 specialized agents (focused prompts) | ~400-600 each | 5-7 | ~2,500-4,200 + messages |
+
+Specialized agents use **comparable or fewer total input tokens** than a monolith, while producing better output because each prompt is focused and unambiguous. A 5,000-token monolithic prompt creates confusion about which "mode" the model should operate in.
+
+**What we tell investors:** "Our MVP runs a 5-7 agent clinical pipeline per message at ~$0.006 CPI. The remaining 31 agent definitions are our internal development tools, strategic advisory, and conditional clinical specialists — they cost zero per user message. The 38-agent architecture is a system design blueprint, not a compute multiplier."
+
+**What we preserve internally:** All 38 definitions. The Ops Pod agents are our AI advisory board. The Tech Pod agents are our development accelerators. Deleting them saves zero user-facing cost and destroys development velocity.
+
 ---
 
 ## 6. Traction Generation Plan (Zero-Cost Actions)
