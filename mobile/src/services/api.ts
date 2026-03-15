@@ -7,14 +7,18 @@
  * - Data Stripping: server handles this, client trusts response
  */
 
+import { Platform } from 'react-native';
 import type { MediationResponse, WSIncoming, WSOutgoing } from '../types';
 
+// Android emulator uses 10.0.2.2 to reach host localhost; iOS simulator uses localhost
+const DEV_HOST = Platform.OS === 'android' ? '10.0.2.2' : 'localhost';
+
 const API_BASE = __DEV__
-  ? 'http://localhost:3000'
+  ? `http://${DEV_HOST}:3000`
   : 'https://api.relio.app';
 
 const WS_BASE = __DEV__
-  ? 'ws://localhost:3000'
+  ? `ws://${DEV_HOST}:3000`
   : 'wss://api.relio.app';
 
 /**
