@@ -94,6 +94,215 @@ Relio is powered by **38 specialized AI agents** distributed across three pods, 
 - `docs/PRD-tech-pod.md`: Tech Pod detailed blueprint.
 - `docs/PRD-ops-pod.md`: Operations Pod detailed blueprint.
 
+## Mobile App (iOS & Android)
+
+Relio ships as a single React Native (Expo) codebase that produces native iOS and Android apps.
+
+### Prerequisites
+
+| Tool | Version | Install |
+|------|---------|---------|
+| Node.js | ≥ 20 | `nvm install 20` |
+| npm | ≥ 10 | Comes with Node.js |
+| Expo CLI | Latest | `npm install -g expo-cli` |
+| EAS CLI | Latest | `npm install -g eas-cli` |
+| Xcode | ≥ 15 | Mac App Store *(iOS simulator only)* |
+| Android Studio | ≥ 2024 | [developer.android.com](https://developer.android.com/studio) *(Android emulator only)* |
+
+> **No Xcode or Android Studio?** You can use [EAS Build](#build-apk--ipa-with-eas) to compile in the cloud.
+
+### Step 1 — Start the Backend API
+
+```bash
+cd Relio/backend
+cp .env.example .env          # Add your GITHUB_TOKEN
+npm install
+npx tsx src/server/app.ts
+```
+
+You should see:
+```
+🟢 Relio API Server running on http://localhost:3000
+   WebSocket: ws://localhost:3000/ws
+   REST API:  http://localhost:3000/api/v1/mediate
+   Health:    http://localhost:3000/health
+```
+
+Verify with: `curl http://localhost:3000/health`
+
+### Step 2 — Install Mobile Dependencies
+
+```bash
+cd Relio/mobile
+npm install
+```
+
+### Step 3 — Run on iOS Simulator
+
+> Requires **macOS** with **Xcode** installed (including iOS Simulator runtime).
+
+```bash
+# 1. Open Xcode at least once to accept the license and install components
+# 2. Start the development server
+npx expo start --ios
+```
+
+**What happens:**
+1. Expo compiles a development build
+2. iOS Simulator launches automatically (iPhone 15 Pro by default)
+3. The app loads — you'll see the **Onboarding** screen
+4. After onboarding, the **Shared Chat Room** appears
+5. Type a message → see "Mediating..." → receive the Tier 3 transformation
+
+**Troubleshooting iOS Simulator:**
+- **"No available simulators"** → Open Xcode → Settings → Platforms → Download iOS 17+ Simulator
+- **"Build failed"** → Run `cd ios && pod install && cd ..` then retry
+- **Slow first build** → Normal, subsequent builds are cached (~10s)
+
+### Step 4 — Run on Android Emulator
+
+> Requires **Android Studio** with an AVD (Android Virtual Device) configured.
+
+```bash
+# 1. Open Android Studio → Device Manager → Create a Pixel 7 (API 34) AVD
+# 2. Start the AVD (click the ▶ play button)
+# 3. Start the development server
+npx expo start --android
+```
+
+**What happens:**
+1. Expo detects the running Android emulator
+2. Installs the Expo Go client on the emulator
+3. The app loads with the same onboarding flow as iOS
+
+**Troubleshooting Android Emulator:**
+- **"No connected devices"** → Ensure the AVD is running in Android Studio first
+- **"ANDROID_HOME not set"** → Add to `~/.zshrc`:
+  ```bash
+  export ANDROID_HOME=$HOME/Library/Android/sdk
+  export PATH=$PATH:$ANDROID_HOME/emulator:$ANDROID_HOME/platform-tools
+  ```
+- **Slow emulator** → Enable hardware acceleration (HAXM on Intel, Hypervisor on Apple Silicon)
+
+### Step 5 — Run on Physical Device (Expo Go)
+
+The fastest way to test without simulators:
+
+```bash
+npx expo start
+```
+
+1. Scan the QR code with **Expo Go** app ([iOS](https://apps.apple.com/app/expo-go/id982107779) | [Android](https://play.google.com/store/apps/details?id=host.exp.exponent))
+2. The app loads directly on your phone
+3. Make sure your phone and laptop are on the same Wi-Fi network
+4. For the backend connection, update `API_BASE` in `src/services/api.ts` to your laptop's local IP (e.g., `http://192.168.1.100:3000`)
+
+### Build APK / IPA with EAS
+
+EAS (Expo Application Services) builds native binaries in the cloud — no Xcode or Android Studio required on your machine.
+
+#### One-Time Setup
+
+```bash
+# Install EAS CLI
+npm install -g eas-cli
+
+# Log in to your Expo account (create one at expo.dev if needed)
+eas login
+
+# Initialize EAS in the project
+cd Relio/mobile
+eas build:configure
+```
+
+#### Build Android APK
+
+```bash
+# Development APK (installable directly, no Play Store needed)
+eas build --platform android --profile preview
+
+# Production AAB (for Google Play Store upload)
+eas build --platform android --profile production
+```
+
+After the build completes (~10-15 min), EAS provides a download link for the `.apk` file. Install it on any Android device or emulator:
+
+```bash
+# Install on connected Android device/emulator
+adb install relio.apk
+```
+
+#### Build iOS App
+
+```bash
+# Development build (for simulator)
+eas build --platform ios --profile development
+
+# Production IPA (for App Store / TestFlight)
+eas build --platform ios --profile production
+```
+
+> **Note:** iOS production builds require an Apple Developer account ($99/year) and proper provisioning profiles. EAS can manage certificates automatically via `eas credentials`.
+
+#### EAS Build Profiles
+
+Add this to `eas.json` in the mobile directory:
+
+```json
+{
+  "cli": { "version": ">= 3.0.0" },
+  "build": {
+    "development": {
+      "developmentClient": true,
+      "distribution": "internal"
+    },
+    "preview": {
+      "distribution": "internal",
+      "android": {
+        "buildType": "apk"
+      }
+    },
+    "production": {}
+  }
+}
+```
+
+### App Architecture
+
+```
+mobile/
+├── App.tsx                          # Entry point — screen router
+├── app.json                         # Expo config (iOS + Android)
+├── src/
+│   ├── screens/
+│   │   ├── OnboardingScreen.tsx     # Welcome + privacy + relationship stage
+│   │   ├── SharedChatScreen.tsx     # Tier 3 shared room (mint-white)
+│   │   ├── PrivateJournalScreen.tsx # Tier 1 private journal (warm sand)
+│   │   ├── CrisisScreen.tsx        # Safety HALT — 988/DV resources
+│   │   ├── BiometricLockScreen.tsx  # FaceID/TouchID gate
+│   │   └── SettingsScreen.tsx       # Privacy, block/report, data deletion
+│   ├── services/
+│   │   ├── api.ts                   # REST + WebSocket client
+│   │   └── secure-storage.ts        # Encrypted local storage + biometric auth
+│   ├── theme/
+│   │   └── tokens.ts                # Design tokens (colors, typography, spacing)
+│   └── types/
+│       └── index.ts                 # TypeScript types matching backend API
+```
+
+### Agent Governance
+
+Every screen and service follows mandates from the Relio repo agents:
+
+| Screen | Governing Agent | Mandate |
+|--------|----------------|---------|
+| SharedChatScreen | `ui-ux-expert` | Tier 3 mint-white visual demarcation |
+| PrivateJournalScreen | `native-mobile-developer` | At-rest encryption via Secure Enclave/Keystore |
+| CrisisScreen | `ui-ux-expert` | Non-dismissable full-screen safety takeover |
+| BiometricLockScreen | `native-mobile-developer` | Mandatory biometric gate before app access |
+| SettingsScreen | `app-store-certifier` | UGC block/report, privacy labels, subscription transparency |
+| API Service | `backend-developer` | WebSocket infra + intercept/hold + data stripping |
+
 ## Development
 
 All Pull Requests must include an update to the `CHANGELOG.md` file as enforced by our CI/CD pipeline and automated checks.
