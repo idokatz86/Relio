@@ -110,6 +110,7 @@ The Skills-Builder agent executed the EvoSkill Refinement Loop against live pipe
 
 | Platform | Type | Link |
 |----------|------|------|
+| Backend API | **LIVE on Azure** | https://relio-backend.nicecliff-c249023f.eastus.azurecontainerapps.io/health |
 | Android | APK (installable) | [EAS Build](https://expo.dev/accounts/send2katzs-organization/projects/relio/builds/1a043bdb-5360-426f-8eb4-8cb1f0a31a1d) |
 | iOS | Simulator (.app) | [EAS Build](https://expo.dev/artifacts/eas/txU6yx9gGJq13czxzsTGWo.tar.gz) |
 | Demo Video | MP4 (1.9 min) | `Relio/demo/relio_demo_final.mp4` |

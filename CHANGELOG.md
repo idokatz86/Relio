@@ -7,6 +7,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.5.0] - 2026-03-16
+### Added
+- **Azure Deployment**: Backend live on Azure Container Apps at `https://relio-backend.nicecliff-c249023f.eastus.azurecontainerapps.io`
+- **Terraform IaC**: VNet (4 subnets), ACR, Key Vault, Redis, Log Analytics, App Insights, Container Apps Environment — all provisioned via `terraform apply`
+- **Docker Image**: Multi-stage build pushed to `relioacr.azurecr.io/relio-backend:latest` via ACR Build
+- **19 Azure Issues** (#55-#73): Full deployment backlog created, triaged, and agent-assigned by Scrum Master
+- **25 Sprint 1-2 issues closed** as completed; 6 duplicates closed
+
+### Changed
+- Mobile app API client now points to Azure backend URL (no local server needed for testers)
+- New Android APK building via EAS with Azure backend baked in
+
 ## [1.4.0] - 2026-03-16
 ### Added
 - **React Native Mobile App** (iOS + Android): 6 screens — Onboarding, SharedChat, PrivateJournal, Crisis, BiometricLock, Settings. Governed by 6 repo agents.
