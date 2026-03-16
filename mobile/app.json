@@ -26,7 +26,9 @@
       "package": "com.relio.app",
       "permissions": [
         "USE_BIOMETRIC",
-        "USE_FINGERPRINT"
+        "USE_FINGERPRINT",
+        "android.permission.USE_BIOMETRIC",
+        "android.permission.USE_FINGERPRINT"
       ]
     },
     "scheme": "relio",
@@ -35,6 +37,12 @@
       "expo-local-authentication",
       "expo-asset",
       "expo-font"
-    ]
+    ],
+    "extra": {
+      "eas": {
+        "projectId": "9cf03af7-e845-430a-9fd5-238ebbf09044"
+      }
+    },
+    "owner": "send2katzs-organization"
   }
 }
