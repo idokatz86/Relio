@@ -2,3 +2,6 @@
 *.tfstate
 *.tfstate.*
 .terraform.lock.hcl
+*.tfplan
+terraform.tfvars
+secrets.auto.tfvars

@@ -5,30 +5,68 @@
  * - WebSocket Infrastructure for real-time 3-way sync
  * - Intercept & Hold Logic via REST fallback
  * - Data Stripping: server handles this, client trusts response
+ *
+ * Auth: JWT token stored in expo-secure-store, sent as
+ * Bearer header (REST) and ?token= query param (WebSocket).
  */
 
-import { Platform } from 'react-native';
 import type { MediationResponse, WSIncoming, WSOutgoing } from '../types';
+import * as SecureStore from 'expo-secure-store';
 
-// Azure Container Apps backend (dev environment)
-const AZURE_HOST = 'relio-backend.nicecliff-c249023f.eastus.azurecontainerapps.io';
+// Azure Container Apps backend (Sweden Central)
+const AZURE_HOST = 'relio-backend.livelytree-6981c681.swedencentral.azurecontainerapps.io';
 const LOCAL_HOST = 'localhost';
 
-// Use Azure backend for all builds (dev and prod)
-// Switch to LOCAL_HOST for local development with adb reverse
+// Toggle for local development (use `adb reverse tcp:3001 tcp:3001` for Android emulator)
 const USE_LOCAL = false;
+const LOCAL_PORT = '3001';
+
 const DEV_HOST = USE_LOCAL ? LOCAL_HOST : AZURE_HOST;
 const DEV_SCHEME = USE_LOCAL ? 'http' : 'https';
 const DEV_WS_SCHEME = USE_LOCAL ? 'ws' : 'wss';
 
 const API_BASE = __DEV__
-  ? `${DEV_SCHEME}://${DEV_HOST}${USE_LOCAL ? ':3000' : ''}`
+  ? `${DEV_SCHEME}://${DEV_HOST}${USE_LOCAL ? `:${LOCAL_PORT}` : ''}`
   : `https://${AZURE_HOST}`;
 
 const WS_BASE = __DEV__
-  ? `${DEV_WS_SCHEME}://${DEV_HOST}${USE_LOCAL ? ':3000' : ''}`
+  ? `${DEV_WS_SCHEME}://${DEV_HOST}${USE_LOCAL ? `:${LOCAL_PORT}` : ''}`
   : `wss://${AZURE_HOST}`;
-  : 'wss://api.relio.app';
+
+// ── Auth Token Helpers ───────────────────────────────────────
+const AUTH_TOKEN_KEY = 'relio_auth_token';
+
+export async function getAuthToken(): Promise<string | null> {
+  try {
+    return await SecureStore.getItemAsync(AUTH_TOKEN_KEY);
+  } catch {
+    return null;
+  }
+}
+
+export async function setAuthToken(token: string): Promise<void> {
+  await SecureStore.setItemAsync(AUTH_TOKEN_KEY, token);
+}
+
+export async function clearAuthToken(): Promise<void> {
+  await SecureStore.deleteItemAsync(AUTH_TOKEN_KEY);
+}
+
+/**
+ * Build headers with Authorization if token is available.
+ */
+async function authHeaders(): Promise<Record<string, string>> {
+  const headers: Record<string, string> = {
+    'Content-Type': 'application/json',
+  };
+  const token = await getAuthToken();
+  if (token) {
+    headers['Authorization'] = `Bearer ${token}`;
+  }
+  return headers;
+}
+
+// ── REST API ─────────────────────────────────────────────────
 
 /**
  * Send a message through the 5-agent pipeline via REST.
@@ -39,14 +77,21 @@ export async function sendMessage(
   message: string,
 ): Promise<MediationResponse> {
   console.log(`[API] Sending to ${API_BASE}/api/v1/mediate`);
+  const headers = await authHeaders();
   const response = await fetch(`${API_BASE}/api/v1/mediate`, {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    headers,
     body: JSON.stringify({ userId, message }),
   });
 
+  if (response.status === 401) {
+    console.error('[API] Unauthorized — token may be expired');
+    throw new Error('Unauthorized');
+  }
+
   if (!response.ok) {
-    console.error(`[API] Error: ${response.status}`);
+    const text = await response.text().catch(() => '');
+    console.error(`[API] Error: ${response.status} ${text}`);
     throw new Error(`API error: ${response.status}`);
   }
 
@@ -68,10 +113,13 @@ export async function checkHealth(): Promise<boolean> {
   }
 }
 
+// ── WebSocket ────────────────────────────────────────────────
+
 /**
  * WebSocket connection manager
  *
  * Follows implement-secure-websocket skill:
+ * - JWT auth via ?token= query param (matches backend app.ts WS auth)
  * - Exponential backoff reconnection (1s→2s→4s→8s→30s max)
  * - Replay missed Tier 3 messages on reconnect
  */
@@ -86,11 +134,18 @@ export class RelioSocket {
     private userId: string,
   ) {}
 
-  connect(): void {
-    const url = `${WS_BASE}/ws?roomId=${this.roomId}&userId=${this.userId}`;
+  async connect(): Promise<void> {
+    // Get auth token for WebSocket handshake
+    const token = await getAuthToken();
+    let url = `${WS_BASE}/ws?roomId=${encodeURIComponent(this.roomId)}&userId=${encodeURIComponent(this.userId)}`;
+    if (token) {
+      url += `&token=${encodeURIComponent(token)}`;
+    }
+
     this.ws = new WebSocket(url);
 
     this.ws.onopen = () => {
+      console.log('[WS] Connected to', this.roomId);
       this.reconnectAttempts = 0;
     };
 
@@ -103,7 +158,13 @@ export class RelioSocket {
       }
     };
 
-    this.ws.onclose = () => {
+    this.ws.onclose = (event) => {
+      console.log(`[WS] Closed: code=${event.code}`);
+      if (event.code === 4401) {
+        // Auth failure — don't reconnect, surface to UI
+        this.emit('error', { type: 'error', message: 'Authentication failed' } as WSIncoming);
+        return;
+      }
       this.scheduleReconnect();
     };
 
@@ -113,7 +174,10 @@ export class RelioSocket {
   }
 
   send(message: string): void {
-    if (this.ws?.readyState !== WebSocket.OPEN) return;
+    if (this.ws?.readyState !== WebSocket.OPEN) {
+      console.warn('[WS] Cannot send — not connected');
+      return;
+    }
     const payload: WSOutgoing = { type: 'message', content: message };
     this.ws.send(JSON.stringify(payload));
   }
@@ -132,18 +196,22 @@ export class RelioSocket {
     this.listeners.clear();
   }
 
+  get isConnected(): boolean {
+    return this.ws?.readyState === WebSocket.OPEN;
+  }
+
   private emit(event: string, data: WSIncoming): void {
     this.listeners.get(event)?.forEach((cb) => cb(data));
     this.listeners.get('*')?.forEach((cb) => cb(data));
   }
 
   private scheduleReconnect(): void {
-    // Exponential backoff: 1s → 2s → 4s → 8s → 30s max
     const delay = Math.min(
       1000 * Math.pow(2, this.reconnectAttempts),
       this.maxReconnectDelay,
     );
     this.reconnectAttempts++;
+    console.log(`[WS] Reconnecting in ${delay}ms (attempt ${this.reconnectAttempts})`);
     setTimeout(() => this.connect(), delay);
   }
 }

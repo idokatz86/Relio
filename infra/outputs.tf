@@ -54,3 +54,20 @@ output "postgres_subnet_id" {
 output "private_endpoints_subnet_id" {
   value = azurerm_subnet.private_endpoints.id
 }
+
+output "postgres_fqdn" {
+  value = azurerm_postgresql_flexible_server.main.fqdn
+}
+
+output "postgres_admin_login" {
+  value = azurerm_postgresql_flexible_server.main.administrator_login
+}
+
+output "cosmos_endpoint" {
+  value = azurerm_cosmosdb_account.main.endpoint
+}
+
+output "cosmos_primary_key" {
+  value     = azurerm_cosmosdb_account.main.primary_key
+  sensitive = true
+}

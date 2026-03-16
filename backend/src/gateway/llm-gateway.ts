@@ -15,13 +15,81 @@
  */
 
 import type { AgentName, AgentModelConfig, LLMMessage, LLMProvider, LLMResponse } from '../types/index.js';
+import { DefaultAzureCredential } from '@azure/identity';
+
+// Azure AD token cache for managed identity auth
+let cachedAzureToken: { token: string; expiresAt: number } | null = null;
+const credential = new DefaultAzureCredential();
+
+// ── Circuit Breaker (Issue #86) ─────────────────────────────
+interface CircuitBreakerState {
+  failures: number;
+  lastFailure: number;
+  state: 'closed' | 'open' | 'half-open';
+}
+
+const circuitBreaker: CircuitBreakerState = {
+  failures: 0,
+  lastFailure: 0,
+  state: 'closed',
+};
+
+const CB_FAILURE_THRESHOLD = 3;
+const CB_RESET_TIMEOUT_MS = 30_000;
+
+function checkCircuitBreaker(): void {
+  if (circuitBreaker.state === 'open') {
+    if (Date.now() - circuitBreaker.lastFailure > CB_RESET_TIMEOUT_MS) {
+      circuitBreaker.state = 'half-open';
+    } else {
+      throw new Error('Circuit breaker OPEN — LLM service unavailable. Retrying shortly.');
+    }
+  }
+}
+
+function recordSuccess(): void {
+  circuitBreaker.failures = 0;
+  circuitBreaker.state = 'closed';
+}
+
+function recordFailure(): void {
+  circuitBreaker.failures++;
+  circuitBreaker.lastFailure = Date.now();
+  if (circuitBreaker.failures >= CB_FAILURE_THRESHOLD) {
+    circuitBreaker.state = 'open';
+    console.error(`[LLM Gateway] Circuit breaker OPEN after ${CB_FAILURE_THRESHOLD} failures`);
+  }
+}
+
+// ── Per-User Token Budget (Issue #86) ────────────────────────
+const userTokenUsage = new Map<string, { tokens: number; resetAt: number }>();
+const DAILY_TOKEN_BUDGET = parseInt(process.env.LLM_DAILY_TOKEN_BUDGET || '50000', 10);
+
+function checkTokenBudget(userId: string): void {
+  const now = Date.now();
+  const usage = userTokenUsage.get(userId);
+  if (usage && usage.resetAt > now && usage.tokens >= DAILY_TOKEN_BUDGET) {
+    throw new Error('Daily token budget exceeded. Please try again tomorrow.');
+  }
+}
+
+function trackTokenUsage(userId: string, tokens: number): void {
+  const now = Date.now();
+  const endOfDay = new Date().setHours(23, 59, 59, 999);
+  const usage = userTokenUsage.get(userId);
+  if (!usage || usage.resetAt <= now) {
+    userTokenUsage.set(userId, { tokens, resetAt: endOfDay });
+  } else {
+    usage.tokens += tokens;
+  }
+}
 
 /** Agent-to-model mapping configuration */
 const AGENT_MODEL_CONFIG: Record<AgentName, AgentModelConfig> = {
   'safety-guardian': {
     agent: 'safety-guardian',
     githubModel: 'openai/gpt-4o',
-    azureModel: 'gpt-54',
+    azureModel: 'gpt-41',
     vertexModel: 'gemini-3.1-pro',
     temperature: 0.1,
     maxTokens: 500,
@@ -29,13 +97,14 @@ const AGENT_MODEL_CONFIG: Record<AgentName, AgentModelConfig> = {
   'orchestrator': {
     agent: 'orchestrator',
     githubModel: 'openai/gpt-4o',
-    azureModel: 'gpt-54',
+    azureModel: 'gpt-41',
     temperature: 0.2,
     maxTokens: 800,
   },
   'communication-coach': {
     agent: 'communication-coach',
     githubModel: 'openai/gpt-4o',
+    azureModel: 'gpt-41-mini',
     anthropicModel: 'claude-opus-4.6',
     temperature: 0.4,
     maxTokens: 1000,
@@ -43,6 +112,7 @@ const AGENT_MODEL_CONFIG: Record<AgentName, AgentModelConfig> = {
   'individual-profiler': {
     agent: 'individual-profiler',
     githubModel: 'openai/gpt-4o',
+    azureModel: 'gpt-41-mini',
     anthropicModel: 'claude-sonnet-4.6',
     temperature: 0.3,
     maxTokens: 600,
@@ -50,6 +120,7 @@ const AGENT_MODEL_CONFIG: Record<AgentName, AgentModelConfig> = {
   'phase-dating': {
     agent: 'phase-dating',
     githubModel: 'openai/gpt-4o',
+    azureModel: 'gpt-41-mini',
     anthropicModel: 'claude-sonnet-4.6',
     temperature: 0.4,
     maxTokens: 800,
@@ -122,8 +193,8 @@ async function callGitHubModels(
 
 /**
  * Call Azure OpenAI Service (Phase 1 — production BYOK).
- * Requires Azure subscription and provisioned models.
- * PII redaction must be active before calling this.
+ * Uses DefaultAzureCredential (managed identity in Azure, az login locally).
+ * Falls back to API key if AZURE_OPENAI_API_KEY is set.
  */
 async function callAzureOpenAI(
   model: string,
@@ -132,18 +203,37 @@ async function callAzureOpenAI(
   maxTokens: number,
 ): Promise<LLMResponse> {
   const endpoint = process.env.AZURE_OPENAI_ENDPOINT;
-  const apiKey = process.env.AZURE_OPENAI_API_KEY;
+  if (!endpoint) {
+    throw new Error('AZURE_OPENAI_ENDPOINT not set.');
+  }
 
-  if (!endpoint || !apiKey) {
-    throw new Error('Azure OpenAI not configured. Set AZURE_OPENAI_ENDPOINT and AZURE_OPENAI_API_KEY.');
+  // Resolve deployment name: use env var override or model param
+  const deployment = process.env.AZURE_OPENAI_DEPLOYMENT || model;
+
+  // Auth: prefer API key if set, otherwise use managed identity token
+  let authHeader: Record<string, string>;
+  const apiKey = process.env.AZURE_OPENAI_API_KEY;
+  if (apiKey) {
+    authHeader = { 'api-key': apiKey };
+  } else {
+    // Get bearer token from managed identity / DefaultAzureCredential
+    const now = Date.now();
+    if (!cachedAzureToken || cachedAzureToken.expiresAt < now + 60_000) {
+      const tokenResponse = await credential.getToken('https://cognitiveservices.azure.com/.default');
+      cachedAzureToken = {
+        token: tokenResponse.token,
+        expiresAt: tokenResponse.expiresOnTimestamp,
+      };
+    }
+    authHeader = { 'Authorization': `Bearer ${cachedAzureToken.token}` };
   }
 
   const response = await fetch(
-    `${endpoint}/openai/deployments/${model}/chat/completions?api-version=2024-10-21`,
+    `${endpoint}openai/deployments/${deployment}/chat/completions?api-version=2024-10-21`,
     {
       method: 'POST',
       headers: {
-        'api-key': apiKey,
+        ...authHeader,
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
@@ -198,28 +288,54 @@ async function callAzureOpenAI(
 export async function callLLM(
   agent: AgentName,
   messages: LLMMessage[],
+  userId?: string,
 ): Promise<LLMResponse> {
   const config = AGENT_MODEL_CONFIG[agent];
   if (!config) {
     throw new Error(`Unknown agent: ${agent}. Valid agents: ${Object.keys(AGENT_MODEL_CONFIG).join(', ')}`);
   }
 
+  // Circuit breaker check (Issue #86)
+  checkCircuitBreaker();
+
+  // Token budget check (Issue #86)
+  if (userId) {
+    checkTokenBudget(userId);
+  }
+
   const provider = getProvider();
 
-  switch (provider) {
-    case 'github':
-      return callGitHubModels(config.githubModel, messages, config.temperature, config.maxTokens);
+  try {
+    let response: LLMResponse;
+    switch (provider) {
+      case 'github':
+        response = await callGitHubModels(config.githubModel, messages, config.temperature, config.maxTokens);
+        break;
 
-    case 'azure':
-      // Use Azure OpenAI for GPT models, fall through for Anthropic/Gemini
-      if (config.azureModel) {
-        return callAzureOpenAI(config.azureModel, messages, config.temperature, config.maxTokens);
-      }
-      // TODO: Add Anthropic API and Vertex AI routing in Phase 1
-      throw new Error(`Azure provider not yet configured for agent: ${agent}`);
+      case 'azure':
+        if (config.azureModel) {
+          response = await callAzureOpenAI(config.azureModel, messages, config.temperature, config.maxTokens);
+        } else {
+          throw new Error(`Azure provider not yet configured for agent: ${agent}`);
+        }
+        break;
 
-    default:
-      throw new Error(`Unsupported provider: ${provider}`);
+      default:
+        throw new Error(`Unsupported provider: ${provider}`);
+    }
+
+    // Record success for circuit breaker
+    recordSuccess();
+
+    // Track token usage (Issue #86)
+    if (userId && response.tokensUsed) {
+      trackTokenUsage(userId, response.tokensUsed.total);
+    }
+
+    return response;
+  } catch (err) {
+    recordFailure();
+    throw err;
   }
 }
 

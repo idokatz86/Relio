@@ -18,13 +18,31 @@ Relio is powered by **38 specialized AI agents** distributed across three pods, 
 - **Operations Pod (9 agents):** CEO, CRO, CFO, CMO, CCO, CAO, CLO, CPO, CSO. Manages business strategy, legal disclaimers, partnership evaluations, and AI-first lean operations.
 - **Tech Pod (15 agents):** CTO, Backend Developer, Cloud Architect, GitHub Architect, Mobile Dev, Mobile QA, Fullstack QA, Penetration Tester, UI/UX Expert, CISO, DPO, App Store Certifier, Skills Builder, Scrum Master, VP R&D. Constructs Azure-native infrastructure, secure WebSockets, CI/CD governance, and adversarial red-teaming.
 
-## Key Capabilities (v1.3.0)
+## Key Capabilities (v1.9.0)
 
-- **Proactive Engagement Engine** — AI anticipates and prevents conflict through pattern recognition, not just reactive mediation
-- **Digital Communication & Social Media Framework** — Cyberspace flooding detection, phubbing analysis, stage-specific digital boundary psychoeducation
-- **Emergency Response Agent** — Dedicated agent for real emergency escalation (911/112/999) via Azure Communication Services
-- **Model Cascading** — Complexity-based LLM routing for cost-optimized inference (CPI: $0.012 → $0.004)
-- **Platform Strategy** — Standalone app PRIMARY; WhatsApp/Telegram as Tier 3 notification channels
+- **Backend LIVE on Azure OpenAI GPT-4.1** — Container Apps (Sweden Central, EU data residency) powered by `gpt-4.1` + `gpt-4.1-mini` via managed identity. No API keys in code.
+- **5-Agent MVP Pipeline** — Safety Guardian → Orchestrator → [Individual Profiler || Communication Coach] → Tier 3 Socratic Output
+- **Backoffice Admin Dashboard** — 10 admin API endpoints + 7-page React frontend (Dashboard, Users, Phases, Subscriptions, Pipeline, Safety, Feedback). k-anonymity enforced, admin-only JWT auth, audit logging.
+- **Security Hardened** — JWT auth, Zod input validation, Helmet headers, rate limiting, CORS lockdown, fail-closed Safety Guardian
+- **LLM Gateway with Circuit Breaker** — 3-failure open, per-user token budgets, provider-agnostic (Azure/GitHub Models swap via config)
+- **PII Redaction Layer** — Strips emails, phones, SSNs, addresses before LLM calls. Tier 1 leak detection on output.
+- **User Feedback System** — Post-session ratings, NPS, weekly pulse, churn interviews. Admin Feedback Center with NPS score.
+- **CI/CD Pipelines** — GitHub Actions: typecheck + tests (PR), security scan (CodeQL + gitleaks + npm audit), CD to ACR → Container Apps
+- **Infrastructure as Code** — Terraform with remote state, NSGs, private endpoints, Key Vault RBAC, scale-to-zero, budget alerts
+- **Mobile App** — React Native/Expo with ContextBanner (private/shared visual indicator), auth token support, Azure backend connectivity
+
+## Tech Pod Status (v1.8.0)
+
+| Sprint | Tech Issues | Closed | Open | Focus |
+|--------|-------------|--------|------|-------|
+| 1 | 4 | 4 | 0 | LLM Gateway + 5 MVP agents |
+| 2 | 7 | 7 | 0 | Pipeline integration + demo |
+| 3 | 10 | 10 | 0 | Azure IaC + containerization + CI/CD |
+| 4 | 14 | 14 | 0 | DB schemas, auth, Redis, App Insights, NSGs |
+| 5 | 4 | 4 | 0 | Security hardening (WS auth, Zod, CORS, CI security) |
+| 6 | 3 | 3 | 0 | Circuit breaker, Redis pub/sub, mobile ContextBanner |
+| 7 | 1 | 1 | 0 | Branch protection |
+| **Total** | **43** | **42** | **1** | **#73 iOS TestFlight (needs Apple Dev account)** |
 
 ## Agent Directory (38 Agents)
 
@@ -110,9 +128,9 @@ The Skills-Builder agent executed the EvoSkill Refinement Loop against live pipe
 
 | Platform | Type | Link |
 |----------|------|------|
-| Backend API | **LIVE on Azure** | https://relio-backend.nicecliff-c249023f.eastus.azurecontainerapps.io/health |
-| Android | APK (installable) | [EAS Build](https://expo.dev/accounts/send2katzs-organization/projects/relio/builds/1a043bdb-5360-426f-8eb4-8cb1f0a31a1d) |
-| iOS | Simulator (.app) | [EAS Build](https://expo.dev/artifacts/eas/txU6yx9gGJq13czxzsTGWo.tar.gz) |
+| Backend API | **LIVE on Azure (Sweden Central)** | https://relio-backend.livelytree-6981c681.swedencentral.azurecontainerapps.io/health |
+| Android | APK (Sweden Central build) | [EAS Build](https://expo.dev/accounts/send2katzs-organization/projects/relio/builds/1d1fe833-1c34-453b-afc3-f498c50feae5) |
+| iOS | Simulator (.app, Sweden Central) | [EAS Build](https://expo.dev/accounts/send2katzs-organization/projects/relio/builds/3a607d7c-89ef-4aa8-ad43-5f94ba42c2ca) |
 | Demo Video | MP4 (1.9 min) | `Relio/demo/relio_demo_final.mp4` |
 
 ## Mobile App (iOS & Android)

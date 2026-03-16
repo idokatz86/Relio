@@ -7,9 +7,97 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.9.0] - 2026-03-16
+### Added
+- **Backoffice Admin Dashboard** — 10 admin API endpoints + 7-page React frontend (Dashboard, Users, Phases, Subscriptions, Pipeline, Safety, Feedback) with sidebar navigation and Relio earth-tone design.
+- **Admin API Router** (`backend/src/server/admin-router.ts`) — `/api/v1/admin/*` endpoints for overview stats, user directory, couple pairing, phase distribution, subscription analytics, pipeline metrics, safety events, feedback, audit log, and system health.
+- **k-Anonymity Enforcement** — All admin aggregations suppress groups < 5 users (shows `"<5"` instead of exact count).
+- **Admin Auth Middleware** — Requires `role: admin` in JWT; regular user tokens get 403. Audit log tracks every admin API call.
+- **User Feedback System** — `POST /api/v1/feedback` for session ratings (1-5), weekly pulse, NPS (0-10), churn interviews. Admin view with anonymized userId and NPS score calculation.
+- **Pipeline Telemetry** — Every mediate call records latency, agent invocations, and safety events to admin stats. Live metrics available via `/api/v1/admin/pipeline`.
+- **Admin Frontend** (`admin/`) — React + Vite + TypeScript + Tailwind CSS with api client, KPI cards, data tables, bar charts, and "Tier 3 Only" data scope badge.
+- **5 New Agent Skills** — `build-admin-api`, `design-admin-dashboard`, `build-kql-workbooks`, `test-admin-privacy`, `design-subscription-analytics`, `collect-user-feedback`.
+- **GitHub Issues #94-#96** created and closed for backoffice phases.
+
+### Changed
+- Backend version bumped to v1.8.1 (deployed to Container Apps revision 0000007)
+- Health endpoint now returns version `1.8.0`
+
+## [1.8.0] - 2026-03-16
+### Added
+- **Azure OpenAI Service** (`relio-openai`) deployed in Sweden Central with GPT-4.1 (`gpt-41`) and GPT-4.1-mini (`gpt-41-mini`) model deployments. Managed identity authentication (no API keys).
+- **LLM Gateway DefaultAzureCredential** — `callAzureOpenAI()` now uses `@azure/identity` for managed identity token auth with automatic caching. Falls back to API key if set.
+- **Security hardening on server**: Helmet security headers, express-rate-limit (30 req/min), Zod input validation (UUID userId, 2000 char max message), CORS lockdown, 10kb body limit.
+- **JWT auth middleware** on REST `/api/v1/mediate` + WebSocket upgrade. `AUTH_DISABLED=true` for dev mode. Prevents userId impersonation (JWT sub must match).
+- **WebSocket heartbeat** (30s ping/pong, disconnect after 3 missed pongs) + connection close code 4401 for auth failures.
+- **Safety Guardian fail-closed** — parse errors now default to `severity: HIGH, halt: true` (was SAFE/false).
+- **LLM Gateway circuit breaker** — 3 consecutive failures → open state for 30s → half-open retry. Per-user daily token budget tracking (50K default).
+- **PII redaction module** (`backend/src/utils/pii-redaction.ts`) — strips emails, phones, SSNs, addresses, credit cards with token substitution. Tier 1 leak detection on LLM output.
+- **Structured JSON logger** (`backend/src/utils/logger.ts`) — pipeline step timing, safety event logging, log levels.
+- **Redis client module** (`backend/src/infra/redis.ts`) — RoomPresence, RateLimiter, PubSub interfaces with InMemoryStore fallback.
+- **Database schemas** — `schema-tier1.sql` (users, tier1_messages with RLS, safety_audit_log, journal_entries, 90-day auto-purge) and `schema-tier3.sql` (rooms, room_members, tier3_messages, sessions, invite codes). No FKs between tier1 and tier3.
+- **CI/CD Workflows** — `security-scan.yml` (CodeQL + npm audit + gitleaks), `backend-cd.yml` (OIDC → ACR → Container Apps → smoke test).
+- **E2E smoke test suite** (`backend/tests/smoke.test.ts`) — health check, auth enforcement, input validation, security headers, CORS.
+- **Operational runbook** (`docs/engineering/operational-runbook.md`) — deploy, logs, scaling, incident response, Terraform ops.
+- **Mobile ContextBanner component** (`mobile/src/components/ContextBanner.tsx`) — persistent private/shared visual indicator.
+- **Key Vault** (`relio-kv-dev`) recovered with RBAC. Secrets: azure-openai-endpoint, redis-connection-string, postgres-host, appinsights-connection-string.
+- **Container App managed identity** (system-assigned) with roles: `Cognitive Services OpenAI User`, `Key Vault Secrets User`.
+- **Budget alert** ($50/month, email at 80%/100%) + scale-to-zero (min=0, max=10 replicas).
+- **Branch protection** on `main` — require PR + 1 review + passing CI + no force push.
+
+### Changed
+- **LLM Provider switched to Azure OpenAI** — `LLM_PROVIDER=azure` on Container App. All 5 agents now use GPT-4.1/GPT-4.1-mini via managed identity in Sweden Central (EU data residency).
+- **Mobile API client rewritten** — fixed syntax error (orphan ternary), added auth token headers (Bearer for REST, ?token= for WS), fixed port (3001 local, no port for Azure HTTPS), async `connect()`, handles 401 + WS close 4401.
+- **Container App ingress** target port fixed from 3001 → 3000 (matches Dockerfile EXPOSE).
+- **Terraform hardened** — ACR `admin_enabled=false`, Cosmos DB `public_network_access_enabled=false` + private endpoint, Key Vault `purge_protection_enabled=true`, NSGs on postgres + private-endpoints subnets, remote state backend.
+- Agent model config updated: Safety Guardian + Orchestrator → `gpt-41`, Coach + Profiler + Phase-Dating → `gpt-41-mini`.
+
+### Fixed
+- Mobile `api.ts` line 32 syntax error (orphan ternary `: 'wss://api.relio.app'`).
+- Container App startup probe failures due to port mismatch (ingress 3001 vs container 3000).
+- Pipeline 500 errors due to invalid GitHub OAuth token (`gho_`) being used for GitHub Models API.
+
+### Closed Issues (38 tech pod issues total)
+- Sprint 3: #55, #56, #57, #58 (Azure infra provisioned), #61 (CI/CD pipeline)
+- Sprint 4: #62 (Redis), #64 (App Insights logging), #65 (DB schemas), #67 (JWT auth), #68 (NSGs), #71 (Terraform remote state)
+- Sprint 5: #74 (SG fail-closed), #75 (WS auth), #76 (input validation), #84 (ACR + Cosmos), #85 (CI security)
+- Sprint 6: #86 (circuit breaker), #87 (Redis pub/sub), #91 (mobile ContextBanner)
+- Sprint 7: #93 (branch protection)
+- Azure: #59 (Azure OpenAI deployed), #60 (PII redaction), #63 (Key Vault), #66 (TLS), #69 (cost optimization), #70 (smoke tests), #72 (runbook)
+
+## [1.7.0] - 2026-03-16
+### Added
+- **20 New GitHub Issues (#74-#93)**: Full cross-pod review by all 38 agents. Scrum Master triaged, prioritized, and assigned issues to relevant agents across Medical, Tech, and Ops pods.
+- **7 P0-BLOCKER issues** (Sprint 5): Safety Guardian fail-closed fix (#74), WebSocket auth (#75), Input sanitization + CORS lockdown (#76), Delaware C-Corp incorporation (#77), ToS v1.0 (#78), Privacy Policy v1.0 (#79), 50 problem interviews (#80)
+- **9 P1-CRITICAL issues** (Sprint 5-6): Emergency Response Agent handler (#81), Safety regex pre-screen (#82), Phase-Crisis flooding detection (#83), ACR managed identity + Cosmos private endpoint (#84), CI security scanning (#85), LLM circuit breaker + token budgets (#86), Redis WebSocket pub/sub (#87), Waitlist landing page deploy (#88), Clinical co-founder outreach (#89)
+- **4 P2-HIGH issues** (Sprint 6-7): CPsychO meta-audit agent (#90), Mobile navigation + ContextBanner (#91), Investor deck v1 (#92), Branch protection rules (#93)
+
+### Changed
+- PRD updated to v1.6.0 with Sprint 5-7 post-launch roadmap section
+- README updated with Key Capabilities v1.7.0 and current issue tracking status
+- Sprint Plan scope extended to cover Sprint 5 (security hardening + legal foundation) and Sprint 6 (agent build-out + go-to-market)
+
+### Security
+- **CRITICAL FINDING**: Safety Guardian defaults to SAFE on parse failure (issue #74 — 1-line fix, ship immediately)
+- **CRITICAL FINDING**: WebSocket connections have zero authentication (issue #75)
+- **CRITICAL FINDING**: CORS wide open, no input validation (issue #76)
+- **HIGH FINDING**: ACR admin credentials, Cosmos DB public access (issue #84)
+- **HIGH FINDING**: No CodeQL, secret scanning, or dependency audit in CI (issue #85)
+
+## [1.6.0] - 2026-03-16
+### Added
+- **Sweden Central Region Migration**: All Azure resources relocated from East US → Sweden Central (EU data residency)
+- **Full Infrastructure**: VNet, ACR, Key Vault, Redis, PostgreSQL Flexible Server (Tier 1/3), Cosmos DB Serverless (Tier 2), Log Analytics, App Insights, Container Apps Environment — all in `swedencentral`
+- **Backend LIVE**: `https://relio-backend.livelytree-6981c681.swedencentral.azurecontainerapps.io`
+
+### Changed
+- Mobile app API client updated to Sweden Central backend URL
+- Terraform IaC `location` changed from `eastus` → `swedencentral`
+- PRD, README, CHANGELOG updated with new region and URLs
+
 ## [1.5.0] - 2026-03-16
 ### Added
-- **Azure Deployment**: Backend live on Azure Container Apps at `https://relio-backend.nicecliff-c249023f.eastus.azurecontainerapps.io`
+- **Azure Deployment**: Backend live on Azure Container Apps (East US, since migrated)
 - **Terraform IaC**: VNet (4 subnets), ACR, Key Vault, Redis, Log Analytics, App Insights, Container Apps Environment — all provisioned via `terraform apply`
 - **Docker Image**: Multi-stage build pushed to `relioacr.azurecr.io/relio-backend:latest` via ACR Build
 - **19 Azure Issues** (#55-#73): Full deployment backlog created, triaged, and agent-assigned by Scrum Master

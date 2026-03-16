@@ -11,7 +11,7 @@ variable "resource_group_name" {
 
 variable "location" {
   type        = string
-  default     = "eastus"
+  default     = "swedencentral"
   description = "Azure region"
 }
 
@@ -28,4 +28,10 @@ variable "tags" {
     environment = "dev"
     managed_by  = "terraform"
   }
+}
+
+variable "postgres_password" {
+  type        = string
+  sensitive   = true
+  description = "PostgreSQL admin password"
 }

@@ -86,13 +86,14 @@ export async function checkSafety(userMessage: string): Promise<SafetyCheckResul
       markers: parsed.markers || [],
     };
   } catch {
-    // If parsing fails, default to SAFE but log the error
-    console.error('[Safety Guardian] Failed to parse response:', response.content);
+    // FAIL-CLOSED: Parse failure defaults to HIGH/halt (issue #74)
+    // Per safety-guardian.agent.md: "false positives are acceptable, false negatives are not"
+    console.error('[Safety Guardian] PARSE_FAILURE — defaulting to HIGH/halt. Raw:', response.content);
     return {
-      severity: 'SAFE',
-      halt: false,
-      reasoning: 'Parse error — defaulting to SAFE. Review logs.',
-      markers: [],
+      severity: 'HIGH',
+      halt: true,
+      reasoning: 'Parse error — defaulting to HIGH (fail-closed). Manual review required.',
+      markers: ['PARSE_FAILURE'],
     };
   }
 }
