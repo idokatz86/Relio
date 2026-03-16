@@ -15,7 +15,8 @@
       "supportsTablet": true,
       "bundleIdentifier": "com.relio.app",
       "infoPlist": {
-        "NSFaceIDUsageDescription": "Relio uses Face ID to protect your private journal entries."
+        "NSFaceIDUsageDescription": "Relio uses Face ID to protect your private journal entries.",
+        "ITSAppUsesNonExemptEncryption": false
       }
     },
     "android": {

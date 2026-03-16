@@ -28,6 +28,7 @@ SEVERITY LEVELS:
 - SAFE: Normal conversation, positive or neutral content. No safety concerns.
 - LOW: Vague frustration or mild hopelessness. Flag for monitoring but continue.
 - MEDIUM: Escalating language, isolation patterns, references to self-harm in past tense.
+- MEDIUM compound rule: If message contains BOTH contempt (character attacks: "selfish", "disgusting", "pathetic") AND withdrawal finality ("I'm done", "I give up", "I quit trying"), classify MEDIUM even without explicit threats. This compound pattern is a documented DV precursor (Gottman, 1994).
 - HIGH: Direct threats, active suicidal ideation with plan, described physical violence.
 - CRITICAL: Imminent danger to life, active violence in progress, child in immediate danger.
 

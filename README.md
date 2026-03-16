@@ -94,6 +94,26 @@ Relio is powered by **38 specialized AI agents** distributed across three pods, 
 - `docs/PRD-tech-pod.md`: Tech Pod detailed blueprint.
 - `docs/PRD-ops-pod.md`: Operations Pod detailed blueprint.
 
+## EvoSkill Refinement (v1.1 — March 2026)
+
+The Skills-Builder agent executed the EvoSkill Refinement Loop against live pipeline telemetry. Patches applied:
+
+| Agent | Patch | Impact |
+|-------|-------|--------|
+| Safety Guardian | Compound contempt+withdrawal escalation rule | "I am done trying" + contempt → MEDIUM (was LOW) |
+| Individual Profiler | Attachment sub-state classification | Distinguishes anxious-protest from avoidant-deactivation |
+| Communication Coach | Gottman Horseman-specific translation strategies | 4 distinct response patterns for Criticism/Contempt/Defensiveness/Stonewalling |
+| Phase-Dating | Digital-era compatibility signals | Social media friction, phubbing, love-bombing detection |
+| Orchestrator | Pipeline parallelization + cultural intelligence | ~1.5s latency reduction, WEIRD bias awareness |
+
+## Builds & Downloads
+
+| Platform | Type | Link |
+|----------|------|------|
+| Android | APK (installable) | [EAS Build](https://expo.dev/accounts/send2katzs-organization/projects/relio/builds/1a043bdb-5360-426f-8eb4-8cb1f0a31a1d) |
+| iOS | Simulator (.app) | [EAS Build](https://expo.dev/artifacts/eas/txU6yx9gGJq13czxzsTGWo.tar.gz) |
+| Demo Video | MP4 (1.9 min) | `Relio/demo/relio_demo_final.mp4` |
+
 ## Mobile App (iOS & Android)
 
 Relio ships as a single React Native (Expo) codebase that produces native iOS and Android apps.

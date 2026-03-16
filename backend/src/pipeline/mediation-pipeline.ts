@@ -40,13 +40,12 @@ export async function processMessage(
     };
   }
 
-  // === STEP 2: Orchestrator (classify and route) ===
-  agentsInvoked.push('orchestrator');
-  const routing = await routeMessage(message);
-
-  // === STEP 3: Individual Profiler (attachment mapping) ===
-  agentsInvoked.push('individual-profiler');
-  const profile = await profileUser(userId, message);
+  // === STEPS 2 & 3: Orchestrator + Profiler (PARALLEL — no data dependency) ===
+  agentsInvoked.push('orchestrator', 'individual-profiler');
+  const [routing, profile] = await Promise.all([
+    routeMessage(message),
+    profileUser(userId, message),
+  ]);
 
   // === STEP 4: Communication Coach (Tier 1 → Tier 3 translation) ===
   agentsInvoked.push('communication-coach');

@@ -1,10 +1,10 @@
 # Relio — Unified Product Requirements Document
 
-**Version:** v1.3.0
-**Date:** March 15, 2026
-**Authors:** `chief-executive-officer` (GPT-5.4), `chief-product-officer` (Claude Sonnet 4.6), `chief-strategy-officer` (GPT-5.4), `chief-technology-officer` (GPT-5.4), `chief-finance-officer` (GPT-5.2), `chief-psychology-officer` (Claude Opus 4.6)
+**Version:** v1.4.0
+**Date:** March 16, 2026
+**Authors:** `chief-executive-officer` (GPT-5.4), `chief-product-officer` (Claude Sonnet 4.6), `chief-strategy-officer` (GPT-5.4), `chief-technology-officer` (GPT-5.4), `chief-finance-officer` (GPT-5.2), `chief-psychology-officer` (Claude Opus 4.6), `skills-builder` (Claude Opus 4.6)
 **Classification:** Confidential — Board & Executive Leadership
-**Status:** REVISED — Founder + CTO/CFO + Clinical Review Integrated
+**Status:** REVISED — EvoSkill Patch v1.1 Applied, Mobile App Built, Azure Deployment Planned
 
 ---
 

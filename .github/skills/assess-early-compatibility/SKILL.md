@@ -7,3 +7,21 @@ Identify baseline compatibility metrics and flag early relationship risks.
 2. Measure boundary-setting responses (e.g., how User B reacts to User A saying "no").
 3. Abstract findings to Tier 2: "User A exhibits secure boundary setting; User B shows minor defensiveness."
 4. If excessive control behaviors are seen, trigger a low-level alert to the Orchestrator.
+
+
+## Digital-Era Compatibility Signals - EvoSkill Patch v1.1
+
+### Risk Signals:
+5. Digital Surveillance -> flag Safety Guardian
+6. Phubbing Complaints -> route Psychoeducation Agent
+7. Premature Digital Commitment (love-bombing indicator) -> flag Safety Guardian
+8. Social Comparison Distress -> route Psychoeducation Agent
+
+
+## Digital-Era Compatibility Signals - EvoSkill Patch v1.1
+
+### Risk Signals:
+5. Digital Surveillance -> flag Safety Guardian
+6. Phubbing Complaints -> route Psychoeducation Agent
+7. Premature Digital Commitment (love-bombing indicator) -> flag Safety Guardian
+8. Social Comparison Distress -> route Psychoeducation Agent

@@ -7,6 +7,31 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.4.0] - 2026-03-16
+### Added
+- **React Native Mobile App** (iOS + Android): 6 screens — Onboarding, SharedChat, PrivateJournal, Crisis, BiometricLock, Settings. Governed by 6 repo agents.
+- **Backend HTTP + WebSocket Server**: Express API on port 3000 with data stripping, intercept & hold logic. REST + WS endpoints.
+- **Android APK**: Built via EAS cloud, shareable download link.
+- **iOS Simulator Build**: Built via EAS cloud (no Apple Developer account needed).
+- **Demo Video**: Automated 6-scene captioned video with title cards (Relio/demo/).
+- **19 Azure Deployment Issues** (#55-#73): Full Terraform IaC plan for Container Apps, PostgreSQL, Cosmos DB, Redis, Key Vault, App Insights.
+- **EvoSkill Refinement Loop v1.1**: Skills-Builder assessed all 5 MVP agents against live telemetry.
+
+### Changed
+- **Pipeline Parallelization**: Orchestrator + Individual Profiler now run in `Promise.all()` (~1.5s latency reduction).
+- **Safety Guardian**: Added compound contempt+withdrawal escalation rule (Gottman, 1994). "I am done trying" + contempt markers → MEDIUM.
+- **Individual Profiler**: Added attachment sub-state classification (anxious-protest vs avoidant-deactivation).
+- **Communication Coach**: Added Gottman Horseman-specific translation strategies (Criticism ≠ Contempt ≠ Defensiveness ≠ Stonewalling).
+- **Phase-Dating Skill**: Added digital-era compatibility signals (social media friction, phubbing, love-bombing detection).
+- **Orchestrator Skill**: Added pipeline parallelization directive and cultural intelligence embedding.
+- **Mobile API Client**: Fixed to use `localhost` with `adb reverse` for emulator connectivity.
+- **Expo Config**: Removed `expo-router` (was causing HomeMenu crash), fixed entry point to `AppEntry.js`.
+
+### Fixed
+- Android emulator "Something went wrong" crash (expo-router plugin hijacking).
+- AI responses not showing in mobile chat (API host mismatch + silent error swallowing).
+- Demo Scene 1 recording (onboarding taps not landing — fixed with `uiautomator` precision coordinates).
+
 ## [1.3.0] - 2026-03-15
 ### Added
 - **Emergency Response Agent (#38)**: New dedicated agent that executes emergency protocols when SAFETY_HALT is triggered. Separates detection (Safety Guardian) from action. Integrates with Azure Communication Services for real emergency number routing (911/112/999).

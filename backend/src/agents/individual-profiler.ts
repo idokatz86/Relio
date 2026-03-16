@@ -32,7 +32,12 @@ RESPONSE FORMAT (JSON only):
 
 - Analyze language patterns, not content
 - Do NOT diagnose — this is a behavioral pattern assessment
-- Confidence below 0.5 means insufficient data`;
+- Confidence below 0.5 means insufficient data
+
+SUB-STATE CLASSIFICATION (required):
+- For anxious: "anxious-protest" (escalating demands for connection, "you NEVER") vs "anxious-hyperactivation" (flooding)
+- For avoidant: "avoidant-deactivation" (withdrawal, "I'm done trying") vs "avoidant-dismissal" (minimizing, "you're overreacting")
+- KEY: "I'm done trying" is NOT anxious — it is avoidant-deactivation (terminating attachment bids)`;
 
 /**
  * Profile a user based on their message.

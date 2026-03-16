@@ -1,0 +1,606 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Relio — AI-Powered Relationship Mediation</title>
+  <meta name="description" content="Relio is the world's first AI-powered 3-way relationship mediator. Transform hostile communication into constructive Socratic dialogue. Your words stay private. Always.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=DM+Serif+Display&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>💜</text></svg>">
+</head>
+<body>
+  <!-- ═══════════════════════════════════════════════════════════════════ -->
+  <!-- NAVIGATION                                                         -->
+  <!-- ═══════════════════════════════════════════════════════════════════ -->
+  <nav class="nav" id="nav">
+    <div class="nav__container">
+      <a href="#" class="nav__logo">
+        <span class="nav__logo-icon">◈</span>
+        <span class="nav__logo-text">Relio</span>
+      </a>
+      <div class="nav__links" id="navLinks">
+        <a href="#how-it-works">How It Works</a>
+        <a href="#privacy">Privacy</a>
+        <a href="#stages">Who It's For</a>
+        <a href="#pricing">Pricing</a>
+        <a href="#faq">FAQ</a>
+      </div>
+      <div class="nav__actions">
+        <a href="#pricing" class="btn btn--ghost">Log In</a>
+        <a href="#pricing" class="btn btn--primary btn--sm">Start Free</a>
+      </div>
+      <button class="nav__hamburger" id="hamburger" aria-label="Toggle menu">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </nav>
+
+  <!-- ═══════════════════════════════════════════════════════════════════ -->
+  <!-- HERO                                                               -->
+  <!-- ═══════════════════════════════════════════════════════════════════ -->
+  <section class="hero" id="hero">
+    <div class="hero__bg-shapes">
+      <div class="hero__shape hero__shape--1"></div>
+      <div class="hero__shape hero__shape--2"></div>
+      <div class="hero__shape hero__shape--3"></div>
+    </div>
+    <div class="container hero__content">
+      <div class="hero__badge">
+        <span class="hero__badge-dot"></span>
+        AI-Powered Relationship Mediation
+      </div>
+      <h1 class="hero__title">
+        Say what you <em>really</em> feel.<br>
+        <span class="hero__title-gradient">Your partner hears what they need.</span>
+      </h1>
+      <p class="hero__subtitle">
+        Relio sits between you and your partner — transforming frustration into understanding, blame into curiosity, and conflict into connection. Your private words stay private. Always.
+      </p>
+      <div class="hero__ctas">
+        <a href="#pricing" class="btn btn--primary btn--lg">Start Free</a>
+        <a href="#how-it-works" class="btn btn--outline btn--lg">
+          <span class="btn__play-icon">▶</span>
+          See How It Works
+        </a>
+      </div>
+      <div class="hero__proof">
+        <div class="hero__proof-avatars">
+          <div class="hero__avatar"></div>
+          <div class="hero__avatar"></div>
+          <div class="hero__avatar"></div>
+          <div class="hero__avatar"></div>
+        </div>
+        <p class="hero__proof-text">Join the waitlist — launching soon</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════════════════════════════ -->
+  <!-- PROBLEM                                                            -->
+  <!-- ═══════════════════════════════════════════════════════════════════ -->
+  <section class="section problem" id="problem">
+    <div class="container">
+      <div class="section__header">
+        <span class="section__tag">The Problem</span>
+        <h2 class="section__title">Good people. Bad communication.</h2>
+        <p class="section__desc">
+          69% of relationship conflicts are perpetual — they never get "solved." The issue isn't the disagreement. It's that when emotions flood, we say things we don't mean, and hear things that weren't said.
+        </p>
+      </div>
+      <div class="problem__grid">
+        <div class="problem__card" data-reveal>
+          <div class="problem__icon">😤</div>
+          <h3>Emotional Flooding</h3>
+          <p>When your heart rate spikes past 100 BPM, your prefrontal cortex goes offline. You can't think clearly, so you fight or flee.</p>
+        </div>
+        <div class="problem__card" data-reveal>
+          <div class="problem__icon">🔁</div>
+          <h3>The Negative Cycle</h3>
+          <p>One partner pursues, the other withdraws. The pursuer escalates, the withdrawer stonewalls. Both feel unheard. Both are right.</p>
+        </div>
+        <div class="problem__card" data-reveal>
+          <div class="problem__icon">📱</div>
+          <h3>Digital Escalation</h3>
+          <p>Text-based arguments strip away tone, facial expressions, and body language. What starts as a text becomes a war fought without context.</p>
+        </div>
+        <div class="problem__card" data-reveal>
+          <div class="problem__icon">💔</div>
+          <h3>The Therapy Gap</h3>
+          <p>Couples therapy costs $150–300/session with 6-week waitlists. 70% of couples who need help never get it. The gap isn't willingness — it's access.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════════════════════════════ -->
+  <!-- HOW IT WORKS                                                       -->
+  <!-- ═══════════════════════════════════════════════════════════════════ -->
+  <section class="section how-it-works" id="how-it-works">
+    <div class="container">
+      <div class="section__header">
+        <span class="section__tag">How It Works</span>
+        <h2 class="section__title">Three steps. Zero judgment.</h2>
+        <p class="section__desc">
+          Relio isn't a chatbot. It's a structured mediator powered by clinical frameworks — Gottman Method, Emotionally Focused Therapy, and Adult Attachment Theory.
+        </p>
+      </div>
+      <div class="steps">
+        <div class="step" data-reveal>
+          <div class="step__number">1</div>
+          <div class="step__content">
+            <div class="step__visual step__visual--private">
+              <div class="step__phone">
+                <div class="step__phone-header">
+                  <span class="step__phone-lock">🔒</span> Private Space
+                </div>
+                <div class="step__message step__message--user">
+                  "I'm so sick of being ignored. Every night it's the same — phone in hand, me invisible."
+                </div>
+                <div class="step__label">Only you can see this. Ever.</div>
+              </div>
+            </div>
+            <h3>Vent Privately</h3>
+            <p>Say exactly what you feel in your <strong>Private Space</strong>. Raw, unfiltered, honest. Relio holds it safely — your partner will never see these words.</p>
+          </div>
+        </div>
+        <div class="step__connector">
+          <div class="step__connector-line"></div>
+          <div class="step__connector-icon">✦</div>
+          <div class="step__connector-line"></div>
+        </div>
+        <div class="step" data-reveal>
+          <div class="step__number">2</div>
+          <div class="step__content">
+            <div class="step__visual step__visual--transform">
+              <div class="step__transform-box">
+                <div class="step__transform-label">AI Mediation Engine</div>
+                <div class="step__transform-flow">
+                  <div class="step__transform-in">Raw emotion</div>
+                  <div class="step__transform-arrow">→</div>
+                  <div class="step__transform-process">
+                    <span>Detect unmet need</span>
+                    <span>Strip blame</span>
+                    <span>Frame as curiosity</span>
+                  </div>
+                  <div class="step__transform-arrow">→</div>
+                  <div class="step__transform-out">Socratic question</div>
+                </div>
+              </div>
+            </div>
+            <h3>Relio Transforms</h3>
+            <p>Our 5-agent pipeline detects the <strong>unmet need</strong> behind your frustration, strips blame and sarcasm, and crafts a constructive Socratic question your partner can actually hear.</p>
+          </div>
+        </div>
+        <div class="step__connector">
+          <div class="step__connector-line"></div>
+          <div class="step__connector-icon">✦</div>
+          <div class="step__connector-line"></div>
+        </div>
+        <div class="step" data-reveal>
+          <div class="step__number">3</div>
+          <div class="step__content">
+            <div class="step__visual step__visual--shared">
+              <div class="step__phone">
+                <div class="step__phone-header">
+                  <span class="step__phone-shield">🛡️</span> Shared Room
+                </div>
+                <div class="step__message step__message--relio">
+                  "I notice I feel disconnected when we're together but not fully present. Can we explore what quality time means to each of us?"
+                </div>
+                <div class="step__label">Safe. Constructive. Heard.</div>
+              </div>
+            </div>
+            <h3>Partner Receives Understanding</h3>
+            <p>Your partner sees a <strong>thoughtful question</strong> in the Shared Room — not an attack. The conversation begins from curiosity, not conflict.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════════════════════════════ -->
+  <!-- BEFORE / AFTER TRANSFORMATION                                      -->
+  <!-- ═══════════════════════════════════════════════════════════════════ -->
+  <section class="section transformation" id="transformation">
+    <div class="container">
+      <div class="section__header">
+        <span class="section__tag">The Relio Effect</span>
+        <h2 class="section__title">From conflict to connection.</h2>
+      </div>
+      <div class="transform-examples">
+        <div class="transform-card" data-reveal>
+          <div class="transform-card__before">
+            <span class="transform-card__label transform-card__label--before">🔒 What you said (Private)</span>
+            <p>"You never help with the kids. I do everything around here while you sit on the couch."</p>
+          </div>
+          <div class="transform-card__arrow">
+            <span>Relio</span>
+            <div class="transform-card__arrow-line"></div>
+          </div>
+          <div class="transform-card__after">
+            <span class="transform-card__label transform-card__label--after">🛡️ What they hear (Shared)</span>
+            <p>"I've been feeling overwhelmed with parenting responsibilities lately. Could we look at how we divide things and find a rhythm that works for both of us?"</p>
+          </div>
+        </div>
+        <div class="transform-card" data-reveal>
+          <div class="transform-card__before">
+            <span class="transform-card__label transform-card__label--before">🔒 What you said (Private)</span>
+            <p>"I found your texts with your ex. You're a liar and I can't trust you."</p>
+          </div>
+          <div class="transform-card__arrow">
+            <span>Relio</span>
+            <div class="transform-card__arrow-line"></div>
+          </div>
+          <div class="transform-card__after">
+            <span class="transform-card__label transform-card__label--after">🛡️ What they hear (Shared)</span>
+            <p>"I'm feeling insecure about boundaries with past relationships. Can we talk about what exclusivity means to each of us and what would help me feel safe?"</p>
+          </div>
+        </div>
+        <div class="transform-card" data-reveal>
+          <div class="transform-card__before">
+            <span class="transform-card__label transform-card__label--before">🔒 What you said (Private)</span>
+            <p>"We haven't been intimate in months. I feel like you don't want me anymore."</p>
+          </div>
+          <div class="transform-card__arrow">
+            <span>Relio</span>
+            <div class="transform-card__arrow-line"></div>
+          </div>
+          <div class="transform-card__after">
+            <span class="transform-card__label transform-card__label--after">🛡️ What they hear (Shared)</span>
+            <p>"Physical closeness is really important to me. I'd love to understand what helps you feel most connected, so we can find ways to be closer together."</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════════════════════════════ -->
+  <!-- 3-TIER PRIVACY MODEL                                               -->
+  <!-- ═══════════════════════════════════════════════════════════════════ -->
+  <section class="section privacy" id="privacy">
+    <div class="container">
+      <div class="section__header">
+        <span class="section__tag">Trust by Design</span>
+        <h2 class="section__title">Privacy isn't a policy. It's our architecture.</h2>
+        <p class="section__desc">
+          Every competitor can write a privacy policy. We built a system where your private words <strong>physically cannot</strong> reach your partner — enforced by network isolation, separate databases, and cryptographic barriers.
+        </p>
+      </div>
+      <div class="privacy__tiers">
+        <div class="privacy__tier privacy__tier--1" data-reveal>
+          <div class="privacy__tier-icon">🔒</div>
+          <div class="privacy__tier-badge">Tier 1 — Private</div>
+          <h3>Your Eyes Only</h3>
+          <p>Raw venting, complaints, and private thoughts. Stored in an <strong>isolated database</strong> with no API endpoint to surface this content. Not even Relio's admins can read it.</p>
+          <ul class="privacy__checks">
+            <li>Separate database per user</li>
+            <li>No cross-tier database JOINs</li>
+            <li>Network-level isolation</li>
+          </ul>
+        </div>
+        <div class="privacy__tier privacy__tier--2" data-reveal>
+          <div class="privacy__tier-icon">🧠</div>
+          <div class="privacy__tier-badge">Tier 2 — Abstracted</div>
+          <h3>Pattern Intelligence</h3>
+          <p>Clinical insights like "anxious attachment activated" or "flooding detected." Used by Relio's AI internally to craft the right response. <strong>Never shared with your partner.</strong></p>
+          <ul class="privacy__checks">
+            <li>AI-internal analysis only</li>
+            <li>Encrypted at rest</li>
+            <li>Clinical-grade data handling</li>
+          </ul>
+        </div>
+        <div class="privacy__tier privacy__tier--3" data-reveal>
+          <div class="privacy__tier-icon">🛡️</div>
+          <div class="privacy__tier-badge">Tier 3 — Shared</div>
+          <h3>Safe to Share</h3>
+          <p>Socratic questions and constructive dialogue crafted by Relio. This is the <strong>only content</strong> your partner ever sees — validated by a meta-audit AI before delivery.</p>
+          <ul class="privacy__checks">
+            <li>Audited before delivery</li>
+            <li>No original phrasing</li>
+            <li>Canary-tested in CI/CD</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════════════════════════════ -->
+  <!-- RELATIONSHIP STAGES                                                -->
+  <!-- ═══════════════════════════════════════════════════════════════════ -->
+  <section class="section stages" id="stages">
+    <div class="container">
+      <div class="section__header">
+        <span class="section__tag">Who It's For</span>
+        <h2 class="section__title">Every stage. Every challenge.</h2>
+        <p class="section__desc">
+          Relio adapts to where you are in your relationship — with stage-specific AI agents trained on clinical frameworks appropriate for your situation.
+        </p>
+      </div>
+      <div class="stages__grid">
+        <div class="stage-card" data-reveal>
+          <div class="stage-card__emoji">💕</div>
+          <h3>Dating</h3>
+          <p>Build healthy communication habits from day one. Navigate jealousy, digital boundaries, and early vulnerability.</p>
+          <span class="stage-card__tag">6–18 months</span>
+        </div>
+        <div class="stage-card" data-reveal>
+          <div class="stage-card__emoji">💍</div>
+          <h3>Committed</h3>
+          <p>Deepen intimacy and navigate perpetual conflicts. Address the unspoken needs underneath recurring arguments.</p>
+          <span class="stage-card__tag">Long-term partners</span>
+        </div>
+        <div class="stage-card" data-reveal>
+          <div class="stage-card__emoji">🌊</div>
+          <h3>In Crisis</h3>
+          <p>De-escalate acute emotional flooding. Enforce healthy timeout structures when conversations become destructive.</p>
+          <span class="stage-card__tag">Acute conflict</span>
+        </div>
+        <div class="stage-card" data-reveal>
+          <div class="stage-card__emoji">🍂</div>
+          <h3>Separating</h3>
+          <p>Manage logistics, grief, and asset division without further damage. Structure difficult conversations with dignity.</p>
+          <span class="stage-card__tag">Transition phase</span>
+        </div>
+        <div class="stage-card" data-reveal>
+          <div class="stage-card__emoji">🤝</div>
+          <h3>Co-Parenting</h3>
+          <p>Coordinate child welfare through structured, low-conflict messaging. Keep the focus on the kids, not the history.</p>
+          <span class="stage-card__tag">Post-divorce</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════════════════════════════ -->
+  <!-- SAFETY                                                             -->
+  <!-- ═══════════════════════════════════════════════════════════════════ -->
+  <section class="section safety" id="safety">
+    <div class="container">
+      <div class="safety__content" data-reveal>
+        <div class="safety__text">
+          <span class="section__tag">Safety First</span>
+          <h2 class="section__title">Your safety is non-negotiable.</h2>
+          <p>Relio's Safety Guardian AI has <strong>absolute veto power</strong>. No optimization, engagement metric, or business KPI ever overrides a safety signal.</p>
+          <ul class="safety__list">
+            <li>
+              <strong>Domestic violence detection</strong> — immediate escalation to real crisis resources
+            </li>
+            <li>
+              <strong>Suicide/self-harm detection</strong> — direct routing to emergency services (911/112/999)
+            </li>
+            <li>
+              <strong>De-escalation timeouts</strong> — 20-minute cool-down periods when flooding is detected
+            </li>
+            <li>
+              <strong>No parasocial dependency</strong> — Relio turns you toward your partner, not toward the AI
+            </li>
+          </ul>
+        </div>
+        <div class="safety__visual">
+          <div class="safety__shield">
+            <div class="safety__shield-icon">🛡️</div>
+            <div class="safety__shield-text">Safety Guardian</div>
+            <div class="safety__shield-subtitle">Absolute Veto Power</div>
+            <div class="safety__shield-pulse"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════════════════════════════ -->
+  <!-- PRICING                                                            -->
+  <!-- ═══════════════════════════════════════════════════════════════════ -->
+  <section class="section pricing" id="pricing">
+    <div class="container">
+      <div class="section__header">
+        <span class="section__tag">Pricing</span>
+        <h2 class="section__title">Invest in your relationship.</h2>
+        <p class="section__desc">
+          One couples therapy session costs $150–300. Relio gives you 24/7 mediation for less than a dinner out.
+        </p>
+      </div>
+      <div class="pricing__grid">
+        <div class="pricing__card" data-reveal>
+          <div class="pricing__card-header">
+            <h3>Free</h3>
+            <div class="pricing__price">
+              <span class="pricing__amount">$0</span>
+              <span class="pricing__period">forever</span>
+            </div>
+          </div>
+          <p class="pricing__desc">Start understanding your relationship patterns.</p>
+          <ul class="pricing__features">
+            <li>Private journaling space</li>
+            <li>Attachment style assessment</li>
+            <li>Weekly psychoeducation lessons</li>
+            <li>Relationship stage insights</li>
+          </ul>
+          <a href="#" class="btn btn--outline btn--full">Get Started</a>
+        </div>
+        <div class="pricing__card pricing__card--featured" data-reveal>
+          <div class="pricing__card-badge">Most Popular</div>
+          <div class="pricing__card-header">
+            <h3>Premium</h3>
+            <div class="pricing__price">
+              <span class="pricing__amount">$19.99</span>
+              <span class="pricing__period">/month</span>
+            </div>
+          </div>
+          <p class="pricing__desc">Real-time AI mediation for couples.</p>
+          <ul class="pricing__features">
+            <li>Everything in Free</li>
+            <li><strong>Real-time 3-way mediation</strong></li>
+            <li>Shared Room with Socratic dialogue</li>
+            <li>Conflict pattern tracking</li>
+            <li>Unlimited private venting</li>
+          </ul>
+          <a href="#" class="btn btn--primary btn--full">Start Free Trial</a>
+        </div>
+        <div class="pricing__card" data-reveal>
+          <div class="pricing__card-header">
+            <h3>Premium+</h3>
+            <div class="pricing__price">
+              <span class="pricing__amount">$29.99</span>
+              <span class="pricing__period">/month</span>
+            </div>
+          </div>
+          <p class="pricing__desc">Deep clinical insights and priority support.</p>
+          <ul class="pricing__features">
+            <li>Everything in Premium</li>
+            <li>Advanced relationship dynamics report</li>
+            <li>Proactive engagement alerts</li>
+            <li>Priority safety response</li>
+            <li>Custom psychoeducation plans</li>
+          </ul>
+          <a href="#" class="btn btn--outline btn--full">Start Free Trial</a>
+        </div>
+      </div>
+      <p class="pricing__note">All plans include the full 3-Tier Confidentiality Model. Safety features are never paywalled.</p>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════════════════════════════ -->
+  <!-- SOLO VALUE                                                         -->
+  <!-- ═══════════════════════════════════════════════════════════════════ -->
+  <section class="section solo" id="solo">
+    <div class="container">
+      <div class="solo__content" data-reveal>
+        <h2 class="section__title">Your partner isn't ready yet? That's okay.</h2>
+        <p class="section__desc">
+          Relio delivers genuine value even when only one partner subscribes. Private journaling, 1-on-1 AI coaching, attachment profiling, and psychoeducation — all from your own space. When your partner is ready, they join on their own terms, and their first experience is absolute privacy, not a sales pitch.
+        </p>
+        <a href="#pricing" class="btn btn--primary btn--lg">Start on Your Own</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════════════════════════════ -->
+  <!-- FAQ                                                                -->
+  <!-- ═══════════════════════════════════════════════════════════════════ -->
+  <section class="section faq" id="faq">
+    <div class="container">
+      <div class="section__header">
+        <span class="section__tag">FAQ</span>
+        <h2 class="section__title">Common questions.</h2>
+      </div>
+      <div class="faq__list">
+        <div class="faq__item" data-reveal>
+          <button class="faq__question" aria-expanded="false">
+            <span>Is Relio therapy?</span>
+            <span class="faq__icon">+</span>
+          </button>
+          <div class="faq__answer">
+            <p>No. Relio is structured AI mediation, not therapy. It's informed by clinical frameworks (Gottman Method, EFT, Adult Attachment Theory) but is not a replacement for licensed professional help. If our Safety Guardian detects a situation requiring professional intervention, it will immediately connect you with appropriate resources.</p>
+          </div>
+        </div>
+        <div class="faq__item" data-reveal>
+          <button class="faq__question" aria-expanded="false">
+            <span>Can my partner see what I type in my Private Space?</span>
+            <span class="faq__icon">+</span>
+          </button>
+          <div class="faq__answer">
+            <p>Absolutely not. Your Private Space (Tier 1) is stored in an isolated database with no technical pathway to your partner's interface. There is no admin override, no API endpoint, and no database JOIN that could surface your private words. This is enforced at the architecture level, not just by policy.</p>
+          </div>
+        </div>
+        <div class="faq__item" data-reveal>
+          <button class="faq__question" aria-expanded="false">
+            <span>What if my partner doesn't want to use Relio?</span>
+            <span class="faq__icon">+</span>
+          </button>
+          <div class="faq__answer">
+            <p>Relio works even if only one of you signs up. You get private journaling, attachment style profiling, psychoeducation, and 1-on-1 AI coaching. If your partner joins later, they enter on their own terms — their first experience is guaranteed privacy, not a pitch.</p>
+          </div>
+        </div>
+        <div class="faq__item" data-reveal>
+          <button class="faq__question" aria-expanded="false">
+            <span>What happens in an emergency?</span>
+            <span class="faq__icon">+</span>
+          </button>
+          <div class="faq__answer">
+            <p>Our Safety Guardian has absolute veto power over everything — no business metric overrides it. If domestic violence, suicide risk, or self-harm is detected, the system immediately halts normal operation and routes to real emergency services (911/112/999). Safety features are never paywalled.</p>
+          </div>
+        </div>
+        <div class="faq__item" data-reveal>
+          <button class="faq__question" aria-expanded="false">
+            <span>How is this different from BetterHelp or Lasting?</span>
+            <span class="faq__icon">+</span>
+          </button>
+          <div class="faq__answer">
+            <p>BetterHelp connects you with a human therapist ($65–100/week). Lasting offers exercises and quizzes. Neither mediates live conversations between two people. Relio is the first product that sits <em>between</em> two partners in real-time, transforms hostile communication, and enforces privacy at the infrastructure level — not just promises it.</p>
+          </div>
+        </div>
+        <div class="faq__item" data-reveal>
+          <button class="faq__question" aria-expanded="false">
+            <span>Is my data used to train AI models?</span>
+            <span class="faq__icon">+</span>
+          </button>
+          <div class="faq__answer">
+            <p>No. Your personal data is never used for training. All AI processing uses enterprise-grade, dedicated model instances where your data is not retained by the provider. Revenue never degrades privacy — this is a non-negotiable principle.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════════════════════════════ -->
+  <!-- CTA BANNER                                                        -->
+  <!-- ═══════════════════════════════════════════════════════════════════ -->
+  <section class="section cta-banner">
+    <div class="container">
+      <div class="cta-banner__content" data-reveal>
+        <h2>Ready to communicate differently?</h2>
+        <p>Start for free. No credit card required. Your private words stay private.</p>
+        <a href="#pricing" class="btn btn--white btn--lg">Start Free Today</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════════════════════════════ -->
+  <!-- FOOTER                                                             -->
+  <!-- ═══════════════════════════════════════════════════════════════════ -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer__grid">
+        <div class="footer__brand">
+          <a href="#" class="nav__logo">
+            <span class="nav__logo-icon">◈</span>
+            <span class="nav__logo-text">Relio</span>
+          </a>
+          <p>The world's first AI-powered 3-way relationship mediator. Privacy is architecture, not policy.</p>
+        </div>
+        <div class="footer__col">
+          <h4>Product</h4>
+          <a href="#how-it-works">How It Works</a>
+          <a href="#privacy">Privacy Model</a>
+          <a href="#pricing">Pricing</a>
+          <a href="#stages">Who It's For</a>
+        </div>
+        <div class="footer__col">
+          <h4>Company</h4>
+          <a href="#">About</a>
+          <a href="#">Blog</a>
+          <a href="#">Careers</a>
+          <a href="#">Contact</a>
+        </div>
+        <div class="footer__col">
+          <h4>Legal</h4>
+          <a href="#">Privacy Policy</a>
+          <a href="#">Terms of Service</a>
+          <a href="#">Security</a>
+          <a href="#">GDPR</a>
+        </div>
+      </div>
+      <div class="footer__bottom">
+        <p>&copy; 2026 Relio. All rights reserved.</p>
+        <p class="footer__principle">Do No Harm. Privacy Is Architecture. The AI Is a Bridge.</p>
+      </div>
+    </div>
+  </footer>
+
+  <script src="script.js"></script>
+</body>
+</html>
