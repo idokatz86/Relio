@@ -10,8 +10,9 @@
 import { Platform } from 'react-native';
 import type { MediationResponse, WSIncoming, WSOutgoing } from '../types';
 
-// Android emulator uses 10.0.2.2 to reach host localhost; iOS simulator uses localhost
-const DEV_HOST = Platform.OS === 'android' ? '10.0.2.2' : 'localhost';
+// Use localhost with adb reverse port forwarding (adb reverse tcp:3000 tcp:3000)
+// Fallback to 10.0.2.2 if reverse forwarding isn't set up
+const DEV_HOST = 'localhost';
 
 const API_BASE = __DEV__
   ? `http://${DEV_HOST}:3000`
@@ -29,6 +30,7 @@ export async function sendMessage(
   userId: string,
   message: string,
 ): Promise<MediationResponse> {
+  console.log(`[API] Sending to ${API_BASE}/api/v1/mediate`);
   const response = await fetch(`${API_BASE}/api/v1/mediate`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
@@ -36,10 +38,13 @@ export async function sendMessage(
   });
 
   if (!response.ok) {
+    console.error(`[API] Error: ${response.status}`);
     throw new Error(`API error: ${response.status}`);
   }
 
-  return response.json();
+  const data = await response.json();
+  console.log(`[API] Response:`, JSON.stringify(data).slice(0, 200));
+  return data;
 }
 
 /**

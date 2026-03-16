@@ -24,13 +24,17 @@
         "backgroundColor": "#F5EFE7"
       },
       "package": "com.relio.app",
-      "permissions": ["USE_BIOMETRIC", "USE_FINGERPRINT"]
+      "permissions": [
+        "USE_BIOMETRIC",
+        "USE_FINGERPRINT"
+      ]
     },
     "scheme": "relio",
     "plugins": [
-      "expo-router",
       "expo-secure-store",
-      "expo-local-authentication"
+      "expo-local-authentication",
+      "expo-asset",
+      "expo-font"
     ]
   }
 }

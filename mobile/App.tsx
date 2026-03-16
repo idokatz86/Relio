@@ -38,14 +38,19 @@ export default function App() {
   }, []);
 
   const initApp = async () => {
-    // Check biometric availability
-    const hasBiometric = await isBiometricAvailable();
-    if (!hasBiometric) {
-      // Skip biometric if not available (dev/simulator)
+    try {
+      // Check biometric availability
+      const hasBiometric = await isBiometricAvailable();
+      if (!hasBiometric) {
+        // Skip biometric if not available (dev/simulator)
+        await checkProfile();
+        return;
+      }
+      setScreen('biometric');
+    } catch (e) {
+      console.log('[App] Biometric check failed, skipping:', e);
       await checkProfile();
-      return;
     }
-    setScreen('biometric');
   };
 
   const checkProfile = async () => {

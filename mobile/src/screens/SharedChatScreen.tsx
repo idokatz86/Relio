@@ -100,9 +100,16 @@ export function SharedChatScreen({ userId, onSafetyHalt, onOpenJournal }: Shared
             : m,
         ),
       );
-    } catch {
-      // Remove temp message on error
-      setMessages((prev) => prev.filter((m) => m.id !== tempId));
+    } catch (err) {
+      console.error('[Chat] Pipeline error:', err);
+      // Show error in the bubble instead of removing it
+      setMessages((prev) =>
+        prev.map((m) =>
+          m.id === tempId
+            ? { ...m, content: 'Failed to connect. Check backend.', isProcessing: false }
+            : m,
+        ),
+      );
     } finally {
       setIsProcessing(false);
     }
