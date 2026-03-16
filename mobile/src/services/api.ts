@@ -10,16 +10,24 @@
 import { Platform } from 'react-native';
 import type { MediationResponse, WSIncoming, WSOutgoing } from '../types';
 
-// Use localhost with adb reverse port forwarding (adb reverse tcp:3000 tcp:3000)
-// Fallback to 10.0.2.2 if reverse forwarding isn't set up
-const DEV_HOST = 'localhost';
+// Azure Container Apps backend (dev environment)
+const AZURE_HOST = 'relio-backend.nicecliff-c249023f.eastus.azurecontainerapps.io';
+const LOCAL_HOST = 'localhost';
+
+// Use Azure backend for all builds (dev and prod)
+// Switch to LOCAL_HOST for local development with adb reverse
+const USE_LOCAL = false;
+const DEV_HOST = USE_LOCAL ? LOCAL_HOST : AZURE_HOST;
+const DEV_SCHEME = USE_LOCAL ? 'http' : 'https';
+const DEV_WS_SCHEME = USE_LOCAL ? 'ws' : 'wss';
 
 const API_BASE = __DEV__
-  ? `http://${DEV_HOST}:3000`
-  : 'https://api.relio.app';
+  ? `${DEV_SCHEME}://${DEV_HOST}${USE_LOCAL ? ':3000' : ''}`
+  : `https://${AZURE_HOST}`;
 
 const WS_BASE = __DEV__
-  ? `ws://${DEV_HOST}:3000`
+  ? `${DEV_WS_SCHEME}://${DEV_HOST}${USE_LOCAL ? ':3000' : ''}`
+  : `wss://${AZURE_HOST}`;
   : 'wss://api.relio.app';
 
 /**
