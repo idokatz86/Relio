@@ -7,6 +7,27 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.3.0] - 2026-03-17
+### Added
+- **Sprint 9: Onboarding & Partner Invite** — 11 issues closed
+- **Invite API** (`/api/v1/invite/*`) — POST /create (room + 6-char hex code), POST /accept (link partner), GET /status (pairing check), GET /qr/:code (QR data for client rendering). Auth-protected.
+- **InvitePartnerScreen** — Generate invite code, share via system sheet, deep link `relio://invite/{code}`, privacy note
+- **AcceptInviteScreen** — 6-char code input with uppercase hex filter, partner linking, 3-Tier privacy note
+- **PrivacyExplainerScreen** — 3-step interactive 3-Tier model demo (Private → Abstracted → Shared) with examples and who-sees-it
+- **AttachmentQuizScreen** — 5 Gottman/EFT-based questions, calculates dominant attachment style (anxious/avoidant/secure/disorganized), clinical context + disclaimer
+- **PsychoeducationCards** — 4 cards: Emotional Flooding, Four Horsemen, Bids for Connection, Pursue-Withdraw Cycle (sourced from Gottman/EFT)
+- **Sprint 8: Auth System (Clerk)** — 20 issues closed
+- **Clerk auth LIVE** — JWKS validation against `set-boa-5.clerk.accounts.dev`, AUTH_DISABLED=false in production. All protected endpoints return 401 without valid token.
+- **Provider-agnostic auth-service.ts** — jose + JWKS, works with Clerk/Auth0/Supabase via env vars
+- **ConsentRouter** — `/api/v1/consent/*` (status, accept, verify-age, withdraw, audit)
+- **Mobile auth screens** — LoginScreen, ConsentScreen, AgeVerifyScreen, token-manager.ts
+- **DB auth schema** — consent_records, consent_audit (immutable), refresh_tokens with RLS
+
+### Changed
+- Backend deployed v2.3.0 (Container Apps revision 0000011)
+- Auth provider migrated from Azure AD B2C → Clerk (free tier, OIDC-compliant)
+- PRD updated to v2.0.0 (consolidated all pod PRDs)
+
 ## [1.9.0] - 2026-03-16
 ### Added
 - **Backoffice Admin Dashboard** — 10 admin API endpoints + 7-page React frontend (Dashboard, Users, Phases, Subscriptions, Pipeline, Safety, Feedback) with sidebar navigation and Relio earth-tone design.

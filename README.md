@@ -18,31 +18,28 @@ Relio is powered by **38 specialized AI agents** distributed across three pods, 
 - **Operations Pod (9 agents):** CEO, CRO, CFO, CMO, CCO, CAO, CLO, CPO, CSO. Manages business strategy, legal disclaimers, partnership evaluations, and AI-first lean operations.
 - **Tech Pod (15 agents):** CTO, Backend Developer, Cloud Architect, GitHub Architect, Mobile Dev, Mobile QA, Fullstack QA, Penetration Tester, UI/UX Expert, CISO, DPO, App Store Certifier, Skills Builder, Scrum Master, VP R&D. Constructs Azure-native infrastructure, secure WebSockets, CI/CD governance, and adversarial red-teaming.
 
-## Key Capabilities (v1.9.0)
+## Key Capabilities (v2.3.0)
 
-- **Backend LIVE on Azure OpenAI GPT-4.1** — Container Apps (Sweden Central, EU data residency) powered by `gpt-4.1` + `gpt-4.1-mini` via managed identity. No API keys in code.
-- **5-Agent MVP Pipeline** — Safety Guardian → Orchestrator → [Individual Profiler || Communication Coach] → Tier 3 Socratic Output
-- **Backoffice Admin Dashboard** — 10 admin API endpoints + 7-page React frontend (Dashboard, Users, Phases, Subscriptions, Pipeline, Safety, Feedback). k-anonymity enforced, admin-only JWT auth, audit logging.
-- **Security Hardened** — JWT auth, Zod input validation, Helmet headers, rate limiting, CORS lockdown, fail-closed Safety Guardian
-- **LLM Gateway with Circuit Breaker** — 3-failure open, per-user token budgets, provider-agnostic (Azure/GitHub Models swap via config)
-- **PII Redaction Layer** — Strips emails, phones, SSNs, addresses before LLM calls. Tier 1 leak detection on output.
-- **User Feedback System** — Post-session ratings, NPS, weekly pulse, churn interviews. Admin Feedback Center with NPS score.
-- **CI/CD Pipelines** — GitHub Actions: typecheck + tests (PR), security scan (CodeQL + gitleaks + npm audit), CD to ACR → Container Apps
-- **Infrastructure as Code** — Terraform with remote state, NSGs, private endpoints, Key Vault RBAC, scale-to-zero, budget alerts
-- **Mobile App** — React Native/Expo with ContextBanner (private/shared visual indicator), auth token support, Azure backend connectivity
+- **Backend LIVE on Azure OpenAI GPT-4.1** — Container Apps (Sweden Central, EU data residency)
+- **Clerk Auth LIVE** — OIDC JWKS validation, Apple/Google/Email sign-in, all endpoints auth-protected
+- **5-Agent MVP Pipeline** — Safety Guardian → Orchestrator → [Individual Profiler || Communication Coach] → Tier 3 Output
+- **Partner Invite System** — Invite codes, QR generation, deep links, couple pairing API
+- **12 Mobile Screens** — BiometricLock, Login, Consent, AgeVerify, Onboarding, PrivacyExplainer, AttachmentQuiz, PsychoeducationCards, InvitePartner, AcceptInvite, SharedChat, PrivateJournal, Crisis, Settings
+- **Backoffice Admin Dashboard** — 10 admin API endpoints + 7-page React frontend with k-anonymity
+- **Security Hardened** — JWT auth, Zod validation, Helmet, rate limiting, CORS, fail-closed Safety Guardian, circuit breaker
+- **Feedback System** — Session ratings, NPS, weekly pulse, churn interviews
 
-## Tech Pod Status (v1.8.0)
+## Tech Pod Status (v2.3.0)
 
 | Sprint | Tech Issues | Closed | Open | Focus |
 |--------|-------------|--------|------|-------|
-| 1 | 4 | 4 | 0 | LLM Gateway + 5 MVP agents |
-| 2 | 7 | 7 | 0 | Pipeline integration + demo |
-| 3 | 10 | 10 | 0 | Azure IaC + containerization + CI/CD |
-| 4 | 14 | 14 | 0 | DB schemas, auth, Redis, App Insights, NSGs |
-| 5 | 4 | 4 | 0 | Security hardening (WS auth, Zod, CORS, CI security) |
-| 6 | 3 | 3 | 0 | Circuit breaker, Redis pub/sub, mobile ContextBanner |
-| 7 | 1 | 1 | 0 | Branch protection |
-| **Total** | **43** | **42** | **1** | **#73 iOS TestFlight (needs Apple Dev account)** |
+| 1–2 | 11 | 11 | 0 | MVP: LLM Gateway + 5 agents + pipeline |
+| 3–4 | 24 | 24 | 0 | Azure IaC, DB, auth, Redis, NSGs |
+| 5–7 | 8 | 8 | 0 | Security hardening, CI, branch protection |
+| 8 | 20 | 20 | 0 | Clerk auth, consent, mobile screens, backoffice |
+| 9 | 11 | 11 | 0 | Partner invite, onboarding, psychoeducation |
+| Azure | 6 | 6 | 0 | OpenAI, Key Vault, cost optimization |
+| **Total** | **80** | **80** | **0** | Sprint 9 complete |
 
 ## Agent Directory (38 Agents)
 

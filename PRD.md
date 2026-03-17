@@ -1,10 +1,10 @@
 # Relio — Unified Product Requirements Document
 
-**Version:** v2.0.0
-**Date:** March 16, 2026
+**Version:** v2.1.0
+**Date:** March 17, 2026
 **Authors:** All 38 agents across Medical Pod (`chief-psychology-officer`), Tech Pod (`chief-technology-officer`), and Ops Pod (`chief-executive-officer`)
 **Classification:** Confidential — Board & Executive Leadership
-**Status:** CONSOLIDATED — All pod PRDs unified. Reflects actual production state.
+**Status:** Sprint 9 complete. Clerk auth live. Partner invite system operational.
 
 > **Supersedes:** PRD v1.0.0–v1.8.0, PRD-medical-pod.md v1.3.0, PRD-tech-pod.md v1.3.0, PRD-ops-pod.md v1.3.0
 
@@ -311,14 +311,13 @@ Freemium-to-premium subscription optimized for asymmetric engagement:
 ### Pending
 - React Navigation (tab navigator + deep linking)
 - iOS TestFlight build (#73 — needs Apple Developer account)
-- Partner invite flow (deep link + 6-digit code)
 - Solo mode (coaching, exercises)
 
 ---
 
 ## 10. Sprint History & Roadmap
 
-### Completed (Sprint 1–8)
+### Completed (Sprint 1–9)
 
 | Sprint | Focus | Tech Issues | Closed |
 |--------|-------|-------------|--------|
@@ -328,17 +327,17 @@ Freemium-to-premium subscription optimized for asymmetric engagement:
 | 5 | Security hardening: JWT, Zod, CORS, fail-closed, CI security | 4 | 4 |
 | 6 | Circuit breaker, Redis pub/sub, mobile ContextBanner | 3 | 3 |
 | 7 | Branch protection | 1 | 1 |
-| 8 | Backoffice admin dashboard + feedback system | 3 | 3 |
+| 8 | Clerk auth, consent API, mobile auth screens, backoffice | 20 | 20 |
+| 9 | Partner invite, onboarding, psychoeducation, attachment quiz | 11 | 11 |
 | Azure | OpenAI deployment, Key Vault, cost optimization | 6 | 6 |
-| **Total** | | **52** | **52** |
+| **Total** | | **80** | **80** |
 
 ### Next Sprints (Planned)
 
 | Sprint | Focus |
 |--------|-------|
-| 9 | Emergency Response Agent + Phase-Crisis (flooding) + regex pre-screen |
-| 10 | CPsychO meta-audit + Relationship Dynamics agent |
-| 11 | Partner invite flow + solo mode + React Navigation migration |
+| 10 | Security (OWASP, account deletion, GDPR), i18n scaffold, push notifications |
+| 11 | iOS TestFlight, Hebrew RTL, translations |
 | 12 | Stripe/RevenueCat integration + App Store submission |
 | 13–16 | Beta expansion (50 → 500 couples), retention data |
 | 17–24 | Series A data deck, scale to 5M architecture |

@@ -29,6 +29,7 @@ import { processMessage } from '../pipeline/mediation-pipeline.js';
 import { adminRouter, recordPipelineMetrics, recordSafetyEvent } from './admin-router.js';
 import { authMiddleware, authenticateWebSocket } from '../auth/auth-service.js';
 import { consentRouter } from '../auth/consent-router.js';
+import { inviteRouter } from './invite-router.js';
 import type { AuthenticatedUser } from '../auth/auth-service.js';
 import type { PipelineResult } from '../types/index.js';
 
@@ -83,6 +84,9 @@ app.use('/api/v1/admin', adminRouter);
 
 // Consent & Age Verification API (Sprint 8: #109, #110)
 app.use('/api/v1/consent', authMiddleware, consentRouter);
+
+// Partner Invite API (Sprint 9: #118, #122)
+app.use('/api/v1/invite', authMiddleware, inviteRouter);
 
 // Feedback submission (user-facing, reuses admin router's submit handler)
 app.post('/api/v1/feedback', authMiddleware, async (req: express.Request, res: express.Response) => {

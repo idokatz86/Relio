@@ -39,5 +39,9 @@
     "@types/react": "~18.3.0",
     "eslint": "^9.0.0",
     "typescript": "^5.7.0"
+  },
+  "overrides": {
+    "tar": ">=6.2.1",
+    "ajv": ">=8.17.2"
   }
 }
