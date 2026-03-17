@@ -27,6 +27,9 @@ import { v4 as uuidv4 } from 'uuid';
 import { z } from 'zod';
 import { processMessage } from '../pipeline/mediation-pipeline.js';
 import { adminRouter, recordPipelineMetrics, recordSafetyEvent } from './admin-router.js';
+import { authMiddleware, authenticateWebSocket } from '../auth/auth-service.js';
+import { consentRouter } from '../auth/consent-router.js';
+import type { AuthenticatedUser } from '../auth/auth-service.js';
 import type { PipelineResult } from '../types/index.js';
 
 // ── Zod Schemas (Issue #76) ─────────────────────────────────
@@ -51,74 +54,7 @@ const corsOptions: cors.CorsOptions = {
   allowedHeaders: ['Content-Type', 'Authorization'],
 };
 
-// ── JWT Verification (Issues #67, #75) ──────────────────────
-interface AuthenticatedUser {
-  id: string;
-  email?: string;
-}
-
-/**
- * Verify a JWT token and extract the user.
- * In production, this should validate against Azure AD B2C JWKS.
- * For dev/beta, accepts the token as-is if JWT_SECRET is set,
- * or falls back to extracting userId from the token payload.
- */
-async function verifyToken(token: string): Promise<AuthenticatedUser | null> {
-  if (!token) return null;
-
-  // Production: validate against IdP JWKS endpoint
-  const jwksUri = process.env.JWKS_URI;
-  if (jwksUri) {
-    try {
-      // Decode JWT payload (middle segment)
-      const parts = token.split('.');
-      if (parts.length !== 3) return null;
-      const payload = JSON.parse(Buffer.from(parts[1], 'base64url').toString());
-      // In production, add full signature verification here using jose/jwks
-      if (!payload.sub) return null;
-      return { id: payload.sub, email: payload.email };
-    } catch {
-      return null;
-    }
-  }
-
-  // Dev mode: if AUTH_DISABLED=true, skip auth entirely (for local testing)
-  if (process.env.AUTH_DISABLED === 'true') {
-    return null; // Will be handled by middleware
-  }
-
-  return null;
-}
-
-/**
- * Express auth middleware — validates JWT on all protected routes.
- */
-function authMiddleware(req: express.Request, res: express.Response, next: express.NextFunction): void {
-  // Skip auth in dev mode when AUTH_DISABLED=true
-  if (process.env.AUTH_DISABLED === 'true') {
-    (req as any).user = { id: req.body?.userId || 'dev-user' };
-    next();
-    return;
-  }
-
-  const authHeader = req.headers.authorization;
-  if (!authHeader?.startsWith('Bearer ')) {
-    res.status(401).json({ error: 'Missing or invalid Authorization header' });
-    return;
-  }
-
-  const token = authHeader.slice(7);
-  verifyToken(token).then(user => {
-    if (!user) {
-      res.status(401).json({ error: 'Invalid or expired token' });
-      return;
-    }
-    (req as any).user = user;
-    next();
-  }).catch(() => {
-    res.status(401).json({ error: 'Token verification failed' });
-  });
-}
+// Auth now imported from ../auth/auth-service.js (#105, #113)
 
 // ── Express App ──────────────────────────────────────────────
 const app = express();
@@ -144,6 +80,9 @@ app.get('/health', (_req: express.Request, res: express.Response) => {
 
 // Admin API (Issue #94: Backoffice Phase 1)
 app.use('/api/v1/admin', adminRouter);
+
+// Consent & Age Verification API (Sprint 8: #109, #110)
+app.use('/api/v1/consent', authMiddleware, consentRouter);
 
 // Feedback submission (user-facing, reuses admin router's submit handler)
 app.post('/api/v1/feedback', authMiddleware, async (req: express.Request, res: express.Response) => {
@@ -227,7 +166,7 @@ wss.on('connection', async (ws, req) => {
   const roomId = url.searchParams.get('roomId');
   const token = url.searchParams.get('token');
 
-  // Issue #75: Authenticate WebSocket connections
+  // Issue #75: Authenticate WebSocket connections (#113: B2C JWKS)
   let userId: string;
   if (process.env.AUTH_DISABLED === 'true') {
     userId = url.searchParams.get('userId') ?? uuidv4();
@@ -236,7 +175,7 @@ wss.on('connection', async (ws, req) => {
       ws.close(4401, 'Authentication required');
       return;
     }
-    const user = await verifyToken(token);
+    const user = await authenticateWebSocket(token);
     if (!user) {
       ws.close(4401, 'Invalid token');
       return;
