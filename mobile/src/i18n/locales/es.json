@@ -17,7 +17,7 @@
     "subtitle": "Mediación de relaciones con inteligencia artificial",
     "signInApple": "Continuar con Apple",
     "signInGoogle": "Continuar con Google",
-    "signInEmail": "Continuar con Email",
+    "signInEmail": "Continuar con correo electrónico",
     "terms": "Al continuar, aceptas nuestros",
     "termsLink": "Términos de Servicio",
     "privacyLink": "Política de Privacidad",
@@ -25,16 +25,29 @@
   },
   "consent": {
     "title": "Antes de comenzar",
-    "aiDisclosure": "Relio usa IA para mediar conversaciones entre tú y tu pareja. Esto NO es terapia y NO reemplaza atención profesional.",
+    "aiDisclosure": "Relio usa inteligencia artificial para mediar conversaciones entre tú y tu pareja. Esto NO es terapia y NO reemplaza la atención profesional.",
     "tierModel": "Tus datos tienen tres niveles:",
     "tier1": "Privado — Solo tú ves tus mensajes originales",
-    "tier2": "Abstracto — Perfiles de IA visibles solo para profesionales",
+    "tier2": "Abstracto — Perfiles de IA visibles solo para profesionales clínicos",
     "tier3": "Compartido — Mensajes reformulados que tu pareja ve",
     "dutyToWarn": "Deber de Advertir: Si nuestra IA detecta peligro inminente, podemos romper la confidencialidad por obligación legal.",
     "tosLabel": "Acepto los Términos de Servicio",
     "privacyLabel": "Acepto la Política de Privacidad",
     "ageLabel": "Confirmo que tengo 18 años o más",
     "acceptButton": "Entiendo y Acepto"
+  },
+  "onboarding": {
+    "welcome": "Bienvenido a Relio",
+    "welcomeDesc": "Un espacio seguro para que las parejas se comuniquen mejor a través de conversaciones mediadas por IA.",
+    "privacy": "Tu Privacidad Importa",
+    "privacyDesc": "Tus mensajes originales son privados (Nivel 1). Solo las versiones reformuladas por IA se comparten con tu pareja (Nivel 3).",
+    "relationship": "Cuéntanos Sobre Ti",
+    "relationshipDesc": "Ayúdanos a personalizar tu experiencia.",
+    "statusQuestion": "Estado de la relación:",
+    "dating": "Saliendo",
+    "engaged": "Comprometidos",
+    "married": "Casados",
+    "letsGo": "¡Comencemos!"
   },
   "chat": {
     "placeholder": "Escribe tu mensaje...",
@@ -45,6 +58,27 @@
     "shared": "Compartido",
     "journalSaved": "Guardado en diario"
   },
+  "invite": {
+    "title": "Invita a Tu Pareja",
+    "subtitle": "Comparte este código con tu pareja para comenzar conversaciones mediadas juntos.",
+    "yourCode": "Tu Código de Invitación",
+    "shareLink": "Compartir Enlace de Invitación",
+    "orScanQR": "O que escanee este código QR",
+    "waitingForPartner": "Esperando a que tu pareja se una...",
+    "acceptTitle": "Únete a Tu Pareja",
+    "acceptSubtitle": "Ingresa el código de 6 caracteres que tu pareja compartió contigo.",
+    "enterCode": "Ingresa código de invitación",
+    "joinButton": "Unirse",
+    "expired": "Esta invitación ha expirado. Pide una nueva a tu pareja.",
+    "success": "¡Conectados! Ya están emparejados."
+  },
+  "journal": {
+    "title": "Diario Privado",
+    "empty": "Tus reflexiones privadas aparecerán aquí",
+    "original": "Tu mensaje original",
+    "reworded": "Lo que vio tu pareja",
+    "insight": "Perspectiva de la IA"
+  },
   "settings": {
     "title": "Configuración",
     "profile": "Perfil",
@@ -53,7 +87,14 @@
     "invitePartner": "Invitar Pareja",
     "invitePartnerDesc": "Comparte un enlace para invitar a tu pareja a Relio",
     "privacyData": "Privacidad y Datos",
+    "dataOnDevice": "Datos en el dispositivo",
+    "dataOnDeviceDesc": "Entradas de diario, datos de perfil. Cifrados mediante Secure Enclave / Keystore.",
+    "dataSentToServer": "Datos enviados a servidores",
+    "dataSentToServerDesc": "El texto se envía solo para procesamiento de IA. Los mensajes Nivel 1 no se almacenan.",
     "deleteAllData": "Eliminar Todos Mis Datos",
+    "deleteConfirmTitle": "¿Eliminar todos los datos?",
+    "deleteConfirmMsg": "Esto borrará permanentemente tu diario, perfil y datos locales. No se puede deshacer.",
+    "deleteConfirmButton": "Eliminar Todo",
     "safety": "Seguridad",
     "reportAbuse": "Reportar Abuso",
     "reportAbuseDesc": "Si tú o alguien que conoces está en peligro",
@@ -63,8 +104,58 @@
     "language": "Idioma",
     "signOut": "Cerrar Sesión"
   },
+  "crisis": {
+    "title": "Estamos aquí para ti",
+    "message": "Relio detectó algo que sugiere necesidad de apoyo más allá de la IA.",
+    "subtitle": "No estás solo/a. Por favor contacta estos recursos:",
+    "acknowledge": "He revisado estos recursos y me siento seguro/a para continuar",
+    "returnButton": "Volver a la app",
+    "tapToConnect": "Toca para conectar →"
+  },
+  "psychoeducation": {
+    "title": "Entendiendo Tus Patrones",
+    "flooding": "Inundación Emocional",
+    "floodingDesc": "Cuando las emociones abruman tu capacidad de pensar con claridad.",
+    "horsemen": "Los Cuatro Jinetes",
+    "horsemenDesc": "Crítica, Desprecio, Actitud Defensiva y Evasión — patrones que predicen el deterioro de la relación.",
+    "bids": "Intentos de Conexión",
+    "bidsDesc": "Pequeños momentos donde una pareja busca acercarse. Responder fortalece los vínculos.",
+    "pursue": "Ciclo Perseguir-Retirarse",
+    "pursueDesc": "Una pareja presiona por conexión mientras la otra se retira. Escala el conflicto."
+  },
+  "privacy": {
+    "title": "Cómo Funciona Tu Privacidad",
+    "tier1Title": "Nivel 1 — Privado",
+    "tier1Desc": "Tu mensaje original. Solo tú lo ves.",
+    "tier2Title": "Nivel 2 — Clínico",
+    "tier2Desc": "Patrones anónimos. Sin detalles personales.",
+    "tier3Title": "Nivel 3 — Compartido",
+    "tier3Desc": "Versión reformulada por IA. Lo que tu pareja ve.",
+    "example": "Pruébalo:"
+  },
+  "attachment": {
+    "title": "Cuestionario de Estilo de Apego",
+    "subtitle": "Entender tu estilo de apego ayuda a personalizar tu experiencia.",
+    "seeResults": "Ver Mis Resultados",
+    "resultTitle": "Tu Estilo: {{style}}",
+    "anxious": "Ansioso",
+    "avoidant": "Evitativo",
+    "secure": "Seguro",
+    "disorganized": "Desorganizado"
+  },
   "account": {
     "deleteAccount": "Eliminar Cuenta",
-    "exportData": "Exportar Mis Datos"
+    "deleteWarning": "Eliminación permanente después de 24 horas de gracia.",
+    "confirmPhrase": "Escribe ELIMINAR MI CUENTA",
+    "cancellable": "Puedes cancelar en 24 horas.",
+    "deletionPending": "Eliminación programada",
+    "cancelDeletion": "Cancelar Eliminación",
+    "exportData": "Exportar Datos",
+    "exportDesc": "Descarga tus datos en JSON"
+  },
+  "notifications": {
+    "inviteAccepted": "¡Tu pareja se ha unido! Comienza la sesión.",
+    "newMessage": "Nuevo mensaje mediado esperando.",
+    "consentUpdate": "Términos actualizados. Por favor revisa y acepta."
   }
 }

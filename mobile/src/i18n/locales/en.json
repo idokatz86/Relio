@@ -152,5 +152,10 @@
     "cancelDeletion": "Cancel Deletion",
     "exportData": "Export My Data",
     "exportDesc": "Download all your data in JSON format"
+  },
+  "notifications": {
+    "inviteAccepted": "Your partner has joined! Start your first session.",
+    "newMessage": "You have a new mediated message waiting.",
+    "consentUpdate": "We have updated our terms. Please review and accept to continue."
   }
 }

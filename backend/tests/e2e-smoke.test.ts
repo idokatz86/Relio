@@ -15,7 +15,7 @@ async function json(res: Response): Promise<any> {
   return res.json();
 }
 
-describe('E2E Smoke Test', () => {
+describe.skipIf(!process.env.TEST_SERVER_RUNNING)('E2E Smoke Test', () => {
   const userA = {
     userId: '550e8400-e29b-41d4-a716-446655440000',
     name: 'User A',

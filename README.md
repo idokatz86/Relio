@@ -18,22 +18,24 @@ Relio is powered by **38 specialized AI agents** distributed across three pods, 
 - **Operations Pod (9 agents):** CEO, CRO, CFO, CMO, CCO, CAO, CLO, CPO, CSO. Manages business strategy, legal disclaimers, partnership evaluations, and AI-first lean operations.
 - **Tech Pod (15 agents):** CTO, Backend Developer, Cloud Architect, GitHub Architect, Mobile Dev, Mobile QA, Fullstack QA, Penetration Tester, UI/UX Expert, CISO, DPO, App Store Certifier, Skills Builder, Scrum Master, VP R&D. Constructs Azure-native infrastructure, secure WebSockets, CI/CD governance, and adversarial red-teaming.
 
-## Key Capabilities (v2.4.0)
+## Key Capabilities (v2.5.0)
 
 - **Backend LIVE on Azure OpenAI GPT-4.1** — Container Apps (Sweden Central, EU data residency)
 - **Clerk Auth LIVE** — OIDC JWKS validation, Apple/Google/Email sign-in, all endpoints auth-protected
 - **5-Agent MVP Pipeline** — Safety Guardian → Orchestrator → [Individual Profiler || Communication Coach] → Tier 3 Output
-- **Multi-Language i18n** — react-i18next + expo-localization, 4 locales: English, Spanish, Portuguese (BR), Hebrew (RTL)
-- **Multi-Language Safety** — Crisis detection in EN/ES/PT/HE via regex pre-screen + LLM, locale-aware emergency resources
+- **8 AI Agents** — Safety Guardian, Orchestrator, Communication Coach, Individual Profiler, Phase-Dating, Emergency Response, Phase-Crisis, CPsychO Meta-Audit
+- **Full i18n (4 Languages)** — English, Spanish, Portuguese (BR), Hebrew (RTL) — all screens, push notifications, App Store listings
+- **Multi-Language Safety** — Crisis detection in EN/ES/PT/HE via regex pre-screen + LLM, locale-aware emergency resources (US/BR/IL)
 - **GDPR Compliance** — Account deletion (24h grace + cascade purge), data export (JSON), consent re-prompt on version change
+- **Legal** — Terms of Service v1.0, Privacy Policy v1.0 (medical disclaimer, duty-to-warn, GDPR/CCPA)
 - **Partner Invite System** — Invite codes, QR generation, deep links, couple pairing API, push notifications
 - **15 Mobile Screens** — BiometricLock, Login, Consent, AgeVerify, Onboarding, PrivacyExplainer, AttachmentQuiz, PsychoeducationCards, InvitePartner, AcceptInvite, SharedChat, PrivateJournal, Crisis, Settings, LanguagePicker
 - **Backoffice Admin Dashboard** — 10 admin API endpoints + 7-page React frontend with k-anonymity
-- **Security Hardened** — JWT auth, OWASP checklist, Zod validation, Helmet, auth rate limiting, CORS, fail-closed Safety Guardian, circuit breaker
-- **A/B Test Infrastructure** — Deterministic hash-based experiment assignment, admin experiment dashboard
-- **Push Notifications** — Expo Push API (invite acceptance, new messages), privacy-safe (no content in pushes)
+- **Security** — JWT auth, OWASP checklist, Zod validation, Helmet, auth rate limiting, CORS, fail-closed Safety Guardian, circuit breaker
+- **A/B Test Infrastructure** — Deterministic hash-based experiment assignment
+- **Clinical Agents** — Phase-crisis flooding detection + 20-min pause, CPsychO meta-audit (bias, scope, parasocial risk)
 
-## Tech Pod Status (v2.4.0)
+## Tech Pod Status (v2.5.0)
 
 | Sprint | Tech Issues | Closed | Open | Focus |
 |--------|-------------|--------|------|-------|
@@ -43,8 +45,12 @@ Relio is powered by **38 specialized AI agents** distributed across three pods, 
 | 8 | 20 | 20 | 0 | Clerk auth, consent, mobile screens, backoffice |
 | 9 | 11 | 11 | 0 | Partner invite, onboarding, psychoeducation |
 | 10 | 16 | 16 | 0 | GDPR, i18n (4 locales), OWASP, push notifications, A/B tests |
+| 11 | 5 | 5 | 0 | Full translations (ES/PT/HE), push templates, legal translations |
+| 12 | 3 | 3 | 0 | Multi-language safety QA (50 scenarios), App Store listings, mixed-lang E2E |
+| Medical | 4 | 4 | 0 | Emergency Response, Phase-Crisis, CPsychO, regex pre-screen |
+| Ops | 27 | 27 | 0 | ToS v1.0, Privacy Policy, incorporation, waitlist, fundraise |
 | Azure | 6 | 6 | 0 | OpenAI, Key Vault, cost optimization |
-| **Total** | **96** | **96** | **0** | Sprint 10 complete |
+| **Total** | **135+** | **135** | **2** | iOS TestFlight (#73) + Clinical co-founder (#89) remain |
 
 ## Agent Directory (38 Agents)
 

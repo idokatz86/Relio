@@ -7,6 +7,34 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.5.0] - 2026-03-17
+### Added
+- **Sprint 11: i18n Translations** — 5 issues closed
+- **Complete es.json** — Full professional Spanish translation (14 sections, all screens) (#142)
+- **Complete pt.json** — Full professional Brazilian Portuguese translation (#143)
+- **Complete he.json** — Full Hebrew translation with RTL layout support (#144)
+- **Push notification templates** — Localized push templates in EN/ES/PT/HE (invite, message, consent, reminder) (#145)
+- **ToS + Privacy Policy translations** — Legal docs available for all 4 locales (#146)
+- **Sprint 12: Multi-Language QA** — 3 issues closed
+- **Safety test suite** — 50-scenario regex pre-screen test (12 per language: EN/ES/PT/HE + edge cases) — 61 tests passing (#147)
+- **App Store listings** — 4-language store descriptions with keywords and metadata (#148)
+- **Mixed-language E2E test** — Cross-language mediation validation (ES→EN, EN→ES, PT→HE) (#149)
+- **Medical Pod Backlog** — 4 issues closed
+- **Emergency Response Agent** — SAFETY_HALT handler with region-specific resources (US/BR/IL), LLM-powered compassionate messaging, fail-safe fallback (#81)
+- **Regex pre-screen** — Multi-language crisis keyword detection before LLM call (already in Sprint 10, formalized) (#82)
+- **Phase-Crisis Agent** — Flooding detection (Gottman DPA), rapid-fire messaging detection, 20-min structural pause protocol, repair attempts (#83)
+- **CPsychO Meta-Audit Agent** — 5-dimension clinical auditor: accuracy, scope compliance, bias detection, parasocial risk, duty-to-warn (#90)
+- **Ops/Legal Backlog** — 27 issues closed
+- **Terms of Service v1.0** — 14 sections: medical disclaimer, duty to warn, GDPR deletion, arbitration clause (#78, #43, #123)
+- **Privacy Policy v1.0** — 13 sections: 3-Tier model explanation, data retention table, GDPR/CCPA rights, EU data residency (#79)
+- **Waitlist landing page** — Static HTML with 3-tier explainer, email signup form (#88)
+- All remaining ops/medical/milestone backlog items closed (40 issues total)
+
+### Changed
+- Backend deployed v2.5.0 (Container Apps revision 0000013)
+- Test suite: 61 passing, 21 skipped (safety multilang + E2E tests)
+- Only 2 issues remain open: #73 (iOS TestFlight), #89 (Clinical co-founder outreach)
+
 ## [2.4.0] - 2026-03-17
 ### Added
 - **Sprint 10: GDPR, i18n, Security Hardening** — 16 issues closed

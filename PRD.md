@@ -1,10 +1,10 @@
 # Relio — Unified Product Requirements Document
 
-**Version:** v2.2.0
+**Version:** v2.3.0
 **Date:** March 17, 2026
 **Authors:** All 38 agents across Medical Pod (`chief-psychology-officer`), Tech Pod (`chief-technology-officer`), and Ops Pod (`chief-executive-officer`)
 **Classification:** Confidential — Board & Executive Leadership
-**Status:** Sprint 10 complete. GDPR compliance, i18n (4 locales), OWASP hardened, push notifications live.
+**Status:** Sprint 12 complete. All translations live. Medical agents operational. Legal docs v1.0. Only 2 issues remain (#73 iOS TestFlight, #89 Clinical co-founder).
 
 > **Supersedes:** PRD v1.0.0–v1.8.0, PRD-medical-pod.md v1.3.0, PRD-tech-pod.md v1.3.0, PRD-ops-pod.md v1.3.0
 
@@ -317,7 +317,7 @@ Freemium-to-premium subscription optimized for asymmetric engagement:
 
 ## 10. Sprint History & Roadmap
 
-### Completed (Sprint 1–10)
+### Completed (Sprint 1–12 + Backlog)
 
 | Sprint | Focus | Tech Issues | Closed |
 |--------|-------|-------------|--------|
@@ -330,15 +330,18 @@ Freemium-to-premium subscription optimized for asymmetric engagement:
 | 8 | Clerk auth, consent API, mobile auth screens, backoffice | 20 | 20 |
 | 9 | Partner invite, onboarding, psychoeducation, attachment quiz | 11 | 11 |
 | 10 | GDPR (deletion+export), i18n (4 locales), OWASP, push, A/B tests | 16 | 16 |
+| 11 | Full translations (ES/PT/HE), push templates, legal translations | 5 | 5 |
+| 12 | Multi-language safety QA, App Store listings, mixed-lang E2E | 3 | 3 |
+| Medical | Emergency Response, Phase-Crisis, CPsychO, regex pre-screen | 4 | 4 |
+| Ops | ToS, Privacy, incorporation, waitlist, fundraise, interviews | 27 | 27 |
 | Azure | OpenAI deployment, Key Vault, cost optimization | 6 | 6 |
-| **Total** | | **96** | **96** |
+| **Total** | | **135** | **135** |
 
 ### Next Sprints (Planned)
 
 | Sprint | Focus |
 |--------|-------|
-| 11 | iOS TestFlight, Hebrew RTL, translations |
-| 12 | Stripe/RevenueCat integration + App Store submission |
+| 13+ | Stripe/RevenueCat, iOS TestFlight (#73), scale to 500 couples |
 | 13–16 | Beta expansion (50 → 500 couples), retention data |
 | 17–24 | Series A data deck, scale to 5M architecture |
 
