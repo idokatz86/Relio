@@ -417,7 +417,7 @@ Model cascading (GPT-4.1-mini for 60% of calls) reduces LLM cost by ~40%.
 
 ---
 
-## Agent Skills Directory (45 skills)
+## Agent Skills Directory (61 skills)
 
 | Skill | Assigned Agent(s) | Domain |
 |-------|-------------------|--------|
@@ -439,7 +439,13 @@ Model cascading (GPT-4.1-mini for 60% of calls) reduces LLM cost by ~40%.
 | `test-admin-privacy` | fullstack-qa | Admin privacy testing |
 | `design-subscription-analytics` | CRO, CFO | Revenue metrics |
 | `collect-user-feedback` | CPO, mobile-dev | Feedback system |
-| *... and 27 more domain-specific skills* | | |
+| `implement-gdpr-account-deletion` | backend-dev, CISO, DPO | GDPR Article 17 deletion |
+| `harden-auth-owasp` | CISO, backend-dev, pen-tester | OWASP auth hardening |
+| `implement-push-notifications` | backend-dev, mobile-dev, DPO | Push notifications |
+| `implement-ab-testing` | backend-dev, CRO | A/B test infrastructure |
+| `configure-biometric-gate` | mobile-dev, CISO | Biometric enforcement |
+| `implement-consent-reprompt` | backend-dev, DPO, CISO | Consent version tracking |
+| *... and 37 more domain-specific skills* | | |
 
 ---
 

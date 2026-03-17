@@ -31,6 +31,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Backend deployed v2.4.0 (Container Apps revision 0000012)
 - Safety Guardian prompt expanded with multi-language examples (ES/PT/HE)
 - Communication Coach prompt augmented with language-aware output instructions
+- Skills count: 55 → 61 (+6 Sprint 10 skills: gdpr-account-deletion, harden-auth-owasp, push-notifications, ab-testing, biometric-gate, consent-reprompt)
 
 ## [2.3.0] - 2026-03-17
 ### Added

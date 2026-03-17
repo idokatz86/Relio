@@ -108,7 +108,7 @@ Relio is powered by **38 specialized AI agents** distributed across three pods, 
 ## Organization & Structure
 
 - `.github/agents/`: Contains definitions and system configurations for each of the 38 AI agents.
-- `.github/skills/`: Houses 38 specific procedural skills (`SKILL.md`) for the agents organized by domain.
+- `.github/skills/`: Houses 61 specific procedural skills (`SKILL.md`) for the agents organized by domain.
 - `PRD.md`: Unified Product Requirements Document (v1.3.0).
 - `docs/PRD-medical-pod.md`: Medical Pod detailed blueprint.
 - `docs/PRD-tech-pod.md`: Tech Pod detailed blueprint.
