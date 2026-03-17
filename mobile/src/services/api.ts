@@ -17,6 +17,9 @@ import * as SecureStore from 'expo-secure-store';
 const AZURE_HOST = 'relio-backend.livelytree-6981c681.swedencentral.azurecontainerapps.io';
 const LOCAL_HOST = 'localhost';
 
+// Clerk publishable key (free tier)
+export const CLERK_PUBLISHABLE_KEY = 'pk_test_c2V0LWJvYS01LmNsZXJrLmFjY291bnRzLmRldiQ';
+
 // Toggle for local development (use `adb reverse tcp:3001 tcp:3001` for Android emulator)
 const USE_LOCAL = false;
 const LOCAL_PORT = '3001';
