@@ -1286,9 +1286,9 @@ section {
 .cta__input {
   flex: 1;
   padding: 0.875rem 1.25rem;
-  border: 2px solid rgba(255, 255, 255, 0.2);
+  border: 2px solid rgba(255, 255, 255, 0.4);
   border-radius: 12px;
-  background: rgba(255, 255, 255, 0.08);
+  background: rgba(255, 255, 255, 0.15);
   color: #fff;
   font-size: 1rem;
   font-family: inherit;
@@ -1297,7 +1297,7 @@ section {
 }
 
 .cta__input::placeholder {
-  color: rgba(255, 255, 255, 0.5);
+  color: rgba(255, 255, 255, 0.6);
 }
 
 .cta__input:focus {

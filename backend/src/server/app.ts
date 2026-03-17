@@ -98,6 +98,51 @@ app.get('/health', (_req: express.Request, res: express.Response) => {
   res.json({ status: 'ok', timestamp: new Date().toISOString(), version: '1.8.0' });
 });
 
+// ── Waitlist (public, no auth — pre-launch email capture) ────
+const waitlistEmails: Array<{ email: string; source: string; ip: string; timestamp: string }> = [];
+
+app.post('/api/v1/waitlist', rateLimit({
+  windowMs: 60 * 60 * 1000, // 1 hour
+  max: 5, // 5 signups per IP per hour
+  message: { error: 'Too many signups. Please try again later.' },
+}), (req: express.Request, res: express.Response) => {
+  const schema = z.object({
+    email: z.string().email('Invalid email address').max(254),
+    source: z.string().max(50).optional().default('landing'),
+  });
+  const parsed = schema.safeParse(req.body);
+  if (!parsed.success) {
+    res.status(400).json({ error: 'Invalid email', details: parsed.error.issues });
+    return;
+  }
+
+  // Check duplicate
+  if (waitlistEmails.some(e => e.email === parsed.data.email)) {
+    res.json({ success: true, message: "You're already on the list!", duplicate: true });
+    return;
+  }
+
+  waitlistEmails.push({
+    email: parsed.data.email,
+    source: parsed.data.source,
+    ip: req.ip || 'unknown',
+    timestamp: new Date().toISOString(),
+  });
+
+  console.log(`[Waitlist] New signup: ${parsed.data.email} (total: ${waitlistEmails.length})`);
+  res.json({ success: true, message: "You're on the list! We'll notify you at launch.", position: waitlistEmails.length });
+});
+
+// Admin: get waitlist count (behind admin auth)
+app.get('/api/v1/waitlist/count', authMiddleware, (req: express.Request, res: express.Response) => {
+  const user = (req as any).user;
+  if (process.env.AUTH_DISABLED !== 'true' && user?.role !== 'admin') {
+    res.status(403).json({ error: 'Admin access required' });
+    return;
+  }
+  res.json({ count: waitlistEmails.length, emails: waitlistEmails });
+});
+
 // Admin API (Issue #94: Backoffice Phase 1)
 app.use('/api/v1/admin', adminRouter);
 

@@ -101,12 +101,13 @@
 })();
 
 // ─── Waitlist Form Handler ──────────────────────────────────
-// Global so the inline onsubmit can call it
+// Posts to the Relio backend API
+var WAITLIST_API = 'https://relio-backend.livelytree-6981c681.swedencentral.azurecontainerapps.io/api/v1/waitlist';
+
 function handleWaitlist(e) {
   e.preventDefault();
-  const email = document.getElementById('waitlist-email').value;
-  const btn = document.getElementById('waitlist-btn');
-  const originalHTML = btn.innerHTML;
+  var email = document.getElementById('waitlist-email').value;
+  var btn = document.getElementById('waitlist-btn');
 
   if (!email) return false;
 
@@ -114,29 +115,56 @@ function handleWaitlist(e) {
   btn.disabled = true;
   btn.style.opacity = '0.7';
 
-  // Store in localStorage as backup (in case no backend yet)
-  try {
-    const waitlist = JSON.parse(localStorage.getItem('relio_waitlist') || '[]');
-    waitlist.push({ email, timestamp: new Date().toISOString() });
-    localStorage.setItem('relio_waitlist', JSON.stringify(waitlist));
-  } catch (err) { /* ignore */ }
+  fetch(WAITLIST_API, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ email: email, source: 'landing' }),
+  })
+    .then(function(res) { return res.json(); })
+    .then(function(data) {
+      if (data.success) {
+        btn.innerHTML = '✓ You\'re on the list!';
+        btn.style.background = '#2A9D8F';
+        btn.style.opacity = '1';
+        document.getElementById('waitlist-email').value = '';
+        document.getElementById('waitlist-email').placeholder = 'We\'ll notify you at launch!';
+        document.getElementById('waitlist-email').disabled = true;
 
-  // Simulate API call (replace with real endpoint when ready)
-  setTimeout(function() {
-    btn.innerHTML = '✓ You\'re on the list!';
-    btn.style.background = '#2A9D8F';
-    btn.style.opacity = '1';
-    document.getElementById('waitlist-email').value = '';
-    document.getElementById('waitlist-email').placeholder = 'We\'ll notify you at launch!';
-    document.getElementById('waitlist-email').disabled = true;
+        var note = document.querySelector('.cta__form-note');
+        if (note) {
+          if (data.duplicate) {
+            note.innerHTML = '👋 <strong>You\'re already on the list!</strong> We\'ll be in touch.';
+          } else {
+            note.innerHTML = '🎉 <strong>You\'re #' + (data.position || '') + ' on the list!</strong> We\'ll send you an invite when Relio launches.';
+          }
+          note.style.color = '#2A9D8F';
+        }
+      } else {
+        btn.innerHTML = 'Try Again';
+        btn.disabled = false;
+        btn.style.opacity = '1';
+      }
+    })
+    .catch(function() {
+      // Fallback: store in localStorage if backend is unreachable
+      try {
+        var waitlist = JSON.parse(localStorage.getItem('relio_waitlist') || '[]');
+        waitlist.push({ email: email, timestamp: new Date().toISOString() });
+        localStorage.setItem('relio_waitlist', JSON.stringify(waitlist));
+      } catch (err) { /* ignore */ }
 
-    // Show success message
-    var note = document.querySelector('.cta__form-note');
-    if (note) {
-      note.innerHTML = '🎉 <strong>You\'re in!</strong> We\'ll send you an invite when Relio launches.';
-      note.style.color = '#2A9D8F';
-    }
-  }, 800);
+      btn.innerHTML = '✓ You\'re on the list!';
+      btn.style.background = '#2A9D8F';
+      btn.style.opacity = '1';
+      document.getElementById('waitlist-email').value = '';
+      document.getElementById('waitlist-email').disabled = true;
+
+      var note = document.querySelector('.cta__form-note');
+      if (note) {
+        note.innerHTML = '🎉 <strong>You\'re in!</strong> We\'ll send you an invite when Relio launches.';
+        note.style.color = '#2A9D8F';
+      }
+    });
 
   return false;
 }
