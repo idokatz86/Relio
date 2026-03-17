@@ -99,3 +99,44 @@
     });
   });
 })();
+
+// ─── Waitlist Form Handler ──────────────────────────────────
+// Global so the inline onsubmit can call it
+function handleWaitlist(e) {
+  e.preventDefault();
+  const email = document.getElementById('waitlist-email').value;
+  const btn = document.getElementById('waitlist-btn');
+  const originalHTML = btn.innerHTML;
+
+  if (!email) return false;
+
+  btn.innerHTML = 'Joining...';
+  btn.disabled = true;
+  btn.style.opacity = '0.7';
+
+  // Store in localStorage as backup (in case no backend yet)
+  try {
+    const waitlist = JSON.parse(localStorage.getItem('relio_waitlist') || '[]');
+    waitlist.push({ email, timestamp: new Date().toISOString() });
+    localStorage.setItem('relio_waitlist', JSON.stringify(waitlist));
+  } catch (err) { /* ignore */ }
+
+  // Simulate API call (replace with real endpoint when ready)
+  setTimeout(function() {
+    btn.innerHTML = '✓ You\'re on the list!';
+    btn.style.background = '#2A9D8F';
+    btn.style.opacity = '1';
+    document.getElementById('waitlist-email').value = '';
+    document.getElementById('waitlist-email').placeholder = 'We\'ll notify you at launch!';
+    document.getElementById('waitlist-email').disabled = true;
+
+    // Show success message
+    var note = document.querySelector('.cta__form-note');
+    if (note) {
+      note.innerHTML = '🎉 <strong>You\'re in!</strong> We\'ll send you an invite when Relio launches.';
+      note.style.color = '#2A9D8F';
+    }
+  }, 800);
+
+  return false;
+}

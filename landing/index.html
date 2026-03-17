@@ -40,7 +40,7 @@
         <li><a href="#stages" class="nav__link">Who It's For</a></li>
         <li><a href="#pricing" class="nav__link">Pricing</a></li>
         <li><a href="#faq" class="nav__link">FAQ</a></li>
-        <li><a href="#cta-final" class="nav__cta btn btn--small">Start Free</a></li>
+        <li><a href="#cta-final" class="nav__cta btn btn--small">Get Early Access</a></li>
       </ul>
     </div>
   </nav>
@@ -70,7 +70,7 @@
         </p>
         <div class="hero__actions animate-on-scroll">
           <a href="#cta-final" class="btn btn--primary btn--large">
-            Start Free
+            Get Early Access
             <svg width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M4 10h12m0 0l-4-4m4 4l-4 4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
           </a>
           <a href="#how-it-works" class="btn btn--ghost btn--large">
@@ -88,7 +88,7 @@
           </div>
           <div class="hero__proof-item">
             <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M8 1v6m0 0l3-3m-3 3L5 4M1 10v2a3 3 0 003 3h8a3 3 0 003-3v-2" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-            <span>Free to start, no credit card</span>
+            <span>Launching soon on iOS & Android</span>
           </div>
         </div>
       </div>
@@ -428,7 +428,7 @@
               <li>Emergency safety features</li>
               <li>Full 3-Tier privacy architecture</li>
             </ul>
-            <a href="#" class="btn btn--outline pricing__card-btn">Get Started</a>
+            <a href="#cta-final" class="btn btn--outline pricing__card-btn">Join Waitlist</a>
           </div>
 
           <div class="pricing__card pricing__card--popular animate-on-scroll">
@@ -449,7 +449,7 @@
               <li>Progress tracking & conflict analytics</li>
               <li>Unlimited mediation sessions</li>
             </ul>
-            <a href="#" class="btn btn--primary pricing__card-btn">Start Free Trial</a>
+            <a href="#cta-final" class="btn btn--primary pricing__card-btn">Join Waitlist</a>
           </div>
 
           <div class="pricing__card animate-on-scroll">
@@ -470,7 +470,7 @@
               <li>Priority AI processing</li>
               <li>Proactive engagement engine</li>
             </ul>
-            <a href="#" class="btn btn--outline pricing__card-btn">Start Free Trial</a>
+            <a href="#cta-final" class="btn btn--outline pricing__card-btn">Join Waitlist</a>
           </div>
         </div>
       </div>
@@ -594,14 +594,27 @@
       <div class="container cta__content">
         <h2 class="cta__title animate-on-scroll">Your relationship deserves<br>a fair translator.</h2>
         <p class="cta__subtitle animate-on-scroll">
-          Start with the free tier. No credit card. No commitment.<br>
-          Just a new way to be heard.
+          Be the first to experience AI-mediated communication.<br>
+          Join the waitlist and we'll notify you at launch.
         </p>
         <div class="cta__actions animate-on-scroll">
-          <a href="#" class="btn btn--primary btn--large btn--glow">
-            Start Free Today
-            <svg width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M4 10h12m0 0l-4-4m4 4l-4 4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-          </a>
+          <form class="cta__form" id="waitlist-form" onsubmit="return handleWaitlist(event)">
+            <div class="cta__form-row">
+              <input type="email" id="waitlist-email" class="cta__input" placeholder="your@email.com" required aria-label="Email address">
+              <button type="submit" class="btn btn--primary btn--large btn--glow" id="waitlist-btn">
+                Get Early Access
+                <svg width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M4 10h12m0 0l-4-4m4 4l-4 4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              </button>
+            </div>
+            <p class="cta__form-note">🎉 First 500 couples get <strong>3 months of Premium free</strong> at launch.</p>
+          </form>
+          <div class="cta__store-badges">
+            <p class="cta__coming-soon">Launching soon on</p>
+            <div class="cta__badges-row">
+              <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='40' viewBox='0 0 120 40'%3E%3Crect width='120' height='40' rx='6' fill='%23000'/%3E%3Ctext x='60' y='15' text-anchor='middle' fill='%23fff' font-size='8' font-family='sans-serif'%3EDownload on the%3C/text%3E%3Ctext x='60' y='28' text-anchor='middle' fill='%23fff' font-size='12' font-weight='bold' font-family='sans-serif'%3EApp Store%3C/text%3E%3C/svg%3E" alt="Coming soon to App Store" style="opacity:0.4;height:40px">
+              <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='135' height='40' viewBox='0 0 135 40'%3E%3Crect width='135' height='40' rx='6' fill='%23000'/%3E%3Ctext x='67' y='15' text-anchor='middle' fill='%23fff' font-size='8' font-family='sans-serif'%3EGET IT ON%3C/text%3E%3Ctext x='67' y='28' text-anchor='middle' fill='%23fff' font-size='12' font-weight='bold' font-family='sans-serif'%3EGoogle Play%3C/text%3E%3C/svg%3E" alt="Coming soon to Google Play" style="opacity:0.4;height:40px">
+            </div>
+          </div>
         </div>
       </div>
     </section>
