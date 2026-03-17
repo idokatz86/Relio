@@ -38,7 +38,7 @@ const consentStore = new Map<string, ConsentRecord>();
 interface ConsentAuditEntry {
   id: string;
   userId: string;
-  action: 'accept_tos' | 'accept_privacy' | 'verify_age' | 'withdraw_consent';
+  action: 'accept_tos' | 'accept_privacy' | 'verify_age' | 'withdraw_consent' | 're_accept_tos' | 're_accept_privacy';
   version: string;
   ipAddress: string;
   userAgent: string;
@@ -125,16 +125,20 @@ router.post('/accept', (req: Request, res: Response) => {
     dateOfBirth: existing?.dateOfBirth || null,
   });
 
+  // Issue #133: Detect re-acceptance (version upgrade) vs first acceptance
+  const isReAcceptTos = existing && existing.tosVersion !== parsed.data.tosVersion;
+  const isReAcceptPrivacy = existing && existing.privacyVersion !== parsed.data.privacyVersion;
+
   logAudit({
     userId: user.id,
-    action: 'accept_tos',
+    action: isReAcceptTos ? 're_accept_tos' : 'accept_tos',
     version: parsed.data.tosVersion,
     ipAddress: req.ip || 'unknown',
     userAgent: req.headers['user-agent'] || 'unknown',
   });
   logAudit({
     userId: user.id,
-    action: 'accept_privacy',
+    action: isReAcceptPrivacy ? 're_accept_privacy' : 'accept_privacy',
     version: parsed.data.privacyVersion,
     ipAddress: req.ip || 'unknown',
     userAgent: req.headers['user-agent'] || 'unknown',

@@ -1,0 +1,70 @@
+{
+  "common": {
+    "appName": "Relio",
+    "loading": "Cargando...",
+    "error": "Algo salió mal",
+    "retry": "Reintentar",
+    "cancel": "Cancelar",
+    "save": "Guardar",
+    "done": "Listo",
+    "next": "Siguiente",
+    "back": "Atrás",
+    "continue": "Continuar",
+    "skip": "Omitir"
+  },
+  "login": {
+    "title": "Bienvenido a Relio",
+    "subtitle": "Mediación de relaciones con inteligencia artificial",
+    "signInApple": "Continuar con Apple",
+    "signInGoogle": "Continuar con Google",
+    "signInEmail": "Continuar con Email",
+    "terms": "Al continuar, aceptas nuestros",
+    "termsLink": "Términos de Servicio",
+    "privacyLink": "Política de Privacidad",
+    "and": "y"
+  },
+  "consent": {
+    "title": "Antes de comenzar",
+    "aiDisclosure": "Relio usa IA para mediar conversaciones entre tú y tu pareja. Esto NO es terapia y NO reemplaza atención profesional.",
+    "tierModel": "Tus datos tienen tres niveles:",
+    "tier1": "Privado — Solo tú ves tus mensajes originales",
+    "tier2": "Abstracto — Perfiles de IA visibles solo para profesionales",
+    "tier3": "Compartido — Mensajes reformulados que tu pareja ve",
+    "dutyToWarn": "Deber de Advertir: Si nuestra IA detecta peligro inminente, podemos romper la confidencialidad por obligación legal.",
+    "tosLabel": "Acepto los Términos de Servicio",
+    "privacyLabel": "Acepto la Política de Privacidad",
+    "ageLabel": "Confirmo que tengo 18 años o más",
+    "acceptButton": "Entiendo y Acepto"
+  },
+  "chat": {
+    "placeholder": "Escribe tu mensaje...",
+    "send": "Enviar",
+    "mediating": "Mediando...",
+    "safetyHalt": "Verificación de seguridad activada",
+    "private": "Privado",
+    "shared": "Compartido",
+    "journalSaved": "Guardado en diario"
+  },
+  "settings": {
+    "title": "Configuración",
+    "profile": "Perfil",
+    "userId": "ID de Usuario",
+    "partner": "Pareja",
+    "invitePartner": "Invitar Pareja",
+    "invitePartnerDesc": "Comparte un enlace para invitar a tu pareja a Relio",
+    "privacyData": "Privacidad y Datos",
+    "deleteAllData": "Eliminar Todos Mis Datos",
+    "safety": "Seguridad",
+    "reportAbuse": "Reportar Abuso",
+    "reportAbuseDesc": "Si tú o alguien que conoces está en peligro",
+    "legal": "Legal",
+    "termsOfService": "Términos de Servicio",
+    "privacyPolicy": "Política de Privacidad",
+    "language": "Idioma",
+    "signOut": "Cerrar Sesión"
+  },
+  "account": {
+    "deleteAccount": "Eliminar Cuenta",
+    "exportData": "Exportar Mis Datos"
+  }
+}

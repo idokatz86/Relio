@@ -18,11 +18,13 @@ import type { AgentName, PipelineResult } from '../types/index.js';
  * 
  * @param userId - The user sending the message (for profiling)
  * @param message - The raw Tier 1 message
+ * @param preferredLanguage - User's preferred language for Tier 3 output (Issue #140)
  * @returns Pipeline result with Tier 3 output (or safety halt)
  */
 export async function processMessage(
   userId: string,
   message: string,
+  preferredLanguage: string = 'en',
 ): Promise<PipelineResult> {
   const startTime = Date.now();
   const agentsInvoked: AgentName[] = [];
@@ -48,8 +50,9 @@ export async function processMessage(
   ]);
 
   // === STEP 4: Communication Coach (Tier 1 → Tier 3 translation) ===
+  // Issue #141: Pass preferredLanguage for language-aware Socratic output
   agentsInvoked.push('communication-coach');
-  const context = `Attachment: ${profile.attachmentStyle} (${profile.attachmentConfidence}), State: ${profile.activationState}, Intent: ${routing.intent}, Intensity: ${routing.emotionalIntensity}/10`;
+  const context = `Attachment: ${profile.attachmentStyle} (${profile.attachmentConfidence}), State: ${profile.activationState}, Intent: ${routing.intent}, Intensity: ${routing.emotionalIntensity}/10, Language: ${preferredLanguage}`;
   const tier3Output = await transformToSocratic(message, context);
 
   return {

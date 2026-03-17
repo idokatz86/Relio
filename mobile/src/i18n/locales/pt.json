@@ -1,0 +1,52 @@
+{
+  "common": {
+    "appName": "Relio",
+    "loading": "Carregando...",
+    "error": "Algo deu errado",
+    "retry": "Tentar Novamente",
+    "cancel": "Cancelar",
+    "save": "Salvar",
+    "done": "Pronto",
+    "next": "Próximo",
+    "back": "Voltar",
+    "continue": "Continuar",
+    "skip": "Pular"
+  },
+  "login": {
+    "title": "Bem-vindo ao Relio",
+    "subtitle": "Mediação de relacionamentos com inteligência artificial",
+    "signInApple": "Continuar com Apple",
+    "signInGoogle": "Continuar com Google",
+    "signInEmail": "Continuar com Email",
+    "terms": "Ao continuar, você concorda com nossos",
+    "termsLink": "Termos de Serviço",
+    "privacyLink": "Política de Privacidade",
+    "and": "e"
+  },
+  "consent": {
+    "title": "Antes de começar",
+    "aiDisclosure": "O Relio usa IA para mediar conversas entre você e seu(sua) parceiro(a). Isso NÃO é terapia e NÃO substitui atendimento profissional.",
+    "tierModel": "Seus dados têm três níveis:",
+    "tier1": "Privado — Apenas você vê suas mensagens originais",
+    "tier2": "Abstrato — Perfis de IA visíveis apenas para profissionais",
+    "tier3": "Compartilhado — Mensagens reformuladas que seu(sua) parceiro(a) vê",
+    "acceptButton": "Entendo e Aceito"
+  },
+  "chat": {
+    "placeholder": "Digite sua mensagem...",
+    "send": "Enviar",
+    "mediating": "Mediando...",
+    "safetyHalt": "Verificação de segurança ativada",
+    "private": "Privado",
+    "shared": "Compartilhado"
+  },
+  "settings": {
+    "title": "Configurações",
+    "signOut": "Sair",
+    "language": "Idioma"
+  },
+  "account": {
+    "deleteAccount": "Excluir Conta",
+    "exportData": "Exportar Meus Dados"
+  }
+}

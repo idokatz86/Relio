@@ -8,6 +8,7 @@
 
 import React, { useState } from 'react';
 import { View, Text, TouchableOpacity, TextInput, StyleSheet, ActivityIndicator, Image } from 'react-native';
+import { useTranslation } from 'react-i18next';
 import { colors, spacing, typography } from '../theme';
 
 interface LoginScreenProps {
@@ -16,6 +17,7 @@ interface LoginScreenProps {
 }
 
 export function LoginScreen({ onLoginSuccess, onSignUp }: LoginScreenProps) {
+  const { t } = useTranslation();
   const [email, setEmail] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
@@ -65,8 +67,8 @@ export function LoginScreen({ onLoginSuccess, onSignUp }: LoginScreenProps) {
   return (
     <View style={styles.container}>
       <View style={styles.header}>
-        <Text style={styles.logo}>Relio</Text>
-        <Text style={styles.tagline}>A private space for better communication</Text>
+        <Text style={styles.logo}>{t('common.appName')}</Text>
+        <Text style={styles.tagline}>{t('login.subtitle')}</Text>
       </View>
 
       <View style={styles.form}>
@@ -76,7 +78,7 @@ export function LoginScreen({ onLoginSuccess, onSignUp }: LoginScreenProps) {
           onPress={() => handleSocialLogin('apple')}
           disabled={loading}
         >
-          <Text style={styles.appleButtonText}>Continue with Apple</Text>
+          <Text style={styles.appleButtonText}>{t('login.signInApple')}</Text>
         </TouchableOpacity>
 
         {/* Google Sign In */}
@@ -85,7 +87,7 @@ export function LoginScreen({ onLoginSuccess, onSignUp }: LoginScreenProps) {
           onPress={() => handleSocialLogin('google')}
           disabled={loading}
         >
-          <Text style={styles.googleButtonText}>Continue with Google</Text>
+          <Text style={styles.googleButtonText}>{t('login.signInGoogle')}</Text>
         </TouchableOpacity>
 
         <View style={styles.divider}>
@@ -115,7 +117,7 @@ export function LoginScreen({ onLoginSuccess, onSignUp }: LoginScreenProps) {
           {loading ? (
             <ActivityIndicator color="#fff" />
           ) : (
-            <Text style={styles.emailButtonText}>Continue with Email</Text>
+            <Text style={styles.emailButtonText}>{t('login.signInEmail')}</Text>
           )}
         </TouchableOpacity>
 
@@ -124,10 +126,10 @@ export function LoginScreen({ onLoginSuccess, onSignUp }: LoginScreenProps) {
 
       <View style={styles.footer}>
         <Text style={styles.footerText}>
-          By continuing, you agree to our Terms of Service and Privacy Policy.
+          {t('login.terms')} {t('login.termsLink')} {t('login.and')} {t('login.privacyLink')}.
         </Text>
         <Text style={styles.footerText}>
-          Relio is NOT therapy. It is AI-mediated communication support.
+          {t('consent.aiDisclosure')}
         </Text>
       </View>
     </View>

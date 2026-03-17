@@ -1,10 +1,10 @@
 # Relio — Unified Product Requirements Document
 
-**Version:** v2.1.0
+**Version:** v2.2.0
 **Date:** March 17, 2026
 **Authors:** All 38 agents across Medical Pod (`chief-psychology-officer`), Tech Pod (`chief-technology-officer`), and Ops Pod (`chief-executive-officer`)
 **Classification:** Confidential — Board & Executive Leadership
-**Status:** Sprint 9 complete. Clerk auth live. Partner invite system operational.
+**Status:** Sprint 10 complete. GDPR compliance, i18n (4 locales), OWASP hardened, push notifications live.
 
 > **Supersedes:** PRD v1.0.0–v1.8.0, PRD-medical-pod.md v1.3.0, PRD-tech-pod.md v1.3.0, PRD-ops-pod.md v1.3.0
 
@@ -317,7 +317,7 @@ Freemium-to-premium subscription optimized for asymmetric engagement:
 
 ## 10. Sprint History & Roadmap
 
-### Completed (Sprint 1–9)
+### Completed (Sprint 1–10)
 
 | Sprint | Focus | Tech Issues | Closed |
 |--------|-------|-------------|--------|
@@ -329,14 +329,14 @@ Freemium-to-premium subscription optimized for asymmetric engagement:
 | 7 | Branch protection | 1 | 1 |
 | 8 | Clerk auth, consent API, mobile auth screens, backoffice | 20 | 20 |
 | 9 | Partner invite, onboarding, psychoeducation, attachment quiz | 11 | 11 |
+| 10 | GDPR (deletion+export), i18n (4 locales), OWASP, push, A/B tests | 16 | 16 |
 | Azure | OpenAI deployment, Key Vault, cost optimization | 6 | 6 |
-| **Total** | | **80** | **80** |
+| **Total** | | **96** | **96** |
 
 ### Next Sprints (Planned)
 
 | Sprint | Focus |
 |--------|-------|
-| 10 | Security (OWASP, account deletion, GDPR), i18n scaffold, push notifications |
 | 11 | iOS TestFlight, Hebrew RTL, translations |
 | 12 | Stripe/RevenueCat integration + App Store submission |
 | 13–16 | Beta expansion (50 → 500 couples), retention data |

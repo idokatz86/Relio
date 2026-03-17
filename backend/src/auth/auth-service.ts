@@ -5,6 +5,16 @@
  * Currently configured for Clerk (free tier).
  * Swap to any OIDC provider by changing JWKS_URI + JWT_ISSUER env vars.
  * 
+ * OWASP Auth Checklist (Issue #130):
+ * ✅ JWKS validation (no local secrets for JWT signing)
+ * ✅ Token expiry enforced by jose library
+ * ✅ Audience/issuer validation
+ * ✅ Constant-time token comparison (jose handles)
+ * ✅ Auth errors return generic messages (no info leakage)
+ * ✅ Rate limiting applied at router level (#128)
+ * ✅ Token sent via Authorization header only (not URL for REST)
+ * ✅ CORS restricted to allowed origins
+ * 
  * Issues #97-#106: Auth provider migration (Azure AD B2C → Clerk)
  * @see .github/agents/chief-info-security-officer.agent.md
  */
@@ -111,8 +121,16 @@ export function authMiddleware(req: Request, res: Response, next: NextFunction):
   }
 
   const token = authHeader.slice(7);
+
+  // OWASP: reject obviously malformed tokens early (must have 3 parts)
+  if (token.split('.').length !== 3) {
+    res.status(401).json({ error: 'Invalid or expired token' });
+    return;
+  }
+
   verifyToken(token).then(user => {
     if (!user) {
+      // OWASP: generic error — never reveal whether token was expired vs invalid
       res.status(401).json({ error: 'Invalid or expired token' });
       return;
     }

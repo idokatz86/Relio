@@ -30,6 +30,9 @@ import { adminRouter, recordPipelineMetrics, recordSafetyEvent } from './admin-r
 import { authMiddleware, authenticateWebSocket } from '../auth/auth-service.js';
 import { consentRouter } from '../auth/consent-router.js';
 import { inviteRouter } from './invite-router.js';
+import { accountRouter } from './account-router.js';
+import { registerPushToken } from './push-notifications.js';
+import { abTestRouter } from './ab-test-router.js';
 import type { AuthenticatedUser } from '../auth/auth-service.js';
 import type { PipelineResult } from '../types/index.js';
 
@@ -37,6 +40,7 @@ import type { PipelineResult } from '../types/index.js';
 const MediateRequestSchema = z.object({
   userId: z.string().uuid('userId must be a valid UUID'),
   message: z.string().min(1, 'Message cannot be empty').max(2000, 'Message cannot exceed 2000 characters'),
+  preferredLanguage: z.enum(['en', 'es', 'pt', 'he']).optional().default('en'),
 });
 
 const WsMessageSchema = z.object({
@@ -74,6 +78,21 @@ app.use('/api/', rateLimit({
   message: { error: 'Too many requests. Please try again later.' },
 }));
 
+// Stricter rate limit on auth-adjacent endpoints (Issue #128)
+// 5 attempts per 15 minutes — prevents brute force on consent/account
+const authRateLimit = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 5,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: { error: 'Too many auth attempts. Please try again in 15 minutes.' },
+  keyGenerator: (req) => {
+    // Rate limit by IP + userId to prevent distributed attacks
+    const user = (req as any).user;
+    return user?.id ? `${req.ip}-${user.id}` : req.ip || 'unknown';
+  },
+});
+
 // Health check (public, no auth required)
 app.get('/health', (_req: express.Request, res: express.Response) => {
   res.json({ status: 'ok', timestamp: new Date().toISOString(), version: '1.8.0' });
@@ -82,11 +101,33 @@ app.get('/health', (_req: express.Request, res: express.Response) => {
 // Admin API (Issue #94: Backoffice Phase 1)
 app.use('/api/v1/admin', adminRouter);
 
-// Consent & Age Verification API (Sprint 8: #109, #110)
-app.use('/api/v1/consent', authMiddleware, consentRouter);
+// Consent & Age Verification API (Sprint 8: #109, #110 — auth rate limited #128)
+app.use('/api/v1/consent', authMiddleware, authRateLimit, consentRouter);
 
 // Partner Invite API (Sprint 9: #118, #122)
 app.use('/api/v1/invite', authMiddleware, inviteRouter);
+
+// Account Management API (Sprint 10: #125, #126 — auth rate limited #128)
+app.use('/api/v1/account', authMiddleware, authRateLimit, accountRouter);
+
+// Push Token Registration (Sprint 10: #132)
+app.post('/api/v1/push/register', authMiddleware, (req: express.Request, res: express.Response) => {
+  const schema = z.object({
+    expoPushToken: z.string().startsWith('ExponentPushToken['),
+    platform: z.enum(['ios', 'android']),
+  });
+  const parsed = schema.safeParse(req.body);
+  if (!parsed.success) {
+    res.status(400).json({ error: 'Invalid push token', details: parsed.error.issues });
+    return;
+  }
+  const user = (req as any).user as AuthenticatedUser;
+  registerPushToken(user.id, parsed.data.expoPushToken, parsed.data.platform);
+  res.json({ registered: true });
+});
+
+// A/B Test Assignments (Sprint 10: #131)
+app.use('/api/v1/ab', authMiddleware, abTestRouter);
 
 // Feedback submission (user-facing, reuses admin router's submit handler)
 app.post('/api/v1/feedback', authMiddleware, async (req: express.Request, res: express.Response) => {
@@ -128,7 +169,7 @@ app.post('/api/v1/mediate', authMiddleware, async (req: express.Request, res: ex
     return;
   }
 
-  const { userId, message } = parsed.data;
+  const { userId, message, preferredLanguage } = parsed.data;
   const authenticatedUser = (req as any).user as AuthenticatedUser;
 
   // Enforce: userId must match authenticated user (prevent impersonation)
@@ -138,7 +179,7 @@ app.post('/api/v1/mediate', authMiddleware, async (req: express.Request, res: ex
   }
 
   try {
-    const result = await processMessage(userId, message);
+    const result = await processMessage(userId, message, preferredLanguage);
 
     // Record telemetry for admin dashboard (#94)
     recordPipelineMetrics(result.processingTimeMs, result.agentsInvoked);

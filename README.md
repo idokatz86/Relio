@@ -18,18 +18,22 @@ Relio is powered by **38 specialized AI agents** distributed across three pods, 
 - **Operations Pod (9 agents):** CEO, CRO, CFO, CMO, CCO, CAO, CLO, CPO, CSO. Manages business strategy, legal disclaimers, partnership evaluations, and AI-first lean operations.
 - **Tech Pod (15 agents):** CTO, Backend Developer, Cloud Architect, GitHub Architect, Mobile Dev, Mobile QA, Fullstack QA, Penetration Tester, UI/UX Expert, CISO, DPO, App Store Certifier, Skills Builder, Scrum Master, VP R&D. Constructs Azure-native infrastructure, secure WebSockets, CI/CD governance, and adversarial red-teaming.
 
-## Key Capabilities (v2.3.0)
+## Key Capabilities (v2.4.0)
 
 - **Backend LIVE on Azure OpenAI GPT-4.1** — Container Apps (Sweden Central, EU data residency)
 - **Clerk Auth LIVE** — OIDC JWKS validation, Apple/Google/Email sign-in, all endpoints auth-protected
 - **5-Agent MVP Pipeline** — Safety Guardian → Orchestrator → [Individual Profiler || Communication Coach] → Tier 3 Output
-- **Partner Invite System** — Invite codes, QR generation, deep links, couple pairing API
-- **12 Mobile Screens** — BiometricLock, Login, Consent, AgeVerify, Onboarding, PrivacyExplainer, AttachmentQuiz, PsychoeducationCards, InvitePartner, AcceptInvite, SharedChat, PrivateJournal, Crisis, Settings
+- **Multi-Language i18n** — react-i18next + expo-localization, 4 locales: English, Spanish, Portuguese (BR), Hebrew (RTL)
+- **Multi-Language Safety** — Crisis detection in EN/ES/PT/HE via regex pre-screen + LLM, locale-aware emergency resources
+- **GDPR Compliance** — Account deletion (24h grace + cascade purge), data export (JSON), consent re-prompt on version change
+- **Partner Invite System** — Invite codes, QR generation, deep links, couple pairing API, push notifications
+- **15 Mobile Screens** — BiometricLock, Login, Consent, AgeVerify, Onboarding, PrivacyExplainer, AttachmentQuiz, PsychoeducationCards, InvitePartner, AcceptInvite, SharedChat, PrivateJournal, Crisis, Settings, LanguagePicker
 - **Backoffice Admin Dashboard** — 10 admin API endpoints + 7-page React frontend with k-anonymity
-- **Security Hardened** — JWT auth, Zod validation, Helmet, rate limiting, CORS, fail-closed Safety Guardian, circuit breaker
-- **Feedback System** — Session ratings, NPS, weekly pulse, churn interviews
+- **Security Hardened** — JWT auth, OWASP checklist, Zod validation, Helmet, auth rate limiting, CORS, fail-closed Safety Guardian, circuit breaker
+- **A/B Test Infrastructure** — Deterministic hash-based experiment assignment, admin experiment dashboard
+- **Push Notifications** — Expo Push API (invite acceptance, new messages), privacy-safe (no content in pushes)
 
-## Tech Pod Status (v2.3.0)
+## Tech Pod Status (v2.4.0)
 
 | Sprint | Tech Issues | Closed | Open | Focus |
 |--------|-------------|--------|------|-------|
@@ -38,8 +42,9 @@ Relio is powered by **38 specialized AI agents** distributed across three pods, 
 | 5–7 | 8 | 8 | 0 | Security hardening, CI, branch protection |
 | 8 | 20 | 20 | 0 | Clerk auth, consent, mobile screens, backoffice |
 | 9 | 11 | 11 | 0 | Partner invite, onboarding, psychoeducation |
+| 10 | 16 | 16 | 0 | GDPR, i18n (4 locales), OWASP, push notifications, A/B tests |
 | Azure | 6 | 6 | 0 | OpenAI, Key Vault, cost optimization |
-| **Total** | **80** | **80** | **0** | Sprint 9 complete |
+| **Total** | **96** | **96** | **0** | Sprint 10 complete |
 
 ## Agent Directory (38 Agents)
 

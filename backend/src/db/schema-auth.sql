@@ -12,6 +12,9 @@ ALTER TABLE users ADD COLUMN IF NOT EXISTS date_of_birth DATE;
 ALTER TABLE users ADD COLUMN IF NOT EXISTS last_login_at TIMESTAMPTZ;
 ALTER TABLE users ADD COLUMN IF NOT EXISTS login_count INTEGER DEFAULT 0;
 
+-- Issue #139: User language preference for i18n + AI output
+ALTER TABLE users ADD COLUMN IF NOT EXISTS preferred_language TEXT DEFAULT 'en' CHECK (preferred_language IN ('en', 'es', 'pt', 'he'));
+
 -- Consent records (#110)
 CREATE TABLE IF NOT EXISTS consent_records (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),

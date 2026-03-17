@@ -17,6 +17,7 @@ import {
   Alert,
   Linking,
 } from 'react-native';
+import { useTranslation } from 'react-i18next';
 import { colors, spacing, typography, borderRadius, shadows } from '../theme';
 import { clearAllData } from '../services/secure-storage';
 
@@ -26,14 +27,16 @@ interface SettingsScreenProps {
 }
 
 export function SettingsScreen({ userId, onLogout }: SettingsScreenProps) {
+  const { t } = useTranslation();
+
   const handleDeleteData = () => {
     Alert.alert(
-      'Delete all data?',
-      'This will permanently erase your private journal, profile, and all local data. This cannot be undone.',
+      t('settings.deleteConfirmTitle'),
+      t('settings.deleteConfirmMsg'),
       [
-        { text: 'Cancel', style: 'cancel' },
+        { text: t('common.cancel'), style: 'cancel' },
         {
-          text: 'Delete Everything',
+          text: t('settings.deleteConfirmButton'),
           style: 'destructive',
           onPress: async () => {
             await clearAllData();
@@ -59,11 +62,11 @@ export function SettingsScreen({ userId, onLogout }: SettingsScreenProps) {
 
   return (
     <ScrollView style={styles.container} contentContainerStyle={styles.content}>
-      <Text style={styles.title}>Settings</Text>
+      <Text style={styles.title}>{t('settings.title')}</Text>
 
       {/* Profile section */}
       <View style={styles.section}>
-        <Text style={styles.sectionTitle}>Profile</Text>
+        <Text style={styles.sectionTitle}>{t('settings.profile')}</Text>
         <View style={styles.card}>
           <Text style={styles.cardLabel}>User ID</Text>
           <Text style={styles.cardValue}>{userId}</Text>
@@ -72,16 +75,16 @@ export function SettingsScreen({ userId, onLogout }: SettingsScreenProps) {
 
       {/* Partner invite */}
       <View style={styles.section}>
-        <Text style={styles.sectionTitle}>Partner</Text>
+        <Text style={styles.sectionTitle}>{t('settings.partner')}</Text>
         <TouchableOpacity style={styles.actionCard}>
-          <Text style={styles.actionTitle}>Invite Partner</Text>
-          <Text style={styles.actionDesc}>Share a link to invite your partner to Relio</Text>
+          <Text style={styles.actionTitle}>{t('settings.invitePartner')}</Text>
+          <Text style={styles.actionDesc}>{t('settings.invitePartnerDesc')}</Text>
         </TouchableOpacity>
       </View>
 
       {/* Privacy — app-store-certifier mandate #2 */}
       <View style={styles.section}>
-        <Text style={styles.sectionTitle}>Privacy & Data</Text>
+        <Text style={styles.sectionTitle}>{t('settings.privacyData')}</Text>
         <View style={styles.card}>
           <Text style={styles.cardLabel}>Data stored on device</Text>
           <Text style={styles.cardValue}>
@@ -95,34 +98,34 @@ export function SettingsScreen({ userId, onLogout }: SettingsScreenProps) {
           </Text>
         </View>
         <TouchableOpacity style={styles.destructiveCard} onPress={handleDeleteData}>
-          <Text style={styles.destructiveText}>Delete All My Data</Text>
+          <Text style={styles.destructiveText}>{t('settings.deleteAllData')}</Text>
         </TouchableOpacity>
       </View>
 
       {/* Safety — app-store-certifier mandate #1 */}
       <View style={styles.section}>
-        <Text style={styles.sectionTitle}>Safety</Text>
+        <Text style={styles.sectionTitle}>{t('settings.safety')}</Text>
         <TouchableOpacity style={styles.actionCard} onPress={handleReportAbuse}>
-          <Text style={[styles.actionTitle, { color: colors.safetyHalt }]}>Report Abuse</Text>
+          <Text style={[styles.actionTitle, { color: colors.safetyHalt }]}>{t('settings.reportAbuse')}</Text>
           <Text style={styles.actionDesc}>
-            If you or someone you know is in danger
+            {t('settings.reportAbuseDesc')}
           </Text>
         </TouchableOpacity>
       </View>
 
       {/* Legal */}
       <View style={styles.section}>
-        <Text style={styles.sectionTitle}>Legal</Text>
+        <Text style={styles.sectionTitle}>{t('settings.legal')}</Text>
         <TouchableOpacity style={styles.card}>
-          <Text style={styles.cardLabel}>Terms of Service</Text>
+          <Text style={styles.cardLabel}>{t('settings.termsOfService')}</Text>
         </TouchableOpacity>
         <TouchableOpacity style={styles.card}>
-          <Text style={styles.cardLabel}>Privacy Policy</Text>
+          <Text style={styles.cardLabel}>{t('settings.privacyPolicy')}</Text>
         </TouchableOpacity>
       </View>
 
       <TouchableOpacity style={styles.logoutButton} onPress={onLogout}>
-        <Text style={styles.logoutText}>Sign Out</Text>
+        <Text style={styles.logoutText}>{t('settings.signOut')}</Text>
       </TouchableOpacity>
     </ScrollView>
   );

@@ -7,6 +7,31 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.4.0] - 2026-03-17
+### Added
+- **Sprint 10: GDPR, i18n, Security Hardening** — 16 issues closed
+- **Account deletion** (`/api/v1/account/*`) — 24h grace period, GDPR Article 17 cascade purge, cancel flow (#125)
+- **Data export** (`/api/v1/account/export`) — GDPR Article 20 Right to Portability, JSON format (#126)
+- **Auth rate limiting** — 5 req/15min on consent + account endpoints, IP+userId key (#128)
+- **OWASP auth checklist** — JWT structure validation, generic error messages, no info leakage (#130)
+- **Multi-language Safety Guardian** — Regex pre-screen for crisis keywords in EN/ES/PT/HE before LLM call (#135)
+- **Locale-aware CrisisScreen** — Country-specific emergency resources: US (988/DV hotline), Brazil (CVV 188), Israel (ERAN 1201), Spanish (988 español) (#136)
+- **i18n scaffold** — react-i18next + expo-localization, 4 locales: en, es, pt-BR, he (RTL) (#137)
+- **String extraction** — LoginScreen + SettingsScreen converted to `useTranslation()` with en.json keys (#138)
+- **Language picker** — LanguagePickerScreen.tsx + preferredLanguage stored in SecureStore + DB schema (#139)
+- **Backend language passthrough** — `preferredLanguage` field in mediate request, piped to pipeline context (#140)
+- **Coach language-aware output** — Communication Coach prompt updated to produce Socratic Tier 3 in user's language (#141)
+- **Biometric gate config** — `setBiometricEnabled`/`isBiometricEnabled` in secure-storage, defaults to hardware check (#127)
+- **Push notifications** — Expo Push API integration, `notifyInviteAccepted` + `notifyNewMessage`, `/api/v1/push/register` (#132)
+- **Consent re-prompt** — Version change detection, `re_accept_tos`/`re_accept_privacy` audit actions (#133)
+- **A/B test infrastructure** — Deterministic hash-based assignment, `/api/v1/ab/assignments` + admin `/experiments` (#131)
+- **E2E smoke test** — 11-step journey: health → consent → age → invite → pair → account → push → export (#129)
+
+### Changed
+- Backend deployed v2.4.0 (Container Apps revision 0000012)
+- Safety Guardian prompt expanded with multi-language examples (ES/PT/HE)
+- Communication Coach prompt augmented with language-aware output instructions
+
 ## [2.3.0] - 2026-03-17
 ### Added
 - **Sprint 9: Onboarding & Partner Invite** — 11 issues closed

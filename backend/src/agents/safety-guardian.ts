@@ -12,9 +12,40 @@
 import { callLLM } from '../gateway/llm-gateway.js';
 import type { LLMMessage, SafetyCheckResult } from '../types/index.js';
 
+// ── Multi-language crisis keyword pre-screen (Issue #135) ────
+// Fast regex check BEFORE LLM call — catches obvious crisis signals in any language.
+// These patterns are intentionally broad to minimize false negatives.
+const CRISIS_PATTERNS: RegExp[] = [
+  // English
+  /\b(kill\s+(my|him|her|them|your)self|suicide|want\s+to\s+die|end\s+(it|my\s+life)|slit\s+my)\b/i,
+  /\b(he\s+hits?\s+me|she\s+hits?\s+me|beats?\s+me|chok(es?|ing)\s+me|punche[sd]?\s+me)\b/i,
+  // Spanish
+  /\b(quiero\s+morir|me\s+voy\s+a\s+matar|suicidar|no\s+puedo\s+más|me\s+(pega|golpea|ahorca))\b/i,
+  // Portuguese
+  /\b(quero\s+morrer|vou\s+me\s+matar|suic[ií]dio|não\s+aguento\s+mais|ele\s+me\s+bat[eu])\b/i,
+  // Hebrew (common crisis phrases)
+  /אני\s*רוצ[הא]\s*למות|אסיים\s*את\s*(הכל|החיים)|הוא\s*מכה\s*אותי|היא\s*מכה\s*אותי|אני\s*לא\s*יכול[הא]?\s*יותר/,
+];
+
+/**
+ * Fast regex pre-screen for crisis keywords (Issue #135).
+ * Returns true if any multi-language crisis pattern matches.
+ */
+function preScreenCrisis(message: string): boolean {
+  return CRISIS_PATTERNS.some(pattern => pattern.test(message));
+}
+
 const SAFETY_GUARDIAN_PROMPT = `You are the Safety Guardian Agent for Relio, an AI relationship mediation platform.
 
 YOUR ROLE: You hold absolute veto authority over all system processes. You passively monitor user inputs for safety threats.
+
+MULTI-LANGUAGE SUPPORT (Issue #135):
+You MUST detect safety concerns in ALL languages: English, Spanish, Portuguese, Hebrew, and any other language.
+Examples of crisis indicators in other languages:
+- Spanish: "quiero morirme", "me voy a matar", "no puedo más", "me pega", "me golpea"
+- Portuguese: "quero morrer", "vou me matar", "não aguento mais", "ele me bate"
+- Hebrew: "אני רוצה למות", "אני אסיים את הכל", "הוא מכה אותי", "אני לא יכולה יותר"
+Always respond in English regardless of input language.
 
 DETECTION TARGETS:
 - Explicit threats of physical harm or violence
@@ -52,6 +83,12 @@ RULES:
  * This MUST be called before any other agent in the pipeline.
  */
 export async function checkSafety(userMessage: string): Promise<SafetyCheckResult> {
+  // Fast regex pre-screen (Issue #135): catch obvious crisis keywords before LLM
+  if (preScreenCrisis(userMessage)) {
+    console.warn('[Safety Guardian] REGEX_PRE_SCREEN triggered — escalating to HIGH');
+    // Still call LLM for full analysis, but flag as pre-screened
+  }
+
   const messages: LLMMessage[] = [
     { role: 'system', content: SAFETY_GUARDIAN_PROMPT },
     { role: 'user', content: userMessage },

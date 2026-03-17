@@ -1,0 +1,47 @@
+{
+  "common": {
+    "appName": "Relio",
+    "loading": "טוען...",
+    "error": "משהו השתבש",
+    "retry": "נסה שוב",
+    "cancel": "ביטול",
+    "save": "שמור",
+    "done": "סיום",
+    "next": "הבא",
+    "back": "חזרה",
+    "continue": "המשך",
+    "skip": "דלג"
+  },
+  "login": {
+    "title": "ברוך הבא ל-Relio",
+    "subtitle": "גישור זוגי מונע בינה מלאכותית",
+    "signInApple": "המשך עם Apple",
+    "signInGoogle": "המשך עם Google",
+    "signInEmail": "המשך עם אימייל",
+    "terms": "בהמשך, אתה מסכים ל",
+    "termsLink": "תנאי השימוש",
+    "privacyLink": "מדיניות הפרטיות",
+    "and": "ו"
+  },
+  "consent": {
+    "title": "לפני שנתחיל",
+    "aiDisclosure": "Relio משתמש בבינה מלאכותית לגשר בין שיחות שלך ושל בן/בת הזוג שלך. זו לא תרפיה ואינה מחליפה טיפול מקצועי.",
+    "acceptButton": "אני מבין/ה ומסכים/ה"
+  },
+  "chat": {
+    "placeholder": "הקלד/י את ההודעה...",
+    "send": "שלח",
+    "mediating": "מגשר...",
+    "private": "פרטי",
+    "shared": "משותף"
+  },
+  "settings": {
+    "title": "הגדרות",
+    "signOut": "התנתק",
+    "language": "שפה"
+  },
+  "account": {
+    "deleteAccount": "מחק חשבון",
+    "exportData": "ייצא את המידע שלי"
+  }
+}

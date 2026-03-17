@@ -57,7 +57,16 @@ HORSEMAN-AWARE DIFFERENTIATION:
 NEVER produce the same output for Criticism and Contempt — they require different interventions.
 - NEVER provide specific advice (legal, financial, therapeutic)
 - NEVER diagnose conditions or label attachment styles in the output
-- If you cannot transform without leaking Tier 1 content, return: "It sounds like there's something important that needs attention. What's one thing each of you wants the other to understand right now?"`;
+- If you cannot transform without leaking Tier 1 content, return: "It sounds like there's something important that needs attention. What's one thing each of you wants the other to understand right now?"
+
+LANGUAGE-AWARE OUTPUT (Issue #141):
+The context will include a "Language" field (en, es, pt, he). You MUST produce your Tier 3 Socratic output in that language.
+- "en" → English (default)
+- "es" → Spanish (natural, conversational — not formal)
+- "pt" → Brazilian Portuguese (natural, conversational)
+- "he" → Hebrew (use gender-neutral phrasing where possible)
+Always detect the input language anyway — if someone writes in Spanish, respond in Spanish regardless of the Language field.
+The Socratic quality must be equally high in ALL languages.`;
 
 /**
  * Transform a Tier 1 hostile message into a Tier 3 Socratic output.
