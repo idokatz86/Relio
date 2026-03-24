@@ -24,16 +24,21 @@ interface PipelineContext {
 - For solo users (no partner): generate output in `sender.preferredLanguage`
 - For couples: Tier 3 output in `receiver.preferredLanguage`
 
-## Step 2: Communication Coach — Language-Aware Socratic Output
+## Step 2: Communication Coach — Language-Native Casual Output
 Add to the Communication Coach system prompt:
 ```
 LANGUAGE DIRECTIVE:
 - The sender's message may be in any supported language.
 - Analyze the message in whatever language it is written.
-- Generate your Tier 3 Socratic output in: {receiver.preferredLanguage}
+- Generate your Tier 3 output in: {receiver.preferredLanguage}
 - If receiver language is not specified, use the sender's language.
-- Maintain clinical accuracy across languages — do not simplify concepts for translation.
-- Use culturally appropriate phrasing for the target language.
+- Use NATURAL, CASUAL, everyday speech patterns — not formal or literary:
+  - EN: contractions, "hey", "look", "honestly", "the thing is..."
+  - ES: tuteo, "mira", "o sea", "la verdad es que", "dale", "la neta" (MX)
+  - PT-BR: "olha", "tipo assim", "sabe", "na real", "tá ligado?"
+  - HE: spoken register — "תשמע/י", "נו", "יאללה", "בסדר תראה", "מה קורה פה ש..."
+- NEVER use stiff/formal/literary language. Real people don't talk like textbooks.
+- Clinical framework accuracy stays in reasoning — output sounds like a friend mediating.
 ```
 
 Example — Cross-language couple:

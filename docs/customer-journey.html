@@ -1,0 +1,731 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Relio — Customer Journey Map</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap');
+  
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  
+  body {
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    color: #2D2D2D;
+    background: #FAFAF8;
+    line-height: 1.6;
+    padding: 40px;
+  }
+
+  @media print {
+    body { padding: 20px; font-size: 11px; }
+    .phase { page-break-inside: avoid; }
+    .no-print { display: none; }
+    h1 { font-size: 24px; }
+    h2 { font-size: 16px; }
+    h3 { font-size: 13px; }
+  }
+
+  h1 {
+    font-family: 'DM Serif Display', serif;
+    font-size: 36px;
+    color: #1a1a1a;
+    margin-bottom: 8px;
+  }
+
+  .subtitle {
+    font-size: 16px;
+    color: #6B6B6B;
+    margin-bottom: 32px;
+  }
+
+  .meta {
+    display: flex;
+    gap: 24px;
+    margin-bottom: 40px;
+    flex-wrap: wrap;
+  }
+
+  .meta-item {
+    background: white;
+    border: 1px solid #E5E5E5;
+    border-radius: 8px;
+    padding: 12px 20px;
+    font-size: 13px;
+  }
+
+  .meta-item strong { color: #B2AC88; }
+
+  .phase {
+    background: white;
+    border-radius: 12px;
+    border: 1px solid #E5E5E5;
+    margin-bottom: 24px;
+    overflow: hidden;
+  }
+
+  .phase-header {
+    padding: 20px 28px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+
+  .phase-number {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 14px;
+    color: white;
+    flex-shrink: 0;
+  }
+
+  .phase-title {
+    font-family: 'DM Serif Display', serif;
+    font-size: 20px;
+  }
+
+  .phase-agents {
+    font-size: 12px;
+    color: #888;
+    margin-left: auto;
+  }
+
+  .phase-body {
+    padding: 0 28px 24px;
+  }
+
+  .step {
+    display: flex;
+    gap: 16px;
+    margin-bottom: 16px;
+    align-items: flex-start;
+  }
+
+  .step-icon {
+    width: 32px;
+    height: 32px;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    flex-shrink: 0;
+    background: #F5F5F0;
+  }
+
+  .step-content h3 {
+    font-size: 14px;
+    font-weight: 600;
+    margin-bottom: 2px;
+  }
+
+  .step-content p {
+    font-size: 13px;
+    color: #666;
+  }
+
+  .tier-badge {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-size: 11px;
+    font-weight: 600;
+    margin-left: 6px;
+  }
+
+  .tier1 { background: #FDE8E8; color: #991B1B; }
+  .tier2 { background: #FEF3C7; color: #92400E; }
+  .tier3 { background: #D1FAE5; color: #065F46; }
+
+  .pipeline-box {
+    background: #F8F8F5;
+    border: 1px solid #E5E5E0;
+    border-radius: 8px;
+    padding: 20px;
+    margin: 16px 0;
+  }
+
+  .pipeline-step {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 10px;
+  }
+
+  .pipeline-step:last-child { margin-bottom: 0; }
+
+  .pipeline-arrow {
+    color: #B2AC88;
+    font-weight: 700;
+    width: 20px;
+    text-align: center;
+    flex-shrink: 0;
+  }
+
+  .pipeline-label {
+    font-size: 13px;
+    font-weight: 600;
+  }
+
+  .pipeline-detail {
+    font-size: 12px;
+    color: #888;
+  }
+
+  .pricing-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+    margin-top: 12px;
+  }
+
+  .pricing-card {
+    border: 1px solid #E5E5E5;
+    border-radius: 8px;
+    padding: 16px;
+    text-align: center;
+  }
+
+  .pricing-card.featured {
+    border-color: #B2AC88;
+    background: #FDFDF5;
+  }
+
+  .pricing-price {
+    font-family: 'DM Serif Display', serif;
+    font-size: 24px;
+    margin: 8px 0;
+  }
+
+  .pricing-features {
+    font-size: 12px;
+    color: #666;
+    text-align: left;
+    list-style: none;
+  }
+
+  .pricing-features li::before {
+    content: "✓ ";
+    color: #B2AC88;
+    font-weight: 700;
+  }
+
+  .agent-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 16px;
+    font-size: 12px;
+  }
+
+  .agent-table th {
+    text-align: left;
+    padding: 8px 12px;
+    background: #F5F5F0;
+    border-bottom: 2px solid #E5E5E5;
+    font-weight: 600;
+  }
+
+  .agent-table td {
+    padding: 8px 12px;
+    border-bottom: 1px solid #F0F0F0;
+  }
+
+  .color-0 { background: #2E7D32; }
+  .color-1 { background: #1565C0; }
+  .color-2 { background: #E65100; }
+  .color-3 { background: #6A1B9A; }
+  .color-4 { background: #00695C; }
+  .color-5 { background: #AD1457; }
+  .color-6 { background: #558B2F; }
+  .color-7 { background: #C62828; }
+  .color-8 { background: #F9A825; color: #333; }
+  .color-9 { background: #455A64; }
+
+  .divider {
+    height: 1px;
+    background: #E5E5E5;
+    margin: 32px 0;
+  }
+
+  .footer {
+    text-align: center;
+    color: #999;
+    font-size: 12px;
+    margin-top: 40px;
+  }
+
+  .print-btn {
+    position: fixed;
+    bottom: 24px;
+    right: 24px;
+    background: #B2AC88;
+    color: white;
+    border: none;
+    padding: 12px 24px;
+    border-radius: 8px;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+  }
+
+  .print-btn:hover { background: #9A9470; }
+</style>
+</head>
+<body>
+
+<button class="print-btn no-print" onclick="window.print()">Save as PDF</button>
+
+<h1>Relio — Customer Journey Map</h1>
+<p class="subtitle">AI-Mediated Relationship Communication Platform · v3.0.0 · March 2026</p>
+
+<div class="meta">
+  <div class="meta-item"><strong>38</strong> AI Agents across 3 Pods</div>
+  <div class="meta-item"><strong>3-Tier</strong> Confidentiality Model</div>
+  <div class="meta-item"><strong>4</strong> Languages (EN/ES/PT/HE)</div>
+  <div class="meta-item"><strong>156</strong> Automated Tests</div>
+  <div class="meta-item"><strong>$19.99</strong>/mo Couples Tier</div>
+</div>
+
+<!-- Phase 0 -->
+<div class="phase">
+  <div class="phase-header">
+    <div class="phase-number color-0">0</div>
+    <div class="phase-title">Discovery</div>
+    <div class="phase-agents">CMO · CRO</div>
+  </div>
+  <div class="phase-body">
+    <div class="step">
+      <div class="step-icon">🌐</div>
+      <div class="step-content">
+        <h3>Awareness Channels</h3>
+        <p>Reddit relationship communities · Therapist referrals · Facebook/Instagram ads · Couples influencers · Product Hunt</p>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-icon">🏠</div>
+      <div class="step-content">
+        <h3>Landing Page</h3>
+        <p>"Love isn't broken. It's just waiting to be rediscovered." — 3-Tier privacy explainer, 90-sec demo video, pricing overview</p>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-icon">📧</div>
+      <div class="step-content">
+        <h3>Waitlist Signup</h3>
+        <p>Email capture via <code>POST /api/v1/waitlist</code> — 1,195+ signups collected</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Phase 1 -->
+<div class="phase">
+  <div class="phase-header">
+    <div class="phase-number color-1">1</div>
+    <div class="phase-title">Download & Onboarding</div>
+    <div class="phase-agents">Mobile Dev · App Store Certifier · UI/UX · CLO</div>
+  </div>
+  <div class="phase-body">
+    <div class="step">
+      <div class="step-icon">🔐</div>
+      <div class="step-content">
+        <h3>BiometricLockScreen</h3>
+        <p>FaceID / TouchID enrollment — prevents shoulder-surfing by abusive partner</p>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-icon">🔑</div>
+      <div class="step-content">
+        <h3>LoginScreen</h3>
+        <p>Clerk OIDC — Apple / Google / Email sign-in</p>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-icon">📋</div>
+      <div class="step-content">
+        <h3>ConsentScreen</h3>
+        <p>Terms of Service v1.0 + Privacy Policy v1.0 + Duty-to-warn acknowledgment. "AI is NOT a therapist" disclaimer. Immutable audit trail.</p>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-icon">🔞</div>
+      <div class="step-content">
+        <h3>AgeVerifyScreen</h3>
+        <p>18+ gate — CLO mandate</p>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-icon">🌐</div>
+      <div class="step-content">
+        <h3>LanguagePickerScreen</h3>
+        <p>English · Spanish · Portuguese · Hebrew (RTL)</p>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-icon">🛡️</div>
+      <div class="step-content">
+        <h3>PrivacyExplainerScreen</h3>
+        <p>Interactive 3-Tier demo — "Your raw feelings stay in Tier 1. Only Socratic guidance reaches your partner."</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Phase 2 -->
+<div class="phase">
+  <div class="phase-header">
+    <div class="phase-number color-2">2</div>
+    <div class="phase-title">Self-Discovery — Solo / Free Tier</div>
+    <div class="phase-agents">Individual Profiler · Psychoeducation · CRO</div>
+  </div>
+  <div class="phase-body">
+    <div class="step">
+      <div class="step-icon">🧠</div>
+      <div class="step-content">
+        <h3>AttachmentQuizScreen</h3>
+        <p>5 Gottman-based questions → attachment style: anxious / avoidant / secure / disorganized. Sub-states + confidence score.</p>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-icon">📚</div>
+      <div class="step-content">
+        <h3>PsychoeducationCards</h3>
+        <p>Flooding · Four Horsemen · Attachment Styles · Digital Boundaries — stage-specific content</p>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-icon">📓</div>
+      <div class="step-content">
+        <h3>PrivateJournalScreen <span class="tier-badge tier1">Tier 1</span></h3>
+        <p>User vents freely. Encrypted at rest (Secure Enclave / Keystore). AI reflections generated but NEVER shared. Solo value for paying user even without partner.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Phase 3 -->
+<div class="phase">
+  <div class="phase-header">
+    <div class="phase-number color-3">3</div>
+    <div class="phase-title">Partner Invite & Pairing</div>
+    <div class="phase-agents">Backend Developer · UI/UX · CPO</div>
+  </div>
+  <div class="phase-body">
+    <div class="step">
+      <div class="step-icon">📨</div>
+      <div class="step-content">
+        <h3>InvitePartnerScreen</h3>
+        <p>Unique invite code + QR code + deep link. Share via iMessage / WhatsApp / Email. 7-day expiry.</p>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-icon">✅</div>
+      <div class="step-content">
+        <h3>AcceptInviteScreen</h3>
+        <p>Partner downloads app → same onboarding → accepts invite → partners linked in a Room. Push notification: "Your partner joined!"</p>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-icon">🏠</div>
+      <div class="step-content">
+        <h3>Room Created <span class="tier-badge tier3">Tier 3</span></h3>
+        <p>Shared mediation space. Separate Tier 1 silos for each user (CTO: "mathematical isolation"). WebSocket connections for real-time sync.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Phase 4 -->
+<div class="phase">
+  <div class="phase-header">
+    <div class="phase-number color-4">4</div>
+    <div class="phase-title">Core Mediation Loop</div>
+    <div class="phase-agents">Safety Guardian · Orchestrator · Profiler · Coach · DPO</div>
+  </div>
+  <div class="phase-body">
+    <p style="font-size: 13px; color: #666; margin-bottom: 16px;">User A types: <em>"He never listens to me. I'm so done with this."</em></p>
+
+    <div class="pipeline-box">
+      <div class="pipeline-step">
+        <div class="pipeline-arrow">⬇</div>
+        <div>
+          <div class="pipeline-label">🔒 PII Redactor <span class="tier-badge tier1">Pre-flight</span></div>
+          <div class="pipeline-detail">Names, emails, phones stripped. Safety Guardian sees original.</div>
+        </div>
+      </div>
+      <div class="pipeline-step">
+        <div class="pipeline-arrow">⬇</div>
+        <div>
+          <div class="pipeline-label">🛡️ Safety Guardian — GPT-4.1, temp 0.1</div>
+          <div class="pipeline-detail">Regex pre-screen (EN/ES/PT/HE) + LLM. Fail-closed: parse error → halt. If CRITICAL → Emergency Response.</div>
+        </div>
+      </div>
+      <div class="pipeline-step">
+        <div class="pipeline-arrow">⬇</div>
+        <div>
+          <div class="pipeline-label">🔀 Orchestrator + 🧬 Individual Profiler <span style="color:#B2AC88">(parallel)</span></div>
+          <div class="pipeline-detail">Tier classification, intent, intensity · Attachment style, activation state → Tier 2 (Cosmos DB)</div>
+        </div>
+      </div>
+      <div class="pipeline-step">
+        <div class="pipeline-arrow">⬇</div>
+        <div>
+          <div class="pipeline-label">💛 Communication Coach — GPT-4.1-mini, temp 0.4</div>
+          <div class="pipeline-detail">Horseman-aware. EFT unmet needs. Tier 1 → Tier 3 Socratic transformation in user's language.</div>
+        </div>
+      </div>
+      <div class="pipeline-step">
+        <div class="pipeline-arrow">⬇</div>
+        <div>
+          <div class="pipeline-label">✅ PII Post-Flight Validator</div>
+          <div class="pipeline-detail">Scans Tier 3 output for leaked PII → strips any matches.</div>
+        </div>
+      </div>
+      <div class="pipeline-step">
+        <div class="pipeline-arrow">⬇</div>
+        <div>
+          <div class="pipeline-label">💾 Dual-Write + 📡 WebSocket Relay</div>
+          <div class="pipeline-detail">Tier 1 DB (raw, RLS) · Tier 3 DB (Socratic) · Redis pub/sub fan-out to partner.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="step-icon">👁️</div>
+      <div class="step-content">
+        <h3>User B receives <span class="tier-badge tier3">Tier 3 Only</span></h3>
+        <p><em>"Feeling heard is really important. What does being truly listened to look like for you?"</em><br/>Partner's raw text is NEVER visible.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Phase 5 -->
+<div class="phase">
+  <div class="phase-header">
+    <div class="phase-number color-5">5</div>
+    <div class="phase-title">Weekly 60-Minute Session</div>
+    <div class="phase-agents">Phase Agents · Relationship Dynamics · Phase-Crisis</div>
+  </div>
+  <div class="phase-body">
+    <div class="step">
+      <div class="step-icon">📅</div>
+      <div class="step-content">
+        <h3>Scheduled Session (~45 exchange turns)</h3>
+        <p>Each turn through full 4-agent pipeline. $0.26/session LLM cost.</p>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-icon">💕</div>
+      <div class="step-content">
+        <h3>Phase-Specific Agent Activation</h3>
+        <p><strong>Dating:</strong> Boundaries, red flags, love-bombing · <strong>Married:</strong> Sound Relationship House · <strong>Pre-Divorced:</strong> Flooding timeout, grief · <strong>Divorced:</strong> BIFF/Gray Rock co-parenting</p>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-icon">📊</div>
+      <div class="step-content">
+        <h3>Real-Time Dynamics Monitoring <span class="tier-badge tier2">Tier 2</span></h3>
+        <p>Four Horsemen tracking · Pursue-Withdraw cycles · DIGITAL_FRICTION tagging · Phubbing detection</p>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-icon">⏸️</div>
+      <div class="step-content">
+        <h3>Flooding Detection → 20-Minute Pause</h3>
+        <p>Rapid-fire messages, ALL CAPS, repetitive swearing → full-screen takeover with breathing exercise</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Phase 6 -->
+<div class="phase">
+  <div class="phase-header">
+    <div class="phase-number color-6">6</div>
+    <div class="phase-title">Between Sessions</div>
+    <div class="phase-agents">Psychoeducation · Progress Tracker · Profiler</div>
+  </div>
+  <div class="phase-body">
+    <div class="step">
+      <div class="step-icon">📓</div>
+      <div class="step-content">
+        <h3>Private Journaling <span class="tier-badge tier1">Tier 1</span></h3>
+        <p>AI reflections on entries. Encrypted. 90-day auto-purge.</p>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-icon">📲</div>
+      <div class="step-content">
+        <h3>Psychoeducation Push Notifications</h3>
+        <p>Stage-specific micro-lessons. Bite-sized for avoidant partner (asymmetric engagement).</p>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-icon">📈</div>
+      <div class="step-content">
+        <h3>Progress Dashboard <span class="tier-badge tier3">Tier 3</span></h3>
+        <p>Conflict frequency · Resolution time · Positive:negative ratio (non-shaming) · Attachment evolution</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Phase 7 -->
+<div class="phase">
+  <div class="phase-header">
+    <div class="phase-number color-7">7</div>
+    <div class="phase-title">Safety Escalation</div>
+    <div class="phase-agents">Safety Guardian · Emergency Response · CLO · CPsychO</div>
+  </div>
+  <div class="phase-body">
+    <div class="step">
+      <div class="step-icon">🚨</div>
+      <div class="step-content">
+        <h3>SAFETY_HALT Triggered</h3>
+        <p>Pipeline stops. No Tier 3 output. Partner sees: "Your partner is taking a moment. We're ensuring everyone is safe."</p>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-icon">⚠️</div>
+      <div class="step-content">
+        <h3>HIGH Severity</h3>
+        <p>Localized crisis resources: US (988, DV hotline, 911) · Brazil (CVV 188, SAMU 192) · Israel (ERAN 1201). Compassionate AI messaging.</p>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-icon">🔴</div>
+      <div class="step-content">
+        <h3>CRITICAL Severity</h3>
+        <p>Route to 911/112/999. CLO notified within 5 minutes (duty-to-warn). Session locked — human clinical reviewer required. Post-crisis follow-ups: 24h, 72h, 7 days.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Phase 8 -->
+<div class="phase">
+  <div class="phase-header">
+    <div class="phase-number color-8">8</div>
+    <div class="phase-title">Subscription & Monetization</div>
+    <div class="phase-agents">CRO · CFO</div>
+  </div>
+  <div class="phase-body">
+    <div class="pricing-grid">
+      <div class="pricing-card">
+        <div style="font-weight:600; color:#666;">Free</div>
+        <div class="pricing-price">$0</div>
+        <ul class="pricing-features">
+          <li>Private journaling</li>
+          <li>Attachment quiz</li>
+          <li>AI reflections</li>
+          <li>Psychoeducation cards</li>
+        </ul>
+      </div>
+      <div class="pricing-card featured">
+        <div style="font-weight:600; color:#B2AC88;">Couples</div>
+        <div class="pricing-price">$19.99<span style="font-size:14px;color:#888">/mo</span></div>
+        <ul class="pricing-features">
+          <li>Everything in Free</li>
+          <li>SharedChat mediation</li>
+          <li>Weekly 60-min sessions</li>
+          <li>Progress tracking</li>
+          <li>Both partners included</li>
+        </ul>
+      </div>
+      <div class="pricing-card">
+        <div style="font-weight:600; color:#666;">Premium+</div>
+        <div class="pricing-price">$29.99<span style="font-size:14px;color:#888">/mo</span></div>
+        <ul class="pricing-features">
+          <li>Everything in Couples</li>
+          <li>Crisis priority response</li>
+          <li>Therapist handoff</li>
+          <li>Reserved response time</li>
+        </ul>
+      </div>
+    </div>
+    <p style="font-size: 12px; color: #888; margin-top: 12px; text-align: center;">Asymmetric funnel: solo paying user gets standalone value even without partner joining.</p>
+  </div>
+</div>
+
+<!-- Phase 9 -->
+<div class="phase">
+  <div class="phase-header">
+    <div class="phase-number color-9">9</div>
+    <div class="phase-title">Account Lifecycle & Data Rights</div>
+    <div class="phase-agents">CLO · DPO</div>
+  </div>
+  <div class="phase-body">
+    <div class="step">
+      <div class="step-icon">📤</div>
+      <div class="step-content">
+        <h3>Data Export</h3>
+        <p>GDPR Article 20 — JSON with Tier 1 + Tier 3 data. User-initiated via <code>GET /api/v1/account/export</code>.</p>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-icon">🗑️</div>
+      <div class="step-content">
+        <h3>Account Deletion</h3>
+        <p>24h grace period → cancel allowed → cascade purge across both databases. Immutable deletion audit preserved.</p>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-icon">⏰</div>
+      <div class="step-content">
+        <h3>Automatic Data Lifecycle</h3>
+        <p>Tier 1 messages: 90-day auto-purge. Cosmos DB observations: 90-day TTL. DPO mandate enforced.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="divider"></div>
+
+<!-- Agent-to-Touchpoint Map -->
+<h2 style="font-family:'DM Serif Display',serif; margin-bottom:16px;">Agent-to-Touchpoint Map</h2>
+
+<table class="agent-table">
+  <thead>
+    <tr>
+      <th>Touchpoint</th>
+      <th>Screen / API</th>
+      <th>Active Agents</th>
+      <th>Data Tier</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr><td>Landing page</td><td>landing-v2</td><td>CMO</td><td>—</td></tr>
+    <tr><td>Biometric gate</td><td>BiometricLockScreen</td><td>Native Mobile Dev</td><td>—</td></tr>
+    <tr><td>Login</td><td>LoginScreen</td><td>Backend Developer</td><td>—</td></tr>
+    <tr><td>Legal consent</td><td>ConsentScreen</td><td>CLO, DPO</td><td>Auth DB</td></tr>
+    <tr><td>Age verification</td><td>AgeVerifyScreen</td><td>CLO</td><td>Auth DB</td></tr>
+    <tr><td>Privacy explainer</td><td>PrivacyExplainerScreen</td><td>UI/UX, CTO</td><td>—</td></tr>
+    <tr><td>Attachment quiz</td><td>AttachmentQuizScreen</td><td>Individual Profiler</td><td><span class="tier-badge tier2">Tier 2</span></td></tr>
+    <tr><td>Psychoeducation</td><td>PsychoeducationCards</td><td>Psychoeducation Agent</td><td>—</td></tr>
+    <tr><td>Partner invite</td><td>InvitePartnerScreen</td><td>Backend Developer</td><td><span class="tier-badge tier3">Tier 3</span></td></tr>
+    <tr><td>Partner accept</td><td>AcceptInviteScreen</td><td>Backend Developer</td><td><span class="tier-badge tier3">Tier 3</span></td></tr>
+    <tr style="background:#F8F8F5; font-weight:600;"><td>Mediated chat</td><td>SharedChatScreen</td><td>Safety Guardian, Orchestrator, Profiler, Coach, DPO</td><td><span class="tier-badge tier1">1</span> → <span class="tier-badge tier3">3</span></td></tr>
+    <tr><td>Private journal</td><td>PrivateJournalScreen</td><td>Individual Profiler</td><td><span class="tier-badge tier1">Tier 1</span></td></tr>
+    <tr><td>Crisis response</td><td>CrisisScreen</td><td>Emergency Response, Safety Guardian, CLO</td><td><span class="tier-badge tier1">Tier 1</span></td></tr>
+    <tr><td>Progress view</td><td>(planned)</td><td>Progress Tracker</td><td><span class="tier-badge tier3">Tier 3</span></td></tr>
+    <tr><td>Data export</td><td>/account/export</td><td>DPO, CLO</td><td>All tiers</td></tr>
+    <tr><td>Account deletion</td><td>/account/delete</td><td>DPO, CLO</td><td>All tiers</td></tr>
+    <tr><td>Admin dashboard</td><td>Admin UI</td><td>CPsychO, Backend Dev</td><td><span class="tier-badge tier3">Tier 3 only</span></td></tr>
+  </tbody>
+</table>
+
+<div class="footer">
+  <p>Relio v3.0.0 · March 2026 · Confidential</p>
+  <p>38 AI Agents · 3 Pods · 156 Tests · Azure Sweden Central</p>
+</div>
+
+</body>
+</html>
