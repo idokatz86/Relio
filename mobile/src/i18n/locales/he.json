@@ -45,8 +45,9 @@
     "relationshipDesc": "עזור/עזרי לנו להתאים את החוויה שלך.",
     "statusQuestion": "מצב הזוגיות:",
     "dating": "בזוגיות",
-    "engaged": "מאורסים",
     "married": "נשואים",
+    "preDivorced": "לפני גירושין",
+    "divorced": "גרושים",
     "letsGo": "בוא נתחיל!"
   },
   "chat": {

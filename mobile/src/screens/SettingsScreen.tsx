@@ -32,13 +32,24 @@ export function SettingsScreen({ userId, onLogout }: SettingsScreenProps) {
   const handleDeleteData = () => {
     Alert.alert(
       t('settings.deleteConfirmTitle'),
-      t('settings.deleteConfirmMsg'),
+      'This will permanently delete your account, all journal entries, chat history, and partner pairing. This cannot be undone.',
       [
         { text: t('common.cancel'), style: 'cancel' },
         {
           text: t('settings.deleteConfirmButton'),
           style: 'destructive',
           onPress: async () => {
+            try {
+              // Call server-side deletion endpoint (Apple 5.1.1v requirement)
+              const API_URL = 'https://relio-backend.livelytree-6981c681.swedencentral.azurecontainerapps.io';
+              await fetch(`${API_URL}/api/v1/account/delete`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ userId }),
+              });
+            } catch {
+              // Server deletion may fail if offline — still clear local data
+            }
             await clearAllData();
             onLogout();
           },
@@ -55,7 +66,7 @@ export function SettingsScreen({ userId, onLogout }: SettingsScreenProps) {
       [
         { text: 'Cancel', style: 'cancel' },
         { text: 'Call Hotline', onPress: () => Linking.openURL('tel:18007997233') },
-        { text: 'Email Report', onPress: () => Linking.openURL('mailto:safety@relio.app') },
+        { text: 'Email Report', onPress: () => Linking.openURL('mailto:safety@myrelio.io') },
       ],
     );
   };

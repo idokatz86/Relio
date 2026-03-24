@@ -2,7 +2,7 @@
   "expo": {
     "name": "Relio",
     "slug": "relio",
-    "version": "0.1.0",
+    "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
@@ -14,6 +14,7 @@
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.relio.app",
+      "buildNumber": "1",
       "infoPlist": {
         "NSFaceIDUsageDescription": "Relio uses Face ID to protect your private journal entries.",
         "ITSAppUsesNonExemptEncryption": false
@@ -25,6 +26,7 @@
         "backgroundColor": "#F5EFE7"
       },
       "package": "com.relio.app",
+      "versionCode": 1,
       "permissions": [
         "USE_BIOMETRIC",
         "USE_FINGERPRINT",
@@ -38,7 +40,8 @@
       "expo-local-authentication",
       "expo-asset",
       "expo-font",
-      "expo-localization"
+      "expo-localization",
+      "@sentry/react-native"
     ],
     "extra": {
       "eas": {

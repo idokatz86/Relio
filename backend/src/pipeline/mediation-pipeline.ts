@@ -11,6 +11,8 @@ import { checkSafety } from '../agents/safety-guardian.js';
 import { routeMessage } from '../agents/orchestrator.js';
 import { profileUser } from '../agents/individual-profiler.js';
 import { transformToSocratic } from '../agents/communication-coach.js';
+import { redactPII } from '../privacy/pii-redactor.js';
+import { validateNoPiiLeak } from '../privacy/pii-validator.js';
 import type { AgentName, PipelineResult } from '../types/index.js';
 
 /**
@@ -29,7 +31,11 @@ export async function processMessage(
   const startTime = Date.now();
   const agentsInvoked: AgentName[] = [];
 
+  // === PRE-FLIGHT: PII Redaction (strip names, emails, phones before any LLM call) ===
+  const { redacted: safeMessage, entities: piiEntities } = redactPII(message);
+
   // === STEP 1: Safety Guardian (non-negotiable, always first) ===
+  // Safety Guardian sees the ORIGINAL message for accurate crisis detection
   agentsInvoked.push('safety-guardian');
   const safetyCheck = await checkSafety(message);
 
@@ -43,17 +49,23 @@ export async function processMessage(
   }
 
   // === STEPS 2 & 3: Orchestrator + Profiler (PARALLEL — no data dependency) ===
+  // These agents see the REDACTED message (no PII)
   agentsInvoked.push('orchestrator', 'individual-profiler');
   const [routing, profile] = await Promise.all([
-    routeMessage(message),
-    profileUser(userId, message),
+    routeMessage(safeMessage),
+    profileUser(userId, safeMessage),
   ]);
 
   // === STEP 4: Communication Coach (Tier 1 → Tier 3 translation) ===
-  // Issue #141: Pass preferredLanguage for language-aware Socratic output
+  // Coach sees the REDACTED message — generates Socratic output without PII
   agentsInvoked.push('communication-coach');
   const context = `Attachment: ${profile.attachmentStyle} (${profile.attachmentConfidence}), State: ${profile.activationState}, Intent: ${routing.intent}, Intensity: ${routing.emotionalIntensity}/10, Language: ${preferredLanguage}`;
-  const tier3Output = await transformToSocratic(message, context);
+  let tier3Output = await transformToSocratic(safeMessage, context);
+
+  // === POST-FLIGHT: Validate no PII leaked into Tier 3 output ===
+  if (tier3Output && piiEntities.length > 0) {
+    tier3Output = validateNoPiiLeak(tier3Output, piiEntities);
+  }
 
   return {
     safetyCheck,

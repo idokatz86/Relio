@@ -12,6 +12,8 @@ import { Router } from 'express';
 import type { Request, Response } from 'express';
 import { z } from 'zod';
 import type { AuthenticatedUser } from '../auth/auth-service.js';
+import { isInMemoryMode } from '../db/pool.js';
+import * as deletionRepo from '../db/repositories/deletion-repo.js';
 
 const router = Router();
 
@@ -45,7 +47,7 @@ const DeleteRequestSchema = z.object({
  * POST /delete — Request account deletion.
  * Starts 24h grace period. User can cancel within window.
  */
-router.post('/delete', (req: Request, res: Response) => {
+router.post('/delete', async (req: Request, res: Response) => {
   const parsed = DeleteRequestSchema.safeParse(req.body);
   if (!parsed.success) {
     res.status(400).json({ error: 'Invalid request', details: parsed.error.issues });
@@ -53,6 +55,35 @@ router.post('/delete', (req: Request, res: Response) => {
   }
 
   const user = (req as any).user as AuthenticatedUser;
+
+  if (!isInMemoryMode()) {
+    try {
+      const existing = await deletionRepo.getDeletionRequest(user.id);
+      if (existing && !existing.cancelled_at && !existing.purged_at) {
+        res.status(409).json({
+          error: 'Deletion already scheduled',
+          scheduledPurgeAt: existing.scheduled_purge_at,
+          canCancelUntil: existing.scheduled_purge_at,
+        });
+        return;
+      }
+
+      const request = await deletionRepo.requestDeletion(user.id, parsed.data.reason ?? null);
+      res.json({
+        scheduled: true,
+        scheduledPurgeAt: request.scheduled_purge_at,
+        graceHours: 24,
+        message: 'Your account is scheduled for deletion. You can cancel within 24 hours.',
+      });
+      return;
+    } catch (err) {
+      console.error('[Account] DB delete error:', err);
+      res.status(500).json({ error: 'Failed to schedule deletion' });
+      return;
+    }
+  }
+
+  // In-memory fallback
   const existing = deletionQueue.get(user.id);
 
   if (existing && !existing.cancelled && !existing.purged) {
@@ -89,8 +120,26 @@ router.post('/delete', (req: Request, res: Response) => {
 /**
  * POST /delete/cancel — Cancel pending deletion within grace period.
  */
-router.post('/delete/cancel', (req: Request, res: Response) => {
+router.post('/delete/cancel', async (req: Request, res: Response) => {
   const user = (req as any).user as AuthenticatedUser;
+
+  if (!isInMemoryMode()) {
+    try {
+      const cancelled = await deletionRepo.cancelDeletion(user.id);
+      if (!cancelled) {
+        res.status(404).json({ error: 'No pending deletion request found' });
+        return;
+      }
+      res.json({ cancelled: true, message: 'Account deletion cancelled. Your data is safe.' });
+      return;
+    } catch (err) {
+      console.error('[Account] DB cancel error:', err);
+      res.status(500).json({ error: 'Failed to cancel deletion' });
+      return;
+    }
+  }
+
+  // In-memory fallback
   const request = deletionQueue.get(user.id);
 
   if (!request || request.cancelled || request.purged) {
@@ -110,8 +159,36 @@ router.post('/delete/cancel', (req: Request, res: Response) => {
 /**
  * GET /delete/status — Check deletion status.
  */
-router.get('/delete/status', (req: Request, res: Response) => {
+router.get('/delete/status', async (req: Request, res: Response) => {
   const user = (req as any).user as AuthenticatedUser;
+
+  if (!isInMemoryMode()) {
+    try {
+      const request = await deletionRepo.getDeletionRequest(user.id);
+      if (!request) {
+        res.json({ hasPendingDeletion: false });
+        return;
+      }
+      const now = new Date();
+      const purgeAt = new Date(request.scheduled_purge_at);
+      const remainingMs = Math.max(0, purgeAt.getTime() - now.getTime());
+
+      res.json({
+        hasPendingDeletion: !request.cancelled_at && !request.purged_at,
+        scheduledPurgeAt: request.scheduled_purge_at,
+        remainingHours: Math.ceil(remainingMs / (60 * 60 * 1000)),
+        cancelled: !!request.cancelled_at,
+        purged: !!request.purged_at,
+      });
+      return;
+    } catch (err) {
+      console.error('[Account] DB status error:', err);
+      res.status(500).json({ error: 'Failed to get deletion status' });
+      return;
+    }
+  }
+
+  // In-memory fallback
   const request = deletionQueue.get(user.id);
 
   if (!request) {
@@ -171,7 +248,35 @@ router.get('/export', async (req: Request, res: Response) => {
  * In production, this runs as a scheduled Azure Function or pg_cron job.
  * For now, called on server startup and every hour.
  */
-export function processDeletionQueue(): number {
+export async function processDeletionQueue(): Promise<number> {
+  // DB mode: use deletion-repo's executeDeletion for expired requests
+  if (!isInMemoryMode()) {
+    try {
+      const { getTier3Pool } = await import('../db/pool.js');
+      const pool = getTier3Pool();
+      const result = await pool.query<{ user_id: string }>(
+        `SELECT user_id FROM deletion_requests
+         WHERE cancelled_at IS NULL AND purged_at IS NULL
+           AND scheduled_purge_at <= now()`,
+      );
+      let purged = 0;
+      for (const row of result.rows) {
+        try {
+          await deletionRepo.executeDeletion(row.user_id);
+          purged++;
+        } catch (err) {
+          console.error(`[Account] Failed to purge user ${row.user_id}:`, err);
+        }
+      }
+      if (purged > 0) console.log(`[Account] Purged ${purged} accounts via DB`);
+      return purged;
+    } catch (err) {
+      console.error('[Account] DB purge check failed:', err);
+      return 0;
+    }
+  }
+
+  // In-memory fallback
   const now = new Date();
   let purged = 0;
 

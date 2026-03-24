@@ -12,11 +12,10 @@ When a user completes onboarding with a relationship stage selection, route thei
 
 | User Selection | Internal Stage | Phase Agent | Fallback |
 |---------------|---------------|-------------|----------|
-| "We're just getting started" | `dating` | `phase-dating` | Default if skipped |
-| "We're building something real" | `commitment` | `phase-commitment` | — |
-| "We're in a rough patch" | `crisis` | `phase-crisis` | — |
-| "We're navigating a transition" | `separation` | `phase-separation` | — |
-| "We're co-parenting" | `post_divorce` | `phase-post-divorce` | — |
+| "We're dating" | `dating` | `phase-dating` | Default if skipped |
+| "We're married" | `married` | `phase-married` | — |
+| "We're going through a rough patch" | `pre_divorced` | `phase-pre-divorced` | — |
+| "We're separated / divorced" | `divorced` | `phase-divorced` | — |
 | "I'd rather not say" | `dating` | `phase-dating` | Adaptive re-route after session 1 |
 
 - If user selects "I'd rather not say", default to `phase-dating` but flag the session for adaptive routing
@@ -48,7 +47,7 @@ When two users become coupled (invite accepted):
 - First couple session: both users receive welcome message
 - Orchestrator runs parallel Safety Guardian check on both users' history
 - Phase agent selected based on Partner A's stage (Partner B's stage is secondary input)
-- If stages conflict (A=dating, B=crisis): use the MORE severe stage (crisis)
+- If stages conflict (A=dating, B=pre_divorced): use the MORE severe stage (pre_divorced)
 
 ## Step 5: Safety Integration During Onboarding
 - Safety Guardian is ACTIVE from the first message (no delay, no warmup)
@@ -70,6 +69,6 @@ Before routing any new user:
 ## Constraints
 - NEVER skip Safety Guardian monitoring for new users (even during onboarding)
 - NEVER reveal Partner A's stage selection to Partner B
-- NEVER use clinical labels in user-facing outputs ("crisis" → "rough patch")
+- NEVER use clinical labels in user-facing outputs ("pre-divorced" → "going through a rough patch")
 - NEVER pressurize solo users to invite a partner (solo is a valid permanent state)
 - Always allow stage re-selection from Settings without losing conversation history

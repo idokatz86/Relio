@@ -7,6 +7,77 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [3.0.0] - 2026-03-24
+### Added — Sprint 13: Data Layer, Privacy & Scale
+- **PostgreSQL Data Layer** — Full production-ready persistence layer replacing all in-memory Maps (#65)
+  - Dual connection pool manager (`pool.ts`) for Tier 1 + Tier 3 physical database isolation
+  - 4 repository modules: `tier1-repo.ts` (RLS-protected), `tier3-repo.ts`, `auth-repo.ts`, `deletion-repo.ts`
+  - Idempotent schema migration runner (`migrate.ts`) — applies SQL schemas on startup when `AUTO_MIGRATE=true`
+  - All 5 routers wired to DB with graceful in-memory fallback for local dev
+  - Docker Compose with PostgreSQL 16 service + init script for `relio_tier3_shared` database
+  - `pg` driver added to dependencies
+- **PII Redaction Pipeline** — Pre-flight and post-flight privacy enforcement (S4-T4)
+  - `pii-redactor.ts` — Regex-based detection of names, emails, phones, addresses, SSNs, URLs
+  - `pii-validator.ts` — Post-flight scan ensuring no PII leaks into Tier 3 LLM output
+  - Pipeline wired: redaction before Orchestrator/Profiler/Coach, validation after Coach
+  - Safety Guardian sees original (un-redacted) message for accurate crisis detection
+- **Canary Leak Detection Tests** — `fullstack-qa` agent mandate fulfilled (S5-3)
+  - 44 tests injecting 7 unique canary strings (including Unicode Hebrew/Chinese)
+  - Verifies canaries NEVER appear in: REST responses, WebSocket broadcasts, admin APIs, error payloads, response headers
+  - Deep JSON recursive scanner catches double-encoded leaks
+  - Compound injection test (all 7 canaries in one message)
+  - Sequential isolation test (canary from request N doesn't bleed to N+1)
+- **WebSocket Relay** — Redis pub/sub for cross-replica message fan-out (`cloud-architect` mandate)
+  - `ws-relay.ts` — Publish/subscribe relay using separate Redis clients
+  - Room lifecycle: subscribe on first connection, unsubscribe on last disconnect
+  - Local EventEmitter fallback for single-replica mode (no Redis required)
+  - App.ts WebSocket handler updated to use relay for all Tier 3 broadcasts
+- **Integration Test Suite** — 20-test full user journey (`integration.test.ts`)
+  - Health, waitlist, mediate (auth, validation, oversized), consent (accept, status, age), invite (create, status, accept), admin (auth, unauthorized), account (export, delete, cancel), security headers, CORS, rate limiting
+- **Server Auto-Start Guard** — `app.ts` no longer calls `start()` on import (prevents port conflicts in parallel test suites)
+
+### Changed
+- `isInMemoryMode()` now returns `true` when pools are uninitialized (fixes test environment detection)
+- Pipeline uses redacted messages for Orchestrator, Profiler, and Coach (original preserved for Safety Guardian only)
+- Test suite: **156 passing** (was 61), 21 skipped, across 7 test files (was 3)
+- `.env.example` updated with uncommented PostgreSQL URLs and `AUTO_MIGRATE=true`
+
+### Test Coverage
+| Test File | Tests | Focus |
+|-----------|-------|---------|
+| `canary-leak.test.ts` | 44 | Privacy: Tier 1 → Tier 3 leak prevention |
+| `integration.test.ts` | 20 | Full API user journey |
+| `pii-redaction.test.ts` | 18 | PII detection + post-flight validation |
+| `ws-relay.test.ts` | 13 | Cross-replica WebSocket relay |
+| `safety-multilang.test.ts` | 50 | Crisis keyword pre-screen (4 languages) |
+| `pipeline.test.ts` | 3 | Pipeline unit tests |
+| `canary.test.ts` | 8 | Basic canary checks |
+| **Total** | **156** | |
+
+## [2.6.0] - 2026-03-24
+### Added
+- **Market Validation Survey** — 14-question survey in English and Hebrew with multiple-choice answers, country dropdown (41 countries), willingness-to-pay, urgency scale, and feature prioritization (#150)
+  - Google Apps Script auto-generator (`scripts/create_validation_forms_v2.gs`)
+  - Survey reference files (`scripts/survey_english.md`, `scripts/survey_hebrew.md`)
+  - Facebook post copy in EN and HE
+- **Landing Page v2** — React + Tailwind CSS + Framer Motion (`landing-v2/`)
+  - Hero section: "Love isn't broken. It's just waiting to be rediscovered."
+  - About section: "Why Relio? Because some things are meant to be fixed." with 3 pillar cards
+  - Waitlist form with email capture (`relio_waitlist` table schema: id, email, first_name, created_at)
+  - Pulsing heart footer animation ("Relationship Pulse")
+  - Sage green (#B2AC88) / warm cream (#FFFDD0) / charcoal theme
+  - DM Serif Display + Plus Jakarta Sans typography
+  - No semicolons constraint honored
+- **Azure Static Web App deployment** — Landing page live at `https://white-river-02b19f103.1.azurestaticapps.net`
+  - Resource group: `rg-relio-landing` (West Europe, Free tier)
+  - Security headers: X-Frame-Options DENY, X-Content-Type-Options nosniff, Referrer-Policy strict-origin-when-cross-origin
+
+### Pre-Seed Fundraise Analysis
+- Revised valuation: $4M post-money (2 co-founders from Microsoft/Oracle/Fintech)
+- Recommended raise: $600K–$800K on post-money SAFE
+- Equity: 10–15% to investors, 37.5%/37.5% co-founder split, 5% clinical co-founder reserve, 10% ESOP, 2.5% advisors
+- 90-day market validation playbook with specific channels, metrics, and thresholds
+
 ## [2.5.0] - 2026-03-17
 ### Added
 - **Sprint 11: i18n Translations** — 5 issues closed

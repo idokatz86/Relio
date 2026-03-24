@@ -14,6 +14,9 @@
 import { Router } from 'express';
 import type { Request, Response } from 'express';
 import { z } from 'zod';
+import { isInMemoryMode } from '../db/pool.js';
+import * as tier1Repo from '../db/repositories/tier1-repo.js';
+import * as tier3Repo from '../db/repositories/tier3-repo.js';
 
 const router = Router();
 
@@ -126,18 +129,37 @@ function logAdminAction(req: Request, endpoint: string): void {
 // ── Routes ──────────────────────────────────────────────────
 
 // Overview stats
-router.get('/stats/overview', adminAuthMiddleware, (req: Request, res: Response) => {
+router.get('/stats/overview', adminAuthMiddleware, async (req: Request, res: Response) => {
   logAdminAction(req, '/admin/stats/overview');
 
-  const userCount = adminStats.userRegistry.size || adminStats.totalUsers;
-  const rooms = Array.from(adminStats.roomRegistry.values());
-  const couples = rooms.filter(r => r.userB !== null).length;
-  const solo = userCount - (couples * 2);
+  let userCount: number;
+  let couples: number;
+  let solo: number;
+
+  if (!isInMemoryMode()) {
+    try {
+      userCount = await tier1Repo.countUsers();
+      const roomCounts = await tier3Repo.countRooms();
+      couples = roomCounts.paired;
+      solo = Math.max(0, userCount - (couples * 2));
+    } catch (err) {
+      console.error('[Admin] DB stats error, falling back to in-memory:', err);
+      userCount = adminStats.userRegistry.size || adminStats.totalUsers;
+      const rooms = Array.from(adminStats.roomRegistry.values());
+      couples = rooms.filter(r => r.userB !== null).length;
+      solo = Math.max(0, userCount - (couples * 2));
+    }
+  } else {
+    userCount = adminStats.userRegistry.size || adminStats.totalUsers;
+    const rooms = Array.from(adminStats.roomRegistry.values());
+    couples = rooms.filter(r => r.userB !== null).length;
+    solo = Math.max(0, userCount - (couples * 2));
+  }
 
   res.json({
     totalUsers: userCount,
     activeCouples: kAnonymize(couples),
-    soloUsers: kAnonymize(Math.max(0, solo)),
+    soloUsers: kAnonymize(solo),
     messagesToday: adminStats.messagesToday,
     safetyHaltsToday: adminStats.safetyHaltsToday,
     avgPipelineLatencyMs: adminStats.pipelineLatencyMs.length > 0

@@ -12,6 +12,8 @@ import { Router } from 'express';
 import type { Request, Response } from 'express';
 import { z } from 'zod';
 import type { AuthenticatedUser } from './auth-service.js';
+import { isInMemoryMode } from '../db/pool.js';
+import * as authRepo from '../db/repositories/auth-repo.js';
 
 const router = Router();
 
@@ -80,9 +82,38 @@ function logAudit(entry: Omit<ConsentAuditEntry, 'id' | 'timestamp'>): void {
 // ── Routes ───────────────────────────────────────────────────
 
 // Get consent status for current user
-router.get('/status', (req: Request, res: Response) => {
+router.get('/status', async (req: Request, res: Response) => {
   const user = (req as any).user as AuthenticatedUser;
-  const consent = consentStore.get(user.id);
+
+  let consent: { tosVersion: string | null; tosAcceptedAt: string | null; privacyVersion: string | null; privacyAcceptedAt: string | null; ageVerified: boolean } | null = null;
+
+  if (!isInMemoryMode()) {
+    try {
+      const record = await authRepo.getConsentRecord(user.id);
+      if (record) {
+        consent = {
+          tosVersion: record.tos_version,
+          tosAcceptedAt: record.tos_accepted_at,
+          privacyVersion: record.privacy_version,
+          privacyAcceptedAt: record.privacy_accepted_at,
+          ageVerified: record.age_verified,
+        };
+      }
+    } catch (err) {
+      console.error('[Consent] DB status error:', err);
+    }
+  } else {
+    const mem = consentStore.get(user.id);
+    if (mem) {
+      consent = {
+        tosVersion: mem.tosVersion,
+        tosAcceptedAt: mem.tosAcceptedAt,
+        privacyVersion: mem.privacyVersion,
+        privacyAcceptedAt: mem.privacyAcceptedAt,
+        ageVerified: mem.ageVerified,
+      };
+    }
+  }
 
   res.json({
     hasConsented: !!consent,
@@ -103,7 +134,7 @@ router.get('/status', (req: Request, res: Response) => {
 });
 
 // Accept ToS + Privacy Policy
-router.post('/accept', (req: Request, res: Response) => {
+router.post('/accept', async (req: Request, res: Response) => {
   const parsed = AcceptConsentSchema.safeParse(req.body);
   if (!parsed.success) {
     res.status(400).json({ error: 'Invalid consent data', details: parsed.error.issues });
@@ -112,6 +143,44 @@ router.post('/accept', (req: Request, res: Response) => {
 
   const user = (req as any).user as AuthenticatedUser;
   const now = new Date().toISOString();
+
+  if (!isInMemoryMode()) {
+    try {
+      const existing = await authRepo.getConsentRecord(user.id);
+      const isReAcceptTos = existing && existing.tos_version !== parsed.data.tosVersion;
+      const isReAcceptPrivacy = existing && existing.privacy_version !== parsed.data.privacyVersion;
+
+      await authRepo.insertConsentRecord(
+        user.id,
+        parsed.data.tosVersion,
+        parsed.data.privacyVersion,
+        existing?.age_verified ?? false,
+      );
+      await authRepo.insertConsentAudit(
+        user.id,
+        isReAcceptTos ? 're_accept_tos' : 'accept_tos',
+        parsed.data.tosVersion,
+        req.ip || 'unknown',
+        req.headers['user-agent'] || 'unknown',
+      );
+      await authRepo.insertConsentAudit(
+        user.id,
+        isReAcceptPrivacy ? 're_accept_privacy' : 'accept_privacy',
+        parsed.data.privacyVersion,
+        req.ip || 'unknown',
+        req.headers['user-agent'] || 'unknown',
+      );
+
+      res.json({ accepted: true, tosVersion: parsed.data.tosVersion, privacyVersion: parsed.data.privacyVersion });
+      return;
+    } catch (err) {
+      console.error('[Consent] DB accept error:', err);
+      res.status(500).json({ error: 'Failed to record consent' });
+      return;
+    }
+  }
+
+  // In-memory fallback
   const existing = consentStore.get(user.id);
 
   consentStore.set(user.id, {
@@ -148,7 +217,7 @@ router.post('/accept', (req: Request, res: Response) => {
 });
 
 // Age verification
-router.post('/verify-age', (req: Request, res: Response) => {
+router.post('/verify-age', async (req: Request, res: Response) => {
   const parsed = AgeVerifySchema.safeParse(req.body);
   if (!parsed.success) {
     res.status(400).json({ error: 'Invalid date of birth', details: parsed.error.issues });
@@ -165,6 +234,30 @@ router.post('/verify-age', (req: Request, res: Response) => {
   }
 
   const user = (req as any).user as AuthenticatedUser;
+
+  if (!isInMemoryMode()) {
+    try {
+      const existing = await authRepo.getConsentRecord(user.id);
+      await authRepo.insertConsentRecord(
+        user.id,
+        existing?.tos_version ?? '',
+        existing?.privacy_version ?? '',
+        true,
+      );
+      await authRepo.insertConsentAudit(
+        user.id, 'verify_age', `age=${age}`,
+        req.ip || 'unknown', req.headers['user-agent'] || 'unknown',
+      );
+      res.json({ verified: true, age });
+      return;
+    } catch (err) {
+      console.error('[Consent] DB verify-age error:', err);
+      res.status(500).json({ error: 'Failed to verify age' });
+      return;
+    }
+  }
+
+  // In-memory fallback
   const now = new Date().toISOString();
   const existing = consentStore.get(user.id) || {
     userId: user.id, tosVersion: '', tosAcceptedAt: '', privacyVersion: '', privacyAcceptedAt: '',
@@ -190,8 +283,26 @@ router.post('/verify-age', (req: Request, res: Response) => {
 });
 
 // Withdraw consent (GDPR right)
-router.post('/withdraw', (req: Request, res: Response) => {
+router.post('/withdraw', async (req: Request, res: Response) => {
   const user = (req as any).user as AuthenticatedUser;
+
+  if (!isInMemoryMode()) {
+    try {
+      await authRepo.deleteConsentRecord(user.id);
+      await authRepo.insertConsentAudit(
+        user.id, 'withdraw_consent', 'all',
+        req.ip || 'unknown', req.headers['user-agent'] || 'unknown',
+      );
+      res.json({ withdrawn: true });
+      return;
+    } catch (err) {
+      console.error('[Consent] DB withdraw error:', err);
+      res.status(500).json({ error: 'Failed to withdraw consent' });
+      return;
+    }
+  }
+
+  // In-memory fallback
   consentStore.delete(user.id);
 
   logAudit({
@@ -206,12 +317,23 @@ router.post('/withdraw', (req: Request, res: Response) => {
 });
 
 // Admin: get audit log
-router.get('/audit', (req: Request, res: Response) => {
+router.get('/audit', async (req: Request, res: Response) => {
   const user = (req as any).user as AuthenticatedUser;
   if (process.env.AUTH_DISABLED !== 'true' && user.role !== 'admin') {
     res.status(403).json({ error: 'Admin access required' });
     return;
   }
+
+  if (!isInMemoryMode()) {
+    try {
+      const entries = await authRepo.getConsentAuditEntries(100);
+      res.json({ entries, total: entries.length });
+      return;
+    } catch (err) {
+      console.error('[Consent] DB audit error:', err);
+    }
+  }
+
   res.json({ entries: auditLog.slice(-100), total: auditLog.length });
 });
 

@@ -12,4 +12,4 @@ Step 2: AI Presence
 Design the AI mediator's UI presence. It should feel like a supportive, neutral scaffold rather than an intrusive bot.
 
 Step 3: Structural Pause UI
-Design a frictionless, calming screen that takes over the interface when the phase-crisis agent triggers a mandatory 20-minute de-escalation timeout.
+Design a frictionless, calming screen that takes over the interface when the phase-pre-divorced agent triggers a mandatory 20-minute de-escalation timeout.

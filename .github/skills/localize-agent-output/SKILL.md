@@ -56,9 +56,9 @@ Example — Cross-language couple:
 ## Step 5: Phase Agents — Cultural Adaptation
 Each phase agent should be aware of cultural context:
 - **Phase-Dating**: Digital trust signals vary by culture (Israeli directness vs. Brazilian indirectness)
-- **Phase-Crisis**: Flooding detection language is culture-dependent
-- **Phase-Post-Divorce**: Co-parenting frameworks (BIFF/Gray Rock) are US-centric — adapt for Israeli/Brazilian family court contexts
-- **Phase-Separation**: Asset division norms differ by jurisdiction
+- **Phase-Married**: Conflict resolution norms and intimacy expectations are culture-dependent
+- **Phase-Pre-Divorced**: Asset division norms differ by jurisdiction; flooding detection language is culture-dependent
+- **Phase-Divorced**: Co-parenting frameworks (BIFF/Gray Rock) are US-centric — adapt for Israeli/Brazilian family court contexts
 
 ## Step 6: Quality Assurance
 For each supported language, evaluate:

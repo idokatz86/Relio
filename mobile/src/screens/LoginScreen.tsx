@@ -30,15 +30,22 @@ export function LoginScreen({ onLoginSuccess, onSignUp }: LoginScreenProps) {
     setLoading(true);
     setError('');
     try {
-      // TODO: Integrate with Azure AD B2C email flow
-      // For now, simulate a dev-mode login
-      if (process.env.NODE_ENV === 'development' || __DEV__) {
-        const devToken = 'dev-token';
-        const devUserId = '550e8400-e29b-41d4-a716-446655440000';
-        onLoginSuccess(devToken, devUserId);
+      const API_URL = 'https://relio-backend.livelytree-6981c681.swedencentral.azurecontainerapps.io';
+      const response = await fetch(`${API_URL}/api/v1/auth/login`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: email.trim() }),
+      });
+
+      if (!response.ok) {
+        const data = await response.json().catch(() => ({}));
+        throw new Error(data.message || 'Login failed');
       }
-    } catch (err) {
-      setError('Login failed. Please try again.');
+
+      const data = await response.json();
+      onLoginSuccess(data.token, data.userId);
+    } catch (err: any) {
+      setError(err.message || 'Login failed. Please try again.');
     } finally {
       setLoading(false);
     }
@@ -48,17 +55,21 @@ export function LoginScreen({ onLoginSuccess, onSignUp }: LoginScreenProps) {
     setLoading(true);
     setError('');
     try {
-      // TODO: Integrate with Azure AD B2C social IdP (#98)
-      // Apple: expo-apple-authentication
-      // Google: expo-auth-session
-      console.log(`[Auth] ${provider} login initiated`);
-      if (__DEV__) {
-        const devToken = 'dev-token';
-        const devUserId = '550e8400-e29b-41d4-a716-446655440000';
-        onLoginSuccess(devToken, devUserId);
+      const API_URL = 'https://relio-backend.livelytree-6981c681.swedencentral.azurecontainerapps.io';
+      const response = await fetch(`${API_URL}/api/v1/auth/social`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ provider }),
+      });
+
+      if (!response.ok) {
+        throw new Error(`${provider} login is not yet available. Please use email.`);
       }
-    } catch (err) {
-      setError(`${provider} login failed. Please try again.`);
+
+      const data = await response.json();
+      onLoginSuccess(data.token, data.userId);
+    } catch (err: any) {
+      setError(err.message || `${provider} login failed. Please try again.`);
     } finally {
       setLoading(false);
     }
@@ -77,6 +88,8 @@ export function LoginScreen({ onLoginSuccess, onSignUp }: LoginScreenProps) {
           style={[styles.socialButton, styles.appleButton]}
           onPress={() => handleSocialLogin('apple')}
           disabled={loading}
+          accessibilityLabel="Sign in with Apple"
+          accessibilityRole="button"
         >
           <Text style={styles.appleButtonText}>{t('login.signInApple')}</Text>
         </TouchableOpacity>
@@ -86,6 +99,8 @@ export function LoginScreen({ onLoginSuccess, onSignUp }: LoginScreenProps) {
           style={[styles.socialButton, styles.googleButton]}
           onPress={() => handleSocialLogin('google')}
           disabled={loading}
+          accessibilityLabel="Sign in with Google"
+          accessibilityRole="button"
         >
           <Text style={styles.googleButtonText}>{t('login.signInGoogle')}</Text>
         </TouchableOpacity>
@@ -107,12 +122,16 @@ export function LoginScreen({ onLoginSuccess, onSignUp }: LoginScreenProps) {
           autoCapitalize="none"
           autoCorrect={false}
           editable={!loading}
+          accessibilityLabel="Email address"
+          accessibilityHint="Enter your email to sign in"
         />
 
         <TouchableOpacity
           style={[styles.emailButton, loading && styles.buttonDisabled]}
           onPress={handleEmailLogin}
           disabled={loading}
+          accessibilityLabel="Sign in with email"
+          accessibilityRole="button"
         >
           {loading ? (
             <ActivityIndicator color="#fff" />

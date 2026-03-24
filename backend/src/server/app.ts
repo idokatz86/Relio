@@ -33,8 +33,14 @@ import { inviteRouter } from './invite-router.js';
 import { accountRouter } from './account-router.js';
 import { registerPushToken } from './push-notifications.js';
 import { abTestRouter } from './ab-test-router.js';
+import { initializePools, shutdownPools, getDbHealth, isInMemoryMode } from '../db/index.js';
+import { runMigrations } from '../db/migrate.js';
+import * as tier1Repo from '../db/repositories/tier1-repo.js';
+import * as tier3Repo from '../db/repositories/tier3-repo.js';
 import type { AuthenticatedUser } from '../auth/auth-service.js';
 import type { PipelineResult } from '../types/index.js';
+import { initRelay, publishTier3Message, subscribeToRoom, unsubscribeFromRoom, shutdownRelay } from '../infra/ws-relay.js';
+import type { Tier3Broadcast } from '../infra/ws-relay.js';
 
 // ── Zod Schemas (Issue #76) ─────────────────────────────────
 const MediateRequestSchema = z.object({
@@ -94,8 +100,9 @@ const authRateLimit = rateLimit({
 });
 
 // Health check (public, no auth required)
-app.get('/health', (_req: express.Request, res: express.Response) => {
-  res.json({ status: 'ok', timestamp: new Date().toISOString(), version: '1.8.0' });
+app.get('/health', async (_req: express.Request, res: express.Response) => {
+  const db = await getDbHealth();
+  res.json({ status: 'ok', timestamp: new Date().toISOString(), version: '1.8.0', db });
 });
 
 // ── Waitlist (public, no auth — pre-launch email capture) ────
@@ -284,7 +291,22 @@ wss.on('connection', async (ws, req) => {
   if (!rooms.has(roomId)) {
     rooms.set(roomId, new Map());
   }
+  const isFirstInRoom = rooms.get(roomId)!.size === 0;
   rooms.get(roomId)!.set(userId, { ws, userId });
+
+  // Subscribe this replica to the room's Redis channel (first local connection triggers it)
+  if (isFirstInRoom) {
+    await subscribeToRoom(roomId, (msg: Tier3Broadcast) => {
+      // Relay: broadcast to all local connections in this room except the sender
+      const localRoom = rooms.get(roomId);
+      if (!localRoom) return;
+      for (const [memberId, member] of localRoom) {
+        if (memberId !== msg.data.fromUserId && member.ws.readyState === WebSocket.OPEN) {
+          member.ws.send(JSON.stringify(msg));
+        }
+      }
+    });
+  }
 
   ws.send(JSON.stringify({
     type: 'connected',
@@ -329,6 +351,27 @@ wss.on('connection', async (ws, req) => {
 
       const result = await processMessage(userId, rawMessage);
 
+      // Persist to database (non-blocking — don't fail the WS flow)
+      if (!isInMemoryMode()) {
+        try {
+          await tier1Repo.insertTier1Message(
+            roomId, userId, rawMessage,
+            result.safetyCheck.severity,
+            result.safetyCheck.halt,
+            result.safetyCheck.reasoning ?? null,
+          );
+          if (result.tier3Output && !result.safetyCheck.halt) {
+            await tier3Repo.insertTier3Message(
+              roomId, userId, result.tier3Output,
+              result.agentsInvoked, result.processingTimeMs,
+              result.safetyCheck.severity,
+            );
+          }
+        } catch (dbErr) {
+          console.error('[WS] DB persistence error (non-fatal):', dbErr);
+        }
+      }
+
       // Send result to sender (they see their own data in private journal)
       ws.send(JSON.stringify({
         type: 'pipeline_result',
@@ -347,8 +390,9 @@ wss.on('connection', async (ws, req) => {
       }));
 
       // Mandate #3: Data Stripping — broadcast ONLY Tier 3 to partner
+      // Publish via Redis relay so all replicas receive it (#87)
       if (result.tier3Output && !result.safetyCheck.halt) {
-        const tier3Broadcast = {
+        const tier3Broadcast: Tier3Broadcast = {
           type: 'tier3_message',
           data: {
             content: result.tier3Output,
@@ -358,14 +402,7 @@ wss.on('connection', async (ws, req) => {
           },
         };
 
-        const room = rooms.get(roomId);
-        if (room) {
-          for (const [memberId, member] of room) {
-            if (memberId !== userId && member.ws.readyState === WebSocket.OPEN) {
-              member.ws.send(JSON.stringify(tier3Broadcast));
-            }
-          }
-        }
+        await publishTier3Message(roomId, tier3Broadcast);
       }
     } catch (err) {
       console.error('[WS] Message processing error:', err);
@@ -373,12 +410,16 @@ wss.on('connection', async (ws, req) => {
     }
   });
 
-  ws.on('close', () => {
+  ws.on('close', async () => {
     clearInterval(heartbeat);
     const room = rooms.get(roomId);
     if (room) {
       room.delete(userId);
-      if (room.size === 0) rooms.delete(roomId);
+      if (room.size === 0) {
+        rooms.delete(roomId);
+        // Last local connection left — unsubscribe from Redis channel
+        await unsubscribeFromRoom(roomId);
+      }
     }
   });
 });
@@ -405,13 +446,51 @@ function stripTier1Data(result: PipelineResult, senderId: string) {
 // ── Start Server ─────────────────────────────────────────────
 const PORT = parseInt(process.env.PORT ?? '3001', 10);
 
-server.listen(PORT, () => {
-  const authStatus = process.env.AUTH_DISABLED === 'true' ? '⚠️  AUTH DISABLED (dev mode)' : '🔒 JWT auth enabled';
-  console.log(`🟢 Relio API Server v1.7.0 on http://localhost:${PORT}`);
-  console.log(`   ${authStatus}`);
-  console.log(`   WebSocket: ws://localhost:${PORT}/ws`);
-  console.log(`   REST API:  http://localhost:${PORT}/api/v1/mediate`);
-  console.log(`   Health:    http://localhost:${PORT}/health`);
-});
+// ── Startup ──────────────────────────────────────────────────
+async function start() {
+  // Initialize database pools (falls back to in-memory when env vars missing)
+  try {
+    await initializePools();
+    if (!isInMemoryMode() && process.env.AUTO_MIGRATE === 'true') {
+      const { applied, failed } = await runMigrations();
+      if (failed.length > 0) {
+        console.error('[Startup] Migration failures:', failed);
+      }
+    }
+  } catch (err) {
+    console.error('[Startup] DB initialization failed — falling back to in-memory:', err);
+  }
+
+  // Initialize Redis pub/sub relay for cross-replica WebSocket fan-out (#87)
+  await initRelay(process.env.REDIS_URL);
+
+  server.listen(PORT, () => {
+    const authStatus = process.env.AUTH_DISABLED === 'true' ? '⚠️  AUTH DISABLED (dev mode)' : '🔒 JWT auth enabled';
+    const dbStatus = isInMemoryMode() ? '💾 In-memory (no PG)' : '🐘 PostgreSQL connected';
+    console.log(`🟢 Relio API Server v1.8.0 on http://localhost:${PORT}`);
+    console.log(`   ${authStatus}`);
+    console.log(`   ${dbStatus}`);
+    console.log(`   WebSocket: ws://localhost:${PORT}/ws`);
+    console.log(`   REST API:  http://localhost:${PORT}/api/v1/mediate`);
+    console.log(`   Health:    http://localhost:${PORT}/health`);
+  });
+}
+
+// ── Graceful Shutdown ────────────────────────────────────────
+async function shutdown(signal: string) {
+  console.log(`\n[Shutdown] ${signal} received — closing gracefully`);
+  server.close();
+  await shutdownRelay();
+  await shutdownPools();
+  process.exit(0);
+}
+process.on('SIGINT', () => shutdown('SIGINT'));
+process.on('SIGTERM', () => shutdown('SIGTERM'));
+
+// Only auto-start when run directly (not imported by tests)
+const isDirectRun = process.argv[1]?.includes('app.js') || process.argv[1]?.includes('app.ts');
+if (isDirectRun) {
+  start();
+}
 
 export { app, server };

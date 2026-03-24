@@ -18,9 +18,29 @@
         "buildType": "apk"
       }
     },
-    "production": {}
+    "production": {
+      "distribution": "store",
+      "autoIncrement": true,
+      "ios": {
+        "buildNumber": "1"
+      },
+      "android": {
+        "buildType": "app-bundle",
+        "versionCode": 1
+      }
+    }
   },
   "submit": {
-    "production": {}
+    "production": {
+      "ios": {
+        "appleId": "APPLE_ID_HERE",
+        "ascAppId": "ASC_APP_ID_HERE",
+        "appleTeamId": "TEAM_ID_HERE"
+      },
+      "android": {
+        "serviceAccountKeyPath": "./google-play-service-account.json",
+        "track": "internal"
+      }
+    }
   }
 }

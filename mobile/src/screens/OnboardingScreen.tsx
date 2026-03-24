@@ -24,10 +24,10 @@ interface OnboardingScreenProps {
 type Step = 'welcome' | 'privacy' | 'stage';
 
 const STAGES = [
-  { id: 'dating', label: 'Dating (0-6 months)', emoji: '💫' },
-  { id: 'committed', label: 'Committed (6-18 months)', emoji: '💞' },
-  { id: 'long-term', label: 'Long-term (18+ months)', emoji: '💕' },
-  { id: 'engaged', label: 'Engaged / Married', emoji: '💍' },
+  { id: 'dating', label: 'Dating', emoji: '💫' },
+  { id: 'married', label: 'Married', emoji: '💍' },
+  { id: 'pre-divorced', label: 'Pre-Divorced', emoji: '💔' },
+  { id: 'divorced', label: 'Divorced', emoji: '🔄' },
 ];
 
 export function OnboardingScreen({ onComplete }: OnboardingScreenProps) {

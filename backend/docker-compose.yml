@@ -10,8 +10,13 @@ services:
       - LLM_PROVIDER=github
       - GITHUB_TOKEN=${GITHUB_TOKEN}
       - REDIS_URL=redis://redis:6379
+      - POSTGRES_TIER1_URL=postgresql://relioadmin:localdev@postgres:5432/relio_tier1_private
+      - POSTGRES_TIER3_URL=postgresql://relioadmin:localdev@postgres:5432/relio_tier3_shared
+      - AUTO_MIGRATE=true
     depends_on:
       redis:
+        condition: service_healthy
+      postgres:
         condition: service_healthy
     healthcheck:
       test: ["CMD", "node", "-e", "fetch('http://localhost:3000/health')"]
@@ -29,3 +34,23 @@ services:
       interval: 5s
       timeout: 3s
       retries: 5
+
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: relioadmin
+      POSTGRES_PASSWORD: localdev
+      POSTGRES_DB: relio_tier1_private
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./docker-entrypoint-initdb.d:/docker-entrypoint-initdb.d
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U relioadmin -d relio_tier1_private"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+
+volumes:
+  postgres_data:

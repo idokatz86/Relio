@@ -13,6 +13,8 @@ import type { Request, Response } from 'express';
 import { z } from 'zod';
 import { randomBytes } from 'node:crypto';
 import type { AuthenticatedUser } from '../auth/auth-service.js';
+import { isInMemoryMode } from '../db/pool.js';
+import * as tier3Repo from '../db/repositories/tier3-repo.js';
 
 const router = Router();
 
@@ -57,9 +59,60 @@ const AcceptInviteSchema = z.object({
 // ── Routes ───────────────────────────────────────────────────
 
 // Create an invite (Partner A creates room + invite code)
-router.post('/create', (req: Request, res: Response) => {
+router.post('/create', async (req: Request, res: Response) => {
   const user = (req as any).user as AuthenticatedUser;
 
+  if (!isInMemoryMode()) {
+    try {
+      // DB path: check if user already has a room
+      const existing = await tier3Repo.getUserRoom(user.id);
+      if (existing) {
+        if (existing.members.length >= 2) {
+          res.status(409).json({ error: 'You are already paired with a partner' });
+          return;
+        }
+        // Return existing pending invite if one exists
+        const pendingInvite = await tier3Repo.getPendingInviteForRoom(existing.room.id, user.id);
+        if (pendingInvite) {
+          res.json({
+            code: pendingInvite.invite_code,
+            roomId: existing.room.id,
+            expiresAt: pendingInvite.expires_at,
+            deepLink: `relio://invite/${pendingInvite.invite_code}`,
+          });
+          return;
+        }
+        // Create new invite for existing room
+        const invite = await tier3Repo.createInvite(existing.room.id, user.id);
+        res.status(201).json({
+          code: invite.invite_code,
+          roomId: existing.room.id,
+          expiresAt: invite.expires_at,
+          deepLink: `relio://invite/${invite.invite_code}`,
+        });
+        return;
+      }
+
+      // Create new room + member + invite
+      const room = await tier3Repo.createRoom();
+      await tier3Repo.addRoomMember(room.id, user.id, 'creator');
+      const invite = await tier3Repo.createInvite(room.id, user.id);
+
+      res.status(201).json({
+        code: invite.invite_code,
+        roomId: room.id,
+        expiresAt: invite.expires_at,
+        deepLink: `relio://invite/${invite.invite_code}`,
+      });
+      return;
+    } catch (err) {
+      console.error('[Invite] DB create error:', err);
+      res.status(500).json({ error: 'Failed to create invite' });
+      return;
+    }
+  }
+
+  // In-memory fallback
   // Check if user already has a room
   const existingRoom = userRooms.get(user.id);
   if (existingRoom) {
@@ -119,7 +172,7 @@ router.post('/create', (req: Request, res: Response) => {
 });
 
 // Accept an invite (Partner B joins the room)
-router.post('/accept', (req: Request, res: Response) => {
+router.post('/accept', async (req: Request, res: Response) => {
   const parsed = AcceptInviteSchema.safeParse(req.body);
   if (!parsed.success) {
     res.status(400).json({ error: 'Invalid invite code', details: parsed.error.issues });
@@ -128,6 +181,51 @@ router.post('/accept', (req: Request, res: Response) => {
 
   const user = (req as any).user as AuthenticatedUser;
   const code = parsed.data.code.toUpperCase();
+
+  if (!isInMemoryMode()) {
+    try {
+      const invite = await tier3Repo.getInviteByCode(code);
+      if (!invite) {
+        res.status(404).json({ error: 'Invite code not found or expired' });
+        return;
+      }
+      if (new Date(invite.expires_at) < new Date()) {
+        res.status(410).json({ error: 'Invite code has expired' });
+        return;
+      }
+      if (invite.claimed_by) {
+        res.status(409).json({ error: 'Invite code already used' });
+        return;
+      }
+      if (invite.created_by === user.id) {
+        res.status(400).json({ error: 'You cannot accept your own invite' });
+        return;
+      }
+      // Check if user already has a room
+      const existingRoom = await tier3Repo.getUserRoom(user.id);
+      if (existingRoom) {
+        res.status(409).json({ error: 'You are already in a room' });
+        return;
+      }
+
+      const claimed = await tier3Repo.claimInvite(code, user.id);
+      if (!claimed) {
+        res.status(410).json({ error: 'Invite code has expired or was already used' });
+        return;
+      }
+      await tier3Repo.addRoomMember(invite.room_id, user.id, 'participant');
+      await tier3Repo.updateRoomStatus(invite.room_id, 'active');
+
+      res.json({ paired: true, roomId: invite.room_id, partnerName: 'Your partner' });
+      return;
+    } catch (err) {
+      console.error('[Invite] DB accept error:', err);
+      res.status(500).json({ error: 'Failed to accept invite' });
+      return;
+    }
+  }
+
+  // In-memory fallback
   const invite = invites.get(code);
 
   if (!invite) {
@@ -174,8 +272,35 @@ router.post('/accept', (req: Request, res: Response) => {
 });
 
 // Get pairing status
-router.get('/status', (req: Request, res: Response) => {
+router.get('/status', async (req: Request, res: Response) => {
   const user = (req as any).user as AuthenticatedUser;
+
+  if (!isInMemoryMode()) {
+    try {
+      const userRoom = await tier3Repo.getUserRoom(user.id);
+      if (!userRoom) {
+        res.json({ paired: false, roomId: null, partner: null });
+        return;
+      }
+      const partnerId = userRoom.members.find(m => m.user_id !== user.id)?.user_id ?? null;
+      const pendingInvite = await tier3Repo.getPendingInviteForRoom(userRoom.room.id, user.id);
+
+      res.json({
+        paired: !!partnerId,
+        roomId: userRoom.room.id,
+        phase: 'dating', // TODO: add phase column to rooms table
+        status: userRoom.room.status,
+        pendingInviteCode: pendingInvite?.invite_code || null,
+      });
+      return;
+    } catch (err) {
+      console.error('[Invite] DB status error:', err);
+      res.status(500).json({ error: 'Failed to get status' });
+      return;
+    }
+  }
+
+  // In-memory fallback
   const roomId = userRooms.get(user.id);
 
   if (!roomId) {
@@ -204,8 +329,31 @@ router.get('/status', (req: Request, res: Response) => {
 });
 
 // QR code generation (#122) — returns SVG data for the invite code
-router.get('/qr/:code', (req: Request, res: Response) => {
+router.get('/qr/:code', async (req: Request, res: Response) => {
   const code = req.params.code?.toUpperCase();
+
+  if (!isInMemoryMode()) {
+    try {
+      const invite = await tier3Repo.getInviteByCode(code);
+      if (!invite || new Date(invite.expires_at) < new Date()) {
+        res.status(404).json({ error: 'Invalid or expired invite code' });
+        return;
+      }
+      res.json({
+        code: invite.invite_code,
+        deepLink: `relio://invite/${invite.invite_code}`,
+        webLink: `https://relio.app/invite/${invite.invite_code}`,
+        expiresAt: invite.expires_at,
+      });
+      return;
+    } catch (err) {
+      console.error('[Invite] DB QR error:', err);
+      res.status(500).json({ error: 'Failed to get invite' });
+      return;
+    }
+  }
+
+  // In-memory fallback
   const invite = invites.get(code);
 
   if (!invite || invite.expiresAt < Date.now()) {

@@ -13,7 +13,7 @@ Step 2: Tier 2 Clinical Isolation Test
 Create test Cosmos DB documents with clinical data (attachment profiles, relationship dynamics). Query admin endpoints. Assert that attachment style, love language, activation history, and raw clinical reasoning NEVER appear in admin responses.
 
 Step 3: k-Anonymity Threshold Test
-Create a test scenario where only 2 users are in the "separation" phase. Query `/api/v1/admin/phases`. Assert that the response shows `"separation": "<5"` instead of the exact count. Repeat for user directory — individual user detail pages must not surface when total count in a filter is below 5.
+Create a test scenario where only 2 users are in the "pre-divorced" phase. Query `/api/v1/admin/phases`. Assert that the response shows `"preDivorced": "<5"` instead of the exact count. Repeat for user directory — individual user detail pages must not surface when total count in a filter is below 5.
 
 Step 4: Admin Auth Enforcement Test
 Attempt to call all `/api/v1/admin/*` endpoints with:

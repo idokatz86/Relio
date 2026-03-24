@@ -45,8 +45,9 @@
     "relationshipDesc": "Ayúdanos a personalizar tu experiencia.",
     "statusQuestion": "Estado de la relación:",
     "dating": "Saliendo",
-    "engaged": "Comprometidos",
     "married": "Casados",
+    "preDivorced": "Pre-Divorcio",
+    "divorced": "Divorciados",
     "letsGo": "¡Comencemos!"
   },
   "chat": {

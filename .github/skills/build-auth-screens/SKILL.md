@@ -33,9 +33,9 @@ Three sequential consent steps (all required before proceeding):
 - All three must be checked to proceed
 
 ## Step 4: OnboardingScreen.tsx — Stage Selection
-- Five card-based options (NOT radio buttons): Dating, Commitment, Crisis, Separation, Co-parenting
+- Four card-based options (NOT radio buttons): Dating, Married, Pre-Divorced, Divorced
 - Each card: 1 emoji + 1 user-friendly label + 1 sentence description
-- NO clinical language: "We're in a rough patch" not "Crisis phase"
+- NO clinical language: "We're going through a rough patch" not "Pre-Divorced phase"
 - "I'd rather not say" option → defaults to `dating` agent
 - Selection changeable anytime from Settings
 - No option pre-selected (avoid anchoring bias)

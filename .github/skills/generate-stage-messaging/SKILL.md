@@ -10,17 +10,17 @@ Identify which of the 4 relationship stages the request targets. Apply the corre
 
 Dating: Focus on discovering compatibility and avoiding toxic attachment cycles.
 
-Pre-Marriage: Focus on aligning long-term life values.
+Married: Focus on breaking negative conflict loops, deepening intimacy, and aligning long-term life values.
 
-Marriage: Focus on breaking negative conflict loops and rebuilding intimacy.
+Pre-Divorced: Focus on de-escalation, logistical mediation, grief processing, and digital boundaries.
 
-Divorce/Co-Parenting: Focus on shielding children and digital boundaries (BIFF framework).
+Divorced: Focus on shielding children and digital boundaries (BIFF framework).
 
 Step 1b: Digital & Social Media Angle
 - Dating: Social media comparison, jealousy, digital trust
-- Marriage: Phubbing, technoference, screen-free rituals
-- Divorce: Digital harassment, public oversharing
-- Co-Parenting: Parallel social media, BIFF for text/email
+- Married: Phubbing, technoference, screen-free rituals
+- Pre-Divorced: Digital harassment, public oversharing, flooding de-escalation
+- Divorced: Parallel social media, BIFF for text/email
 
 Step 2: Brand Voice & Differentiation
 Ensure the tone is empathetic, non-judgmental, and authoritative.

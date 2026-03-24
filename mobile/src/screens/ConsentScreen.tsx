@@ -75,7 +75,7 @@ export function ConsentScreen({ onAccept, tosVersion, privacyVersion }: ConsentS
             <Switch value={tosAccepted} onValueChange={setTosAccepted} trackColor={{ true: '#6B705C' }} />
             <Text style={styles.checkboxText}>
               I accept the{' '}
-              <Text style={styles.link} onPress={() => Linking.openURL('https://relio.app/terms')}>
+              <Text style={styles.link} onPress={() => Linking.openURL('https://myrelio.io/terms')}>
                 Terms of Service
               </Text>{' '}
               (v{tosVersion})
@@ -86,7 +86,7 @@ export function ConsentScreen({ onAccept, tosVersion, privacyVersion }: ConsentS
             <Switch value={privacyAccepted} onValueChange={setPrivacyAccepted} trackColor={{ true: '#6B705C' }} />
             <Text style={styles.checkboxText}>
               I accept the{' '}
-              <Text style={styles.link} onPress={() => Linking.openURL('https://relio.app/privacy')}>
+              <Text style={styles.link} onPress={() => Linking.openURL('https://myrelio.io/privacy')}>
                 Privacy Policy
               </Text>{' '}
               (v{privacyVersion})

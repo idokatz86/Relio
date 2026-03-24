@@ -194,10 +194,26 @@ User Input (Tier 1 Raw)
 - **LLM Gateway**: Provider-agnostic `callLLM()` with circuit breaker (3 failures → 30s open) + per-user daily token budget (50K)
 - **Auth**: JWT middleware on REST + WebSocket. `AUTH_DISABLED=true` for dev. userId must match JWT `sub`.
 
-### Database Schemas [DESIGNED — pending connection]
-- **Tier 1**: `users`, `tier1_messages` (RLS), `safety_audit_log`, `journal_entries`, 90-day auto-purge
-- **Tier 3**: `rooms`, `room_members`, `tier3_messages`, `sessions`, `room_invites`, `feedback`
+### Database Layer [LIVE — Sprint 13]
+- **Connection**: Dual-pool `pg` driver (`pool.ts`) — separate connections for Tier 1 and Tier 3 databases, SSL/TLS required, configurable pooling, graceful shutdown
+- **Tier 1 Repository** (`tier1-repo.ts`): `users`, `tier1_messages` (RLS via `SET LOCAL app.current_user_id`), `safety_audit_log`, `journal_entries`, 90-day auto-purge
+- **Tier 3 Repository** (`tier3-repo.ts`): `rooms`, `room_members`, `tier3_messages`, `sessions`, `room_invites`
+- **Auth Repository** (`auth-repo.ts`): `consent_records`, `consent_audit` (immutable)
+- **Deletion Repository** (`deletion-repo.ts`): GDPR cascade deletion across both databases, 24h grace period
+- **Migration Runner** (`migrate.ts`): Idempotent SQL schema application on startup (`AUTO_MIGRATE=true`)
+- **In-Memory Fallback**: All routers gracefully degrade to Maps when `POSTGRES_TIER1_URL` is not set (dev mode)
 - **No foreign keys** between Tier 1 and Tier 3 databases
+
+### PII Redaction Pipeline [LIVE — Sprint 13]
+- **Pre-flight** (`pii-redactor.ts`): Regex-based detection of PERSON, EMAIL, PHONE, ADDRESS, ID_NUMBER, URL — strips before Orchestrator/Profiler/Coach LLM calls
+- **Post-flight** (`pii-validator.ts`): Scans Tier 3 output for leaked PII entities, strips any matches
+- **Safety Guardian exception**: Sees original un-redacted message for accurate crisis detection
+- **Audit**: Detected entities stored in Tier 1 safety audit log (never in Tier 3)
+
+### WebSocket Relay [LIVE — Sprint 13]
+- **Redis pub/sub** (`ws-relay.ts`): Cross-replica Tier 3 message fan-out via `room:{roomId}` channels
+- **Lifecycle**: Subscribe on first connection, unsubscribe on last disconnect
+- **Fallback**: Local EventEmitter when Redis unavailable (single-replica mode)
 
 ---
 
@@ -332,10 +348,11 @@ Freemium-to-premium subscription optimized for asymmetric engagement:
 | 10 | GDPR (deletion+export), i18n (4 locales), OWASP, push, A/B tests | 16 | 16 |
 | 11 | Full translations (ES/PT/HE), push templates, legal translations | 5 | 5 |
 | 12 | Multi-language safety QA, App Store listings, mixed-lang E2E | 3 | 3 |
+| **13** | **PostgreSQL data layer, PII redaction, canary leak tests, WS relay** | **6** | **6** |
 | Medical | Emergency Response, Phase-Crisis, CPsychO, regex pre-screen | 4 | 4 |
 | Ops | ToS, Privacy, incorporation, waitlist, fundraise, interviews | 27 | 27 |
 | Azure | OpenAI deployment, Key Vault, cost optimization | 6 | 6 |
-| **Total** | | **135** | **135** |
+| **Total** | | **141** | **141** |
 
 ### Next Sprints (Planned)
 

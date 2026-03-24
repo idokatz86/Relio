@@ -18,7 +18,7 @@ Design 8 admin pages:
 
 3. **Couple Pairing** — Visual grid showing paired couples (connected dots) and solo users (single dots). Filter by phase. Show invite-pending status.
 
-4. **Phase Distribution** — Pie chart + bar chart showing how many couples are in each relationship phase (Dating, Commitment, Crisis, Separation, Post-Divorce). k-anonymity: suppress groups < 5.
+4. **Phase Distribution** — Pie chart + bar chart showing how many couples are in each relationship phase (Dating, Married, Pre-Divorced, Divorced). k-anonymity: suppress groups < 5.
 
 5. **Subscription Analytics** — Free/Premium/Premium+ funnel chart. MRR trend line. Churn rate by cohort. Conversion rate (free→paid). LTV estimate.
 

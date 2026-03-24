@@ -18,9 +18,13 @@ Relio is powered by **38 specialized AI agents** distributed across three pods, 
 - **Operations Pod (9 agents):** CEO, CRO, CFO, CMO, CCO, CAO, CLO, CPO, CSO. Manages business strategy, legal disclaimers, partnership evaluations, and AI-first lean operations.
 - **Tech Pod (15 agents):** CTO, Backend Developer, Cloud Architect, GitHub Architect, Mobile Dev, Mobile QA, Fullstack QA, Penetration Tester, UI/UX Expert, CISO, DPO, App Store Certifier, Skills Builder, Scrum Master, VP R&D. Constructs Azure-native infrastructure, secure WebSockets, CI/CD governance, and adversarial red-teaming.
 
-## Key Capabilities (v2.5.0)
+## Key Capabilities (v3.0.0)
 
 - **Backend LIVE on Azure OpenAI GPT-4.1** — Container Apps (Sweden Central, EU data residency)
+- **PostgreSQL Persistence** — Dual-pool data layer (Tier 1 RLS-isolated + Tier 3 shared), 4 repository modules, idempotent migrations, in-memory fallback for dev
+- **PII Redaction Pipeline** — Pre-flight regex detection (names, emails, phones, addresses, SSNs, URLs) + post-flight validation ensuring zero PII in Tier 3 output
+- **Canary Leak Prevention** — 44 automated tests proving Tier 1 data never leaks to Tier 3 (REST, WebSocket, admin, headers, deep JSON scan)
+- **WebSocket Relay** — Redis pub/sub for cross-replica Tier 3 fan-out, graceful fallback to local broadcast
 - **Clerk Auth LIVE** — OIDC JWKS validation, Apple/Google/Email sign-in, all endpoints auth-protected
 - **5-Agent MVP Pipeline** — Safety Guardian → Orchestrator → [Individual Profiler || Communication Coach] → Tier 3 Output
 - **8 AI Agents** — Safety Guardian, Orchestrator, Communication Coach, Individual Profiler, Phase-Dating, Emergency Response, Phase-Crisis, CPsychO Meta-Audit
@@ -31,7 +35,8 @@ Relio is powered by **38 specialized AI agents** distributed across three pods, 
 - **Partner Invite System** — Invite codes, QR generation, deep links, couple pairing API, push notifications
 - **15 Mobile Screens** — BiometricLock, Login, Consent, AgeVerify, Onboarding, PrivacyExplainer, AttachmentQuiz, PsychoeducationCards, InvitePartner, AcceptInvite, SharedChat, PrivateJournal, Crisis, Settings, LanguagePicker
 - **Backoffice Admin Dashboard** — 10 admin API endpoints + 7-page React frontend with k-anonymity
-- **Security** — JWT auth, OWASP checklist, Zod validation, Helmet, auth rate limiting, CORS, fail-closed Safety Guardian, circuit breaker
+- **Security** — JWT auth, OWASP checklist, Zod validation, Helmet, auth rate limiting, CORS, fail-closed Safety Guardian, circuit breaker, PII redaction
+- **156 Automated Tests** — Canary leak (44), integration (20), PII (18), WS relay (13), safety multilang (50), pipeline (3), canary (8)
 - **A/B Test Infrastructure** — Deterministic hash-based experiment assignment
 - **Clinical Agents** — Phase-crisis flooding detection + 20-min pause, CPsychO meta-audit (bias, scope, parasocial risk)
 
