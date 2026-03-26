@@ -7,7 +7,8 @@
  */
 
 import React, { useState } from 'react';
-import { View, Text, ScrollView, TouchableOpacity, StyleSheet, Switch, Linking } from 'react-native';
+import { View, Text, ScrollView, TouchableOpacity, StyleSheet, Switch, Linking, Alert } from 'react-native';
+import { acceptConsent } from '../services/api';
 
 interface ConsentScreenProps {
   onAccept: () => void;
@@ -24,8 +25,13 @@ export function ConsentScreen({ onAccept, tosVersion, privacyVersion }: ConsentS
 
   const handleAccept = async () => {
     if (!allAccepted) return;
-    // TODO: Call /api/v1/consent/accept
-    onAccept();
+    try {
+      await acceptConsent(tosVersion, privacyVersion, false);
+      onAccept();
+    } catch (err) {
+      console.error('[Consent] Accept failed:', err);
+      Alert.alert('Error', 'Failed to save consent. Please try again.');
+    }
   };
 
   return (

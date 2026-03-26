@@ -72,6 +72,63 @@ async function authHeaders(): Promise<Record<string, string>> {
 // ── REST API ─────────────────────────────────────────────────
 
 /**
+ * Accept consent (ToS + Privacy Policy + AI Disclosure)
+ */
+export async function acceptConsent(
+  tosVersion: string,
+  privacyVersion: string,
+  ageVerified: boolean,
+): Promise<void> {
+  const headers = await authHeaders();
+  const response = await fetch(`${API_BASE}/api/v1/consent/accept`, {
+    method: 'POST',
+    headers,
+    body: JSON.stringify({ tosVersion, privacyVersion, ageVerified }),
+  });
+  if (!response.ok) throw new Error(`Consent error: ${response.status}`);
+}
+
+/**
+ * Verify age
+ */
+export async function verifyAge(dateOfBirth: string): Promise<void> {
+  const headers = await authHeaders();
+  const response = await fetch(`${API_BASE}/api/v1/consent/verify-age`, {
+    method: 'POST',
+    headers,
+    body: JSON.stringify({ dateOfBirth }),
+  });
+  if (!response.ok) throw new Error(`Age verify error: ${response.status}`);
+}
+
+/**
+ * Create a partner invite
+ */
+export async function createInvite(): Promise<{ inviteCode: string; deepLink: string }> {
+  const headers = await authHeaders();
+  const response = await fetch(`${API_BASE}/api/v1/invite/create`, {
+    method: 'POST',
+    headers,
+  });
+  if (!response.ok) throw new Error(`Invite error: ${response.status}`);
+  return response.json();
+}
+
+/**
+ * Accept a partner invite
+ */
+export async function acceptInvite(inviteCode: string): Promise<{ roomId: string }> {
+  const headers = await authHeaders();
+  const response = await fetch(`${API_BASE}/api/v1/invite/accept`, {
+    method: 'POST',
+    headers,
+    body: JSON.stringify({ inviteCode }),
+  });
+  if (!response.ok) throw new Error(`Invite accept error: ${response.status}`);
+  return response.json();
+}
+
+/**
  * Send a message through the 5-agent pipeline via REST.
  * Used as fallback when WebSocket is unavailable.
  */

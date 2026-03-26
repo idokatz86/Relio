@@ -6,7 +6,8 @@
  */
 
 import React, { useState } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, Platform } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, Platform, Alert } from 'react-native';
+import { verifyAge } from '../services/api';
 
 interface AgeVerifyScreenProps {
   onVerified: () => void;
@@ -43,8 +44,14 @@ export function AgeVerifyScreen({ onVerified, onUnderage }: AgeVerifyScreenProps
       return;
     }
 
-    // TODO: Call /api/v1/consent/verify-age
-    onVerified();
+    try {
+      const dateOfBirth = `${y}-${String(m).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
+      await verifyAge(dateOfBirth);
+      onVerified();
+    } catch (err) {
+      console.error('[AgeVerify] Failed:', err);
+      Alert.alert('Error', 'Age verification failed. Please try again.');
+    }
   };
 
   return (
