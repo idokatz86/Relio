@@ -49,7 +49,7 @@ Three sequential consent steps (all required before proceeding):
 - Timer showing expiry countdown
 
 ## Step 6: AcceptInviteScreen.tsx
-- Auto-opened via deep link (`relio.app/invite/{code}`)
+- Auto-opened via deep link (`myrelio.io/invite/{code}`)
 - Shows Partner A's first name only
 - Accept / Decline buttons
 - On accept: celebration animation → navigate to SharedChatScreen

@@ -11,7 +11,7 @@ You build the complete couple formation system from solo signup through partner 
 Mobile screen with three invitation channels:
 - **6-char code**: Display in large format with hyphen (e.g., `RLO-K7M`). Copy-to-clipboard button.
 - **QR code**: Fetched from server (`GET /api/v1/qr/:code`). Scannable by partner.
-- **Deep link**: Share via native share sheet (`https://relio.app/invite/{code}`).
+- **Deep link**: Share via native share sheet (`https://myrelio.io/invite/{code}`).
 - Show invite status: "Waiting for partner..." with countdown to expiry (7 days)
 - Re-invite button (generates new code, invalidates old one)
 - Rate limit: max 3 invites per 30-day window
@@ -43,8 +43,8 @@ function generateInviteCode(): string {
 
 ## Step 4: Deep Link Configuration
 Configure for both platforms:
-- iOS: Associated Domains (`applinks:relio.app`) in `app.json`
-- Android: Intent filters for `https://relio.app/invite/*`
+- iOS: Associated Domains (`applinks:myrelio.io`) in `app.json`
+- Android: Intent filters for `https://myrelio.io/invite/*`
 - Expo linking: `scheme: "relio"` + universal link handlers
 - Handle: app installed → deep link to AcceptInviteScreen; app not installed → redirect to App Store/Play Store
 
