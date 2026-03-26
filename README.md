@@ -18,32 +18,38 @@ Relio is powered by **38 specialized AI agents** distributed across three pods, 
 - **Operations Pod (9 agents):** CEO, CRO, CFO, CMO, CCO, CAO, CLO, CPO, CSO. Manages business strategy, legal disclaimers, partnership evaluations, and AI-first lean operations.
 - **Tech Pod (15 agents):** CTO, Backend Developer, Cloud Architect, GitHub Architect, Mobile Dev, Mobile QA, Fullstack QA, Penetration Tester, UI/UX Expert, CISO, DPO, App Store Certifier, Skills Builder, Scrum Master, VP R&D. Constructs Azure-native infrastructure, secure WebSockets, CI/CD governance, and adversarial red-teaming.
 
-## Key Capabilities (v3.0.0)
+## Key Capabilities (v3.3.0)
 
+- **7-Step, 13-Agent Pipeline** — PII Redactor → Safety Guardian → (Orchestrator ‖ Profiler ‖ Dynamics) → Phase Agent → Communication Coach → PII Validator
+- **13 AI Agents in Code** — Safety Guardian, Orchestrator, Communication Coach, Individual Profiler, Phase-Dating, Phase-Married, Phase-Pre-Divorced, Phase-Divorced, Phase-Crisis, Relationship Dynamics, Psychoeducation, Progress Tracker, Emergency Response
+- **Full Relationship Lifecycle** — Dating → Married → Pre-Divorced → Divorced. Orchestrator auto-detects stage and routes to the right phase agent.
 - **Backend LIVE on Azure OpenAI GPT-4.1** — Container Apps (Sweden Central, EU data residency)
 - **PostgreSQL Persistence** — Dual-pool data layer (Tier 1 RLS-isolated + Tier 3 shared), 4 repository modules, idempotent migrations, in-memory fallback for dev
 - **PII Redaction Pipeline** — Pre-flight regex detection (names, emails, phones, addresses, SSNs, URLs) + post-flight validation ensuring zero PII in Tier 3 output
 - **Canary Leak Prevention** — 44 automated tests proving Tier 1 data never leaks to Tier 3 (REST, WebSocket, admin, headers, deep JSON scan)
 - **WebSocket Relay** — Redis pub/sub for cross-replica Tier 3 fan-out, graceful fallback to local broadcast
-- **Clerk Auth LIVE** — OIDC JWKS validation, Apple/Google/Email sign-in, all endpoints auth-protected
-- **5-Agent MVP Pipeline** — Safety Guardian → Orchestrator → [Individual Profiler || Communication Coach] → Tier 3 Output
-- **8 AI Agents** — Safety Guardian, Orchestrator, Communication Coach, Individual Profiler, Phase-Dating, Emergency Response, Phase-Crisis, CPsychO Meta-Audit
-- **Full i18n (4 Languages)** — English, Spanish, Portuguese (BR), Hebrew (RTL) — all screens, push notifications, App Store listings
+- **Clerk OIDC Auth** — `@clerk/clerk-expo` with `AuthProvider` context, secure token cache, Apple/Google/Email sign-in
+- **React Navigation** — AuthStack → OnboardingStack → MainTabs (chat/journal/settings) + modal screens. Deep linking for `relio://invite/:code`
+- **Full i18n (4 Languages)** — English, Spanish, Portuguese (BR), Hebrew (RTL) — all screens, casual Israeli register
 - **Multi-Language Safety** — Crisis detection in EN/ES/PT/HE via regex pre-screen + LLM, locale-aware emergency resources (US/BR/IL)
-- **GDPR Compliance** — Account deletion (24h grace + cascade purge), data export (JSON), consent re-prompt on version change
-- **Legal** — Terms of Service v1.0, Privacy Policy v1.0 (medical disclaimer, duty-to-warn, GDPR/CCPA)
+- **GDPR Compliance** — Account deletion via `DELETE /api/v1/account` (Apple 5.1.1v), 24h grace + cascade purge, data export (JSON), consent re-prompt
+- **Legal** — Terms of Service v1.0, Privacy Policy v1.0 hosted at myrelio.io/terms + myrelio.io/privacy
 - **Partner Invite System** — Invite codes, QR generation, deep links, couple pairing API, push notifications
-- **15 Mobile Screens** — BiometricLock, Login, Consent, AgeVerify, Onboarding, PrivacyExplainer, AttachmentQuiz, PsychoeducationCards, InvitePartner, AcceptInvite, SharedChat, PrivateJournal, Crisis, Settings, LanguagePicker
+- **17 Mobile Screens** — BiometricLock, Login, Consent, AgeVerify, Onboarding, PrivacyExplainer, AttachmentQuiz, PsychoeducationCards, Paywall, InvitePartner, AcceptInvite, SharedChat, PrivateJournal, Crisis, Settings, LanguagePicker, NPSSurvey
+- **RevenueCat Subscriptions** — $19.99/mo Couples + $29.99/mo Premium+, feature gating, restore purchases
+- **Sentry Crash Reporting** — PII-scrubbed crash reports, screen transition breadcrumbs
+- **Accessibility** — VoiceOver + TalkBack props on all interactive elements (a11y audit complete)
 - **Backoffice Admin Dashboard** — 10 admin API endpoints + 7-page React frontend with k-anonymity
 - **Security** — JWT auth, OWASP checklist, Zod validation, Helmet, auth rate limiting, CORS, fail-closed Safety Guardian, circuit breaker, PII redaction
 - **156 Automated Tests** — Canary leak (44), integration (20), PII (18), WS relay (13), safety multilang (50), pipeline (3), canary (8)
-- **A/B Test Infrastructure** — Deterministic hash-based experiment assignment
+- **Reviewer Demo** — `GET /api/v1/seed/reviewer` returns demo credentials for App Store review
+- **Domain** — myrelio.io (live)
 - **Clinical Agents** — Phase-crisis flooding detection + 20-min pause, CPsychO meta-audit (bias, scope, parasocial risk)
 
-## Tech Pod Status (v2.5.0)
+## Sprint Status (v3.3.0)
 
-| Sprint | Tech Issues | Closed | Open | Focus |
-|--------|-------------|--------|------|-------|
+| Sprint | Issues | Closed | Open | Focus |
+|--------|--------|--------|------|-------|
 | 1–2 | 11 | 11 | 0 | MVP: LLM Gateway + 5 agents + pipeline |
 | 3–4 | 24 | 24 | 0 | Azure IaC, DB, auth, Redis, NSGs |
 | 5–7 | 8 | 8 | 0 | Security hardening, CI, branch protection |
@@ -51,11 +57,14 @@ Relio is powered by **38 specialized AI agents** distributed across three pods, 
 | 9 | 11 | 11 | 0 | Partner invite, onboarding, psychoeducation |
 | 10 | 16 | 16 | 0 | GDPR, i18n (4 locales), OWASP, push notifications, A/B tests |
 | 11 | 5 | 5 | 0 | Full translations (ES/PT/HE), push templates, legal translations |
-| 12 | 3 | 3 | 0 | Multi-language safety QA (50 scenarios), App Store listings, mixed-lang E2E |
-| Medical | 4 | 4 | 0 | Emergency Response, Phase-Crisis, CPsychO, regex pre-screen |
-| Ops | 27 | 27 | 0 | ToS v1.0, Privacy Policy, incorporation, waitlist, fundraise |
-| Azure | 6 | 6 | 0 | OpenAI, Key Vault, cost optimization |
-| **Total** | **135+** | **135** | **2** | iOS TestFlight (#73) + Clinical co-founder (#89) remain |
+| 12 | 3 | 3 | 0 | Multi-language safety QA (50 scenarios), App Store listings |
+| 13 | 10 | 10 | 0 | Data layer (PG dual-pool, PII redaction, canary tests, WS relay) |
+| 14 | 6 | 6 | 0 | Relationship Dynamics, Psychoeducation, Progress Tracker agents |
+| 15 | 5 | 5 | 0 | Production deploy, RevenueCat pricing, NPS survey |
+| P2 | 3 | 3 | 0 | Phase-Married, Phase-Pre-Divorced, Phase-Divorced agents |
+| App Store | 10 | 10 | 0 | Auth (Clerk), navigation, privacy/ToS, deletion, a11y, Sentry, EAS |
+| Domain | 1 | 1 | 0 | myrelio.io purchased |
+| **Total** | **170+** | **158** | **12** | Remaining: Apple/Google enrollment, store metadata, screenshots |
 
 ## Agent Directory (38 Agents)
 
@@ -66,11 +75,11 @@ Relio is powered by **38 specialized AI agents** distributed across three pods, 
 | `emergency-response-agent` | Medical | Executes emergency protocols on SAFETY_HALT — routes to real emergency services (911/112/999) via Azure Communication Services. |
 | `individual-profiler` | Medical | Evaluates Adult Attachment Theory and Love Languages for individual users. |
 | `orchestrator-agent` | Medical | Enforces the 3-Tier Confidentiality Model, routes all messages through the clinical pipeline. |
-| `phase-commitment` | Medical | Focuses on Gottman's Sound Relationship House and deepening intimacy. |
-| `phase-crisis` | Medical | Detects physiological and cyberspace flooding, enforces structural pauses, initiates repair attempts. |
 | `phase-dating` | Medical | Assesses early compatibility, boundaries, and red flags including digital trust. |
-| `phase-post-divorce` | Medical | Manages high-conflict co-parenting with BIFF/Gray Rock digital communication frameworks. |
-| `phase-separation` | Medical | Non-partisan logistical mediation for asset division and grief processing. |
+| `phase-married` | Medical | Gottman's Sound Relationship House: Love Maps, Fondness & Admiration, Turning Towards. |
+| `phase-pre-divorced` | Medical | De-escalation, flooding handoff, logistical mediation, grief processing, digital flooding management. |
+| `phase-divorced` | Medical | BIFF/Gray Rock co-parenting, parallel parenting, Tier 1 venting firewall, parental alienation detection. |
+| `phase-crisis` | Medical | Detects physiological and cyberspace flooding, enforces structural pauses, initiates repair attempts. |
 | `psychoeducation-agent` | Medical | Delivers personalized exercises including digital boundaries and social media literacy micro-lessons. |
 | `relationship-dynamics` | Medical | Analyzes Gottman's Four Horsemen, EFT cycles, and social media friction patterns (Surface vs. Depth). |
 | `safety-guardian` | Medical | Continuous monitoring for coercive control, domestic violence, and self-harm. Absolute veto authority. |
@@ -323,23 +332,32 @@ Add this to `eas.json` in the mobile directory:
 
 ```
 mobile/
-├── App.tsx                          # Entry point — screen router
+├── App.tsx                          # Entry point — ClerkProvider → AuthProvider → AppNavigator
 ├── app.json                         # Expo config (iOS + Android)
 ├── src/
-│   ├── screens/
-│   │   ├── OnboardingScreen.tsx     # Welcome + privacy + relationship stage
-│   │   ├── SharedChatScreen.tsx     # Tier 3 shared room (mint-white)
+│   ├── auth/
+│   │   ├── AuthContext.tsx          # Clerk OIDC auth state + token sync
+│   │   └── token-cache.ts           # Secure token persistence for Clerk
+│   ├── navigation/
+│   │   └── AppNavigator.tsx         # AuthStack → OnboardingStack → MainTabs + modals
+│   ├── screens/                     # 17 screens
+│   │   ├── LoginScreen.tsx          # Apple/Google/Email sign-in via Clerk
+│   │   ├── ConsentScreen.tsx        # ToS + Privacy + AI disclosure (a11y)
+│   │   ├── SharedChatScreen.tsx     # Tier 3 shared room (mint-white, a11y)
 │   │   ├── PrivateJournalScreen.tsx # Tier 1 private journal (warm sand)
-│   │   ├── CrisisScreen.tsx        # Safety HALT — 988/DV resources
-│   │   ├── BiometricLockScreen.tsx  # FaceID/TouchID gate
-│   │   └── SettingsScreen.tsx       # Privacy, block/report, data deletion
+│   │   ├── CrisisScreen.tsx        # Safety HALT — 988/DV resources (a11y)
+│   │   ├── PaywallScreen.tsx       # RevenueCat $19.99/$29.99 plans
+│   │   ├── NPSSurveyScreen.tsx     # 0-10 NPS survey
+│   │   └── ... (10 more screens)
 │   ├── services/
-│   │   ├── api.ts                   # REST + WebSocket client
-│   │   └── secure-storage.ts        # Encrypted local storage + biometric auth
-│   ├── theme/
-│   │   └── tokens.ts                # Design tokens (colors, typography, spacing)
-│   └── types/
-│       └── index.ts                 # TypeScript types matching backend API
+│   │   ├── api.ts                   # REST + WebSocket + deleteAccount()
+│   │   ├── subscriptions.ts         # RevenueCat integration
+│   │   ├── sentry.ts                # Crash reporting (PII-scrubbed)
+│   │   ├── token-manager.ts         # JWT lifecycle
+│   │   └── secure-storage.ts        # Encrypted local storage + biometric
+│   ├── i18n/locales/                # EN, ES, PT, HE (RTL)
+│   ├── theme/tokens.ts              # Design tokens (Tier 1 sand / Tier 3 mint)
+│   └── types/index.ts               # TypeScript types matching backend API
 ```
 
 ### Agent Governance

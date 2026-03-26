@@ -1,6 +1,6 @@
 # Relio Multi-Agent Flow Diagram
 
-Below is the Flow Diagram encompassing all 37 agents in the Relio architecture. 
+Below is the Flow Diagram encompassing all 38 agents in the Relio architecture, including the 7-step mediation pipeline and 4 phase agents covering the full relationship lifecycle. 
 
 **Excalidraw Instructions:**
 To view and edit this natively in Excalidraw:
@@ -16,21 +16,58 @@ graph TD
     classDef ops fill:#fff3e0,stroke:#f57c00,stroke-width:2px,color:#000
     classDef tech fill:#e8f5e9,stroke:#388e3c,stroke-width:2px,color:#000
     classDef sys fill:#f3e5f5,stroke:#7b1fa2,stroke-width:2px,color:#000
+    classDef pipeline fill:#fce4ec,stroke:#c62828,stroke-width:2px,color:#000
 
     %% --------------------------------
     %% Top Level Node
     %% --------------------------------
     CEO[chief-executive-officer] ::: sys
-    ORCH[orchestrator-agent] ::: sys
 
     CEO -->|Directs Tech & Product Strategy| CTO[chief-technology-officer]
     CEO -->|Directs Business & Legal| Ops[Operations / Exec Pod]
     CEO -->|Directs Mediation Vision| CPO[chief-psychology-officer]
     
     %% --------------------------------
-    %% System & Orchestration
+    %% 7-Step Mediation Pipeline (v3.3)
     %% --------------------------------
-    ORCH -->|Routes User Context| CLIN_TRIAGE(Clinical Triage)
+    subgraph Pipeline["7-Step Mediation Pipeline"]
+        direction LR
+        P1[1. PII Redactor] ::: pipeline
+        P2[2. Safety Guardian] ::: pipeline
+        P3A[3a. Orchestrator] ::: pipeline
+        P3B[3b. Profiler] ::: pipeline
+        P3C[3c. Dynamics] ::: pipeline
+        P4[4. Phase Agent] ::: pipeline
+        P5[5. Coach] ::: pipeline
+        P6[6. PII Validator] ::: pipeline
+
+        P1 --> P2
+        P2 -->|Clear| P3A
+        P2 -->|Clear| P3B
+        P2 -->|Clear| P3C
+        P3A --> P4
+        P3B --> P4
+        P3C --> P4
+        P4 --> P5
+        P5 --> P6
+        P2 -->|HALT| EMERG[Emergency Response] ::: medical
+    end
+
+    %% --------------------------------
+    %% Phase Routing (4 lifecycle stages)
+    %% --------------------------------
+    subgraph Phases["Phase Agents — Full Lifecycle"]
+        direction TB
+        PDAT[phase-dating] ::: medical
+        PMAR[phase-married] ::: medical
+        PPRE[phase-pre-divorced] ::: medical
+        PDIV[phase-divorced] ::: medical
+    end
+
+    P4 -.->|dating| PDAT
+    P4 -.->|married| PMAR
+    P4 -.->|pre-divorced| PPRE
+    P4 -.->|divorced| PDIV
 
     %% --------------------------------
     %% Operations / Executive Pod
@@ -95,32 +132,21 @@ graph TD
         direction TB
         CPO ::: medical
         
-        CLIN_TRIAGE --> SAFETY[safety-guardian] ::: medical
-        SAFETY -->|Clear| PROFILE[individual-profiler] ::: medical
-        SAFETY -->|Danger| ESCALATE(Hard Stops / Red Flags)
-
-        PROFILE -->|Analyzes| RD[relationship-dynamics] ::: medical
-        RD -->|Phase Routing| PHASES(Conflict Phases)
+        CPO -->|Governs| P3A
+        CPO -->|Audits| PSYEDU[psychoeducation-agent] ::: medical
+        CPO -->|Tracks| TRACK[progress-tracker] ::: medical
         
-        PHASES --> PDAT[phase-dating] ::: medical
-        PHASES --> PCOM[phase-commitment] ::: medical
-        PHASES --> PCRIS[phase-crisis] ::: medical
-        PHASES --> PSEP[phase-separation] ::: medical
-        PHASES --> PPOST[phase-post-divorce] ::: medical
+        PCRIS[phase-crisis] ::: medical
         
-        PHASES --> RESOLVE(Clinical Remediation)
-        
-        RESOLVE --> COACH[communication-coach] ::: medical
-        RESOLVE --> PSYEDU[psychoeducation-agent] ::: medical
-        
-        COACH --> TRACK[progress-tracker] ::: medical
+        P5 --> TRACK
         PSYEDU --> TRACK
     end
 
     %% Cross-pod interactions
-    TRACK -.->|Feedback Loop| ORCH
+    TRACK -.->|Feedback Loop| P3A
     PT -.->|Audits Systems| Backend
     SB -.->|EvoSkill Refines| CPO
     SB -.->|EvoSkill Refines| CTO
     DPO -.->|Data Compliance| CA
+    PCRIS -.->|Flooding Detection| P4
 ```
