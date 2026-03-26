@@ -1,12 +1,12 @@
 # Relio — Unified Product Requirements Document
 
-**Version:** v2.3.0
-**Date:** March 17, 2026
+**Version:** v3.0.0
+**Date:** March 26, 2026
 **Authors:** All 38 agents across Medical Pod (`chief-psychology-officer`), Tech Pod (`chief-technology-officer`), and Ops Pod (`chief-executive-officer`)
 **Classification:** Confidential — Board & Executive Leadership
-**Status:** Sprint 12 complete. All translations live. Medical agents operational. Legal docs v1.0. Only 2 issues remain (#73 iOS TestFlight, #89 Clinical co-founder).
+**Status:** Sprint 13 complete. DB persistence live. PII redaction live. 156 tests. Casual tone overhaul deployed. CI/CD green. Only 2 issues remain (#73 iOS TestFlight, #89 Clinical co-founder).
 
-> **Supersedes:** PRD v1.0.0–v1.8.0, PRD-medical-pod.md v1.3.0, PRD-tech-pod.md v1.3.0, PRD-ops-pod.md v1.3.0
+> **Supersedes:** PRD v1.0.0–v2.3.0, PRD-medical-pod.md v1.3.0, PRD-tech-pod.md v1.3.0, PRD-ops-pod.md v1.3.0
 
 ---
 
@@ -32,7 +32,10 @@
 
 ### What Relio Is
 
-Relio is the world's first AI-powered 3-way relationship mediator — a private, neutral third party that sits between two partners and transforms hostile, blame-laden communication into constructive, Socratic dialogue. It is not therapy. It is structured mediation informed by evidence-based clinical frameworks (Gottman Method, Emotionally Focused Therapy, Adult Attachment Theory), delivered by 38 specialized AI agents, and protected by a privacy architecture that is physically incapable of leaking one partner's private words to the other.
+Relio is the world's first AI-powered 3-way relationship mediator — a private, neutral third party that sits between two partners and transforms hostile, blame-laden communication into natural, warm, everyday conversation prompts. It is not therapy. It is structured mediation informed by evidence-based clinical frameworks (Gottman Method, Emotionally Focused Therapy, Adult Attachment Theory), delivered by 38 specialized AI agents, and protected by a privacy architecture that is physically incapable of leaking one partner's private words to the other.
+
+**Tone Philosophy (v3.0.0 — CSO + CPsychO + CMO joint directive):**
+Clinical frameworks power the reasoning. The output sounds like a caring friend — not a therapist, not a textbook. Each language uses its own natural register: EN contractions, ES tuteo, PT-BR informal, HE spoken Israeli (תשמע, יאללה, תכלס). See `israeli-hebrew-tone-guide` skill for HE cultural rules.
 
 ### Who It Serves
 
@@ -66,9 +69,10 @@ Relio is the world's first AI-powered 3-way relationship mediator — a private,
 
 - **No foreign keys** between Tier 1 and Tier 3 databases (per `architect-dual-context-db` skill)
 - **Row-Level Security** on Tier 1: `sender_id = current_setting('app.current_user_id')::uuid`
-- **PII Redaction** before all LLM calls: emails, phones, SSNs, addresses stripped with token substitution
-- **Canary string injection tests** in CI: Tier 1 data NEVER appears in Tier 3 payloads
+- **PII Redaction** before all LLM calls: emails, phones, SSNs, addresses stripped with token substitution (pre-flight + post-flight validation)
+- **Canary string injection tests** in CI: 44 tests prove Tier 1 data NEVER appears in Tier 3 payloads (including Unicode Hebrew/Chinese canaries)
 - **Admin dashboard** connects ONLY to Tier 3 — physically cannot query Tier 1/2
+- **WebSocket relay** via Redis pub/sub — Tier 3 messages only cross replica boundaries
 
 ---
 
@@ -78,17 +82,19 @@ Relio is the world's first AI-powered 3-way relationship mediator — a private,
 
 **5 IMPLEMENTED [LIVE]** | 33 PLANNED
 
+*Note: Emergency Response + Phase-Crisis are live in code (v2.5.0) but listed below with their production models.*
+
 #### Medical Pod (14 agents)
 
 | Agent | Status | Model (Production) | Role |
 |-------|--------|-------------------|------|
-| `safety-guardian` | **[LIVE]** | GPT-4.1 via Azure OpenAI | Absolute veto. Detects DV, suicidal ideation, child abuse. **Fail-closed on parse error.** |
+| `safety-guardian` | **[LIVE]** | GPT-4.1 via Azure OpenAI | Absolute veto. Detects DV, suicidal ideation, child abuse. Multi-language regex pre-screen (EN/ES/PT/HE). **Fail-closed on parse error.** |
 | `orchestrator-agent` | **[LIVE]** | GPT-4.1 | Routes messages through 3-Tier Model. Classifies intent + emotional intensity. |
-| `communication-coach` | **[LIVE]** | GPT-4.1-mini | Transforms Tier 1 hostile language into Tier 3 Socratic questions. |
-| `individual-profiler` | **[LIVE]** | GPT-4.1-mini | Evaluates attachment style (anxious/avoidant/secure/disorganized) and activation state. |
-| `phase-dating` | **[LIVE]** | GPT-4.1-mini | Early compatibility, boundaries, red flags, digital trust. |
-| `emergency-response-agent` | PLANNED | — | Executes emergency protocols on SAFETY_HALT (911/112/999 routing). |
-| `phase-crisis` | PLANNED | — | Flooding detection, 20-min structural pauses, repair attempts. |
+| `communication-coach` | **[LIVE]** | GPT-4.1-mini | Transforms Tier 1 hostile language into casual, warm Tier 3 conversation prompts. Horseman-aware differentiation stays in reasoning; output sounds like a friend mediating. Language-native slang per locale. |
+| `individual-profiler` | **[LIVE]** | GPT-4.1-mini | Evaluates attachment style (anxious/avoidant/secure/disorganized) and activation state. Sub-state classification (protest vs hyperactivation). |
+| `phase-dating` | **[LIVE]** | GPT-4.1-mini | Early compatibility, boundaries, red flags, digital trust, love-bombing detection. |
+| `emergency-response-agent` | **[LIVE]** | GPT-4.1-mini | Executes emergency protocols on SAFETY_HALT. Region-specific resources (US/BR/IL). Warm, caring tone — not hotline script. |
+| `phase-crisis` | **[LIVE]** | GPT-4.1-mini | Flooding detection, 20-min structural pauses with casual messaging, repair attempts. |
 | `relationship-dynamics` | PLANNED | — | Gottman Four Horsemen detection, EFT pursue-withdraw cycles. |
 | `chief-psychology-officer` | PLANNED | — | Meta-auditor: clinical validity, bias detection, parasocial monitoring. |
 | `phase-commitment` | PLANNED | — | Sound Relationship House, deepening intimacy. |
@@ -140,17 +146,26 @@ Relio is the world's first AI-powered 3-way relationship mediator — a private,
 ```
 User Input (Tier 1 Raw)
     │
+    ├──► [0] PII REDACTOR (regex, pre-flight)
+    │         └── Names, emails, phones, addresses, SSNs stripped
+    │         └── Safety Guardian sees ORIGINAL (for accurate crisis detection)
+    │
     ├──► [1] SAFETY GUARDIAN (GPT-4.1)
+    │         ├── Multi-language regex pre-screen (EN/ES/PT/HE) [LIVE]
     │         ├── SAFE → Continue
     │         ├── Parse failure → HALT (fail-closed)
-    │         └── HIGH/CRITICAL → SAFETY_HALT → Emergency Response [PLANNED]
+    │         └── HIGH/CRITICAL → SAFETY_HALT → Emergency Response [LIVE]
     │
     ├──► [2] ORCHESTRATOR + INDIVIDUAL PROFILER (parallel, GPT-4.1 + GPT-4.1-mini)
     │         ├── Tier classification, intent, emotional intensity
     │         └── Attachment style, activation state
     │
-    └──► [3] COMMUNICATION COACH (GPT-4.1-mini)
-              └── Tier 1 → Tier 3 Socratic transformation
+    ├──► [3] COMMUNICATION COACH (GPT-4.1-mini)
+    │         └── Tier 1 → Tier 3 casual, warm conversation prompt
+    │         └── Language-native output (EN/ES/PT/HE with slang)
+    │
+    └──► [4] PII POST-FLIGHT VALIDATOR
+              └── Scans Tier 3 output for leaked PII → strips matches
 ```
 
 **Average pipeline latency:** ~7s (4 LLM calls, 2 parallelized)
@@ -158,8 +173,10 @@ User Input (Tier 1 Raw)
 ### Safety Guardian Specifics [LIVE]
 - Severity levels: SAFE, LOW, MEDIUM, HIGH, CRITICAL
 - Compound rule: contempt + withdrawal → MEDIUM (Gottman, 1994)
-- **Regex pre-screen layer** [PLANNED]: Fast keyword matching before LLM call
+- **Regex pre-screen layer** [LIVE]: Multi-language crisis keyword detection (EN/ES/PT/HE) before LLM call
 - **Fail-closed doctrine**: ANY parse failure defaults to `severity: HIGH, halt: true`
+- **Emergency Response** [LIVE]: Region-specific resources (US 988/DV/911, BR CVV/180/SAMU, IL ERAN/MDA)
+- **Phase-Crisis** [LIVE]: Flooding detection (rapid-fire, ALL CAPS, contempt+withdrawal), 20-min structural pause with casual messaging
 
 ### Clinical Frameworks Referenced
 - Gottman Method (Four Horsemen, Sound Relationship House, flooding indicators)
@@ -269,14 +286,18 @@ User Input (Tier 1 Raw)
 ## 8. Business & Operations
 
 ### Revenue Model
-Freemium-to-premium subscription optimized for asymmetric engagement:
+Freemium-to-premium subscription optimized for asymmetric engagement (CRO mandate: solo user gets standalone value even without partner joining):
 
 | Tier | Price | Features |
-|------|-------|----------|
-| Free | $0 | Private journaling, attachment quiz |
-| Premium Solo | $9.99/mo | Unlimited AI coaching, exercises |
-| Premium Couples | $14.99/mo | SharedChat mediation (both linked) |
-| Premium+ | $24.99/mo | Crisis, priority, therapist handoff |
+|------|-------|---------|
+| Free | $0 | Private journaling, attachment quiz, AI reflections, psychoeducation cards |
+| Premium Couples | $19.99/mo | SharedChat mediation + weekly 60-min sessions + progress tracking (both partners included) |
+| Premium+ | $29.99/mo | Crisis priority, therapist handoff, reserved response time |
+
+**Unit Economics (CFO validated, Sprint 13):**
+- AI COGS per couple: $1.72/mo (weekly 60-min text session + 4 daily messages)
+- Infrastructure (amortized at 100+): $0.42/couple/mo
+- **Gross margin: 89.3%** at $19.99
 
 ### Market Size
 - Mental health tech: $17.5B (2028)
@@ -390,16 +411,15 @@ Freemium-to-premium subscription optimized for asymmetric engagement:
 | Key Vault | ~$0 | Secrets (negligible) |
 | Budget alert | $50/mo | Email at 80%/100% |
 
-### Projected at Scale
+### Projected at Scale (CFO updated — Sprint 13 cost model)
 
-| Users | Monthly Azure | LLM Cost | Total |
-|-------|--------------|----------|-------|
-| 100 | $100 | $150 | $250 |
-| 1,000 | $200 | $1,200 | $1,400 |
-| 10,000 | $500 | $8,000 | $8,500 |
-| 100,000 | $2,000 | $40,000 | $42,000 |
+| Couples | Monthly Azure | LLM Cost | Total | Revenue ($19.99) | Gross Margin |
+|---------|--------------|----------|-------|-------------------|-------------|
+| 100 | $42 | $172 | $214 | $1,999 | 89.3% |
+| 1,000 | $257 | $1,720 | $1,977 | $19,990 | 90.1% |
+| 10,000 | $824 | $17,200 | $18,024 | $199,900 | 91.0% |
 
-Model cascading (GPT-4.1-mini for 60% of calls) reduces LLM cost by ~40%.
+Model cascading (GPT-4.1-mini for Coach+Profiler+Dating, GPT-4.1 for Safety+Orchestrator) built into production.
 
 ---
 
@@ -407,15 +427,19 @@ Model cascading (GPT-4.1-mini for 60% of calls) reduces LLM cost by ~40%.
 
 | Risk | Severity | Mitigation | Status |
 |------|----------|------------|--------|
-| Tier 1 data leak to partner | **CRITICAL** | RLS, no FKs, canary tests, admin Tier 3-only | **MITIGATED** |
-| Safety false negative | **CRITICAL** | Fail-closed doctrine, regex pre-screen, compound rules | **PARTIALLY MITIGATED** |
+| Tier 1 data leak to partner | **CRITICAL** | RLS, no FKs, 44 canary tests (incl. Unicode), admin Tier 3-only, PII redaction pre+post-flight | **MITIGATED** |
+| Safety false negative | **CRITICAL** | Fail-closed doctrine, multi-lang regex pre-screen (EN/ES/PT/HE), compound rules, Emergency Response agent [LIVE] | **MITIGATED** |
 | LLM service outage | HIGH | Circuit breaker (3 fail → 30s open), graceful degradation | **MITIGATED** |
 | Token budget abuse | HIGH | Per-user 50K daily limit, rate limiting | **MITIGATED** |
 | No clinical co-founder | HIGH | Active outreach to AAMFT/Gottman alumni (#89) | **OPEN** |
-| Prompt injection | HIGH | System prompts hardened, pen-tester agent designed | **PARTIALLY MITIGATED** |
+| Prompt injection | HIGH | System prompts hardened, pen-tester agent designed, PII redaction strips identifying data | **PARTIALLY MITIGATED** |
+| Data loss on restart | **RESOLVED** | PostgreSQL persistence live (Sprint 13), dual-pool + in-memory fallback | **MITIGATED** |
+| Multi-replica WS isolation | **RESOLVED** | Redis pub/sub relay (Sprint 13), local EventEmitter fallback | **MITIGATED** |
+| PII in LLM context | **RESOLVED** | Pre-flight regex redactor + post-flight validator (Sprint 13) | **MITIGATED** |
 | Parasocial dependency | MEDIUM | CPsychO meta-audit agent (planned) | **PLANNED** |
 | Apple App Store rejection | MEDIUM | AppStore certifier agent, privacy labels | **OPEN** |
 | Competitor replication | LOW | 12–18 month architectural head start, provisional patent planned | **OPEN** |
+| npm vulnerabilities | LOW | npm audit fix in CI, automated dependency scanning | **MITIGATED** |
 
 ---
 
@@ -467,8 +491,36 @@ Model cascading (GPT-4.1-mini for 60% of calls) reduces LLM cost by ~40%.
 | `implement-consent-reprompt` | backend-dev, DPO, CISO | Consent version tracking |
 | *... and 37 more domain-specific skills* | | |
 
+### Automated Test Coverage (v3.0.0 — 156 tests)
+
+| Suite | Tests | Focus |
+|-------|-------|---------|
+| Canary Leak Detection | 44 | Tier 1 → Tier 3 isolation proof (7 canary strings, Unicode, deep JSON scan) |
+| Integration | 20 | Full API user journey (health → consent → invite → mediate → admin → delete) |
+| PII Redaction | 18 | Email, phone, SSN, address, URL, name detection + post-flight validation |
+| WebSocket Relay | 13 | Cross-replica pub/sub, room lifecycle, message fidelity, burst test |
+| Safety Multilang | 50 | Crisis keyword pre-screen (EN/ES/PT/HE + edge cases) |
+| Pipeline | 3 | Pipeline unit tests |
+| Canary Basic | 8 | Baseline canary checks |
+
 ---
 
-*This document is the single authoritative PRD for the Relio project. It supersedes all prior versions (v1.0.0–v1.8.0) and all pod-level PRDs (medical, tech, ops). Any conflict between this document and a pod PRD is resolved in favor of this document.*
+## 14. Voice of Each Pod — v3.0.0 Review
 
-*Last reviewed by: @chief-executive-officer, @chief-technology-officer, @chief-product-officer, @chief-strategy-officer, @chief-psychology-officer — March 16, 2026*
+### Medical Pod (`chief-psychology-officer`)
+> "Sprint 13 delivered the database persistence needed for longitudinal clinical analysis. PII redaction before LLM calls is a clinical milestone — we can now guarantee that patient names never enter model context (except Safety Guardian, which needs originals for accurate crisis detection). The casual tone overhaul aligns with our parasocial prevention mandate: formal language creates a therapist dynamic we explicitly want to avoid. The Israeli Hebrew glossary correctly identifies that volume ≠ severity in Israeli couples — our flooding detection must not over-trigger on cultural directness."
+
+### Tech Pod (`chief-technology-officer`)
+> "The data layer gap was our #1 technical debt — now resolved. Dual-pool PostgreSQL with RLS enforcement, 4 repository modules, and idempotent migrations give us production-grade persistence with graceful local dev fallback. The WebSocket relay via Redis pub/sub enables horizontal scaling. 44 canary leak tests provide CI-enforced proof that the 3-Tier Model holds under adversarial conditions. 156 total tests, 0 TS errors, both CI pipelines green."
+
+### Ops Pod (`chief-executive-officer`)
+> "Revenue model updated to $19.99 with 89% gross margins validated by the CFO. The casual tone overhaul is a market positioning decision — we are NOT a therapy app, we're the friend who helps couples talk. The Hebrew glossary is critical for our Israel launch market. Cost projections now use actual GPT-4.1/4.1-mini pricing with model cascading built in. Bootstrap path remains viable: $214/mo at 100 couples against $1,999 revenue."
+
+### CSO Synthesis (`chief-strategy-officer`)
+> "Three strategic shifts in v3.0.0: (1) Tone — moving from clinical Socratic to casual friend-mediating is the right differentiation against BetterHelp's clinical posture and Lasting's quiz format. (2) Pricing — $19.99 at 89% margin gives runway to add voice later as a $29.99 tier without margin pressure. (3) Hebrew-first cultural adaptation — sets the precedent for per-locale tone guides (Arabic, Hindi, Japanese next). The 3-Tier architecture remains the defensible moat. Provisional patent filing should proceed before any investor meetings."
+
+---
+
+*This document is the single authoritative PRD for the Relio project. It supersedes all prior versions (v1.0.0–v2.3.0) and all pod-level PRDs (medical, tech, ops). Any conflict between this document and a pod PRD is resolved in favor of this document.*
+
+*Last reviewed by: @chief-executive-officer, @chief-technology-officer, @chief-product-officer, @chief-strategy-officer, @chief-psychology-officer — March 26, 2026*
