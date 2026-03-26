@@ -187,11 +187,16 @@ export function SharedChatScreen({ userId, onSafetyHalt, onOpenJournal }: Shared
           multiline
           maxLength={2000}
           editable={!isProcessing}
+          accessibilityLabel="Message input"
+          accessibilityHint="Type your message here. It will be mediated by AI before your partner sees it."
         />
         <TouchableOpacity
           style={[styles.sendButton, (!inputText.trim() || isProcessing) && styles.sendButtonDisabled]}
           onPress={handleSend}
           disabled={!inputText.trim() || isProcessing}
+          accessibilityLabel="Send message"
+          accessibilityRole="button"
+          accessibilityState={{ disabled: !inputText.trim() || isProcessing }}
         >
           <Text style={styles.sendButtonText}>Send</Text>
         </TouchableOpacity>

@@ -20,7 +20,13 @@
     },
     "production": {
       "distribution": "store",
-      "autoIncrement": true
+      "autoIncrement": true,
+      "env": {
+        "EXPO_PUBLIC_SENTRY_DSN": "SENTRY_DSN_HERE",
+        "EXPO_PUBLIC_REVENUECAT_IOS_KEY": "REVENUECAT_IOS_KEY_HERE",
+        "EXPO_PUBLIC_REVENUECAT_ANDROID_KEY": "REVENUECAT_ANDROID_KEY_HERE"
+      },
+      "channel": "production"
     }
   },
   "submit": {

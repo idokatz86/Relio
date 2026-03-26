@@ -20,6 +20,7 @@ import {
 import { useTranslation } from 'react-i18next';
 import { colors, spacing, typography, borderRadius, shadows } from '../theme';
 import { clearAllData } from '../services/secure-storage';
+import { deleteAccount } from '../services/api';
 
 interface SettingsScreenProps {
   userId: string;
@@ -40,13 +41,7 @@ export function SettingsScreen({ userId, onLogout }: SettingsScreenProps) {
           style: 'destructive',
           onPress: async () => {
             try {
-              // Call server-side deletion endpoint (Apple 5.1.1v requirement)
-              const API_URL = 'https://relio-backend.livelytree-6981c681.swedencentral.azurecontainerapps.io';
-              await fetch(`${API_URL}/api/v1/account/delete`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ userId }),
-              });
+              await deleteAccount();
             } catch {
               // Server deletion may fail if offline — still clear local data
             }

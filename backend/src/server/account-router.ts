@@ -311,4 +311,70 @@ export async function processDeletionQueue(): Promise<number> {
 // Run purge check every hour
 setInterval(processDeletionQueue, 60 * 60 * 1000);
 
+/**
+ * DELETE / — Apple 5.1.1(v) compliant account deletion.
+ * Convenience route: same logic as POST /delete but with HTTP DELETE method.
+ * Apple App Review requires a DELETE endpoint for account removal.
+ *
+ * Issue #160: Server-side account deletion — Apple 5.1.1(v)
+ */
+router.delete('/', async (req: Request, res: Response) => {
+  const user = (req as any).user as AuthenticatedUser;
+
+  if (!isInMemoryMode()) {
+    try {
+      const existing = await deletionRepo.getDeletionRequest(user.id);
+      if (existing && !existing.cancelled_at && !existing.purged_at) {
+        res.status(409).json({
+          error: 'Deletion already scheduled',
+          scheduledPurgeAt: existing.scheduled_purge_at,
+        });
+        return;
+      }
+
+      const request = await deletionRepo.requestDeletion(user.id, 'Apple account deletion');
+      res.json({
+        scheduled: true,
+        scheduledPurgeAt: request.scheduled_purge_at,
+        graceHours: 24,
+        message: 'Your account is scheduled for deletion. You can cancel within 24 hours.',
+      });
+      return;
+    } catch (err) {
+      console.error('[Account] DB delete error:', err);
+      res.status(500).json({ error: 'Failed to schedule deletion' });
+      return;
+    }
+  }
+
+  // In-memory fallback
+  const existing = deletionQueue.get(user.id);
+  if (existing && !existing.cancelled && !existing.purged) {
+    res.status(409).json({
+      error: 'Deletion already scheduled',
+      scheduledPurgeAt: existing.scheduledPurgeAt,
+    });
+    return;
+  }
+
+  const now = new Date();
+  const purgeAt = new Date(now.getTime() + GRACE_PERIOD_MS);
+  const request: DeletionRequest = {
+    userId: user.id,
+    requestedAt: now.toISOString(),
+    scheduledPurgeAt: purgeAt.toISOString(),
+    cancelled: false,
+    purged: false,
+    reason: 'Apple account deletion',
+  };
+  deletionQueue.set(user.id, request);
+
+  res.json({
+    scheduled: true,
+    scheduledPurgeAt: request.scheduledPurgeAt,
+    graceHours: 24,
+    message: 'Your account is scheduled for deletion. You can cancel within 24 hours.',
+  });
+});
+
 export { router as accountRouter };

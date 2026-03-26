@@ -7,6 +7,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [3.3.0] - 2026-03-26
+### Added — App Store Submission Critical Path
+- **Clerk OIDC auth flow** (#152) — `@clerk/clerk-expo` integration, `AuthProvider` context, `clerkTokenCache` for secure token persistence, Clerk session synced to secure storage
+- **React Navigation** (#153) — Replaced state machine with `NavigationContainer` + native stack/bottom tab navigators. Auth stack (biometric → login), onboarding stack (consent → age → privacy → setup → quiz → paywall), main tabs (chat, journal, settings), modal screens (crisis, language, invite, NPS). Deep linking for `relio://invite/:code`.
+- **Privacy Policy + Terms of Service** (#155) — Static HTML pages at `/privacy.html` and `/terms.html` in landing-v2/public. Full 3-Tier data model disclosure, AI disclaimer, GDPR Article 17 deletion, third-party services list.
+- **Account deletion endpoint** (#160) — `DELETE /api/v1/account` for Apple 5.1.1(v) compliance. 24h grace period, GDPR cascade. Mobile SettingsScreen updated to use proper auth headers.
+- **Reviewer seed endpoint** (#151, #168) — `GET /api/v1/seed/reviewer` returns demo credentials (reviewer@myrelio.io). Pre-loaded conversation data. Disabled in production.
+- **Sentry crash reporting** (#157) — Already wired via `initSentry()` in App.tsx. PII scrubbing in `beforeSend`. Screen transition breadcrumbs via `captureScreenTransition`.
+- **Accessibility audit** (#159) — Added `accessibilityLabel`, `accessibilityRole`, `accessibilityState`, `accessibilityHint` to: SharedChatScreen TextInput + Send button, ConsentScreen switches + accept button, CrisisScreen resource buttons + checkbox + continue button.
+- **EAS production profile** (#154) — Added env vars (Sentry DSN, RevenueCat keys) to production build, `channel: "production"`, `expo-web-browser` plugin for Clerk OAuth.
+
+### Changed
+- **App.tsx** — Complete rewrite: ClerkProvider → AuthProvider → SafeAreaProvider → GestureHandlerRootView → AppNavigator
+- **SettingsScreen** — Account deletion uses `deleteAccount()` API method with auth headers instead of hardcoded fetch
+- **Mobile dependencies** — Added `@clerk/clerk-expo`, `expo-web-browser`, `expo-auth-session`
+
 ## [3.2.0] - 2026-03-26
 ### Added — P2: Phase Agents (Married, Pre-Divorced, Divorced)
 - **Phase-Married Agent** (`phase-married.ts`) — Gottman's Sound Relationship House framework: Love Maps, Fondness & Admiration, Turning Towards, perpetual conflict dialogue, shared meaning rituals. Casual friend-who-gets-it tone.

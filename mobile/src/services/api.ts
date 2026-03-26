@@ -129,6 +129,21 @@ export async function acceptInvite(inviteCode: string): Promise<{ roomId: string
 }
 
 /**
+ * Delete user account — Apple 5.1.1(v) compliant.
+ * Schedules account for deletion with 24h grace period.
+ * Issue #160: Server-side account deletion
+ */
+export async function deleteAccount(): Promise<{ scheduled: boolean; scheduledPurgeAt: string }> {
+  const headers = await authHeaders();
+  const response = await fetch(`${API_BASE}/api/v1/account`, {
+    method: 'DELETE',
+    headers,
+  });
+  if (!response.ok) throw new Error(`Delete account error: ${response.status}`);
+  return response.json();
+}
+
+/**
  * Send a message through the 5-agent pipeline via REST.
  * Used as fallback when WebSocket is unavailable.
  */

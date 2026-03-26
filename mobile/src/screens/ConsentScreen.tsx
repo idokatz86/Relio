@@ -77,7 +77,7 @@ export function ConsentScreen({ onAccept, tosVersion, privacyVersion }: ConsentS
 
         {/* Checkboxes */}
         <View style={styles.checkboxSection}>
-          <View style={styles.checkboxRow}>
+          <View style={styles.checkboxRow} accessible accessibilityRole="switch" accessibilityLabel="Accept Terms of Service" accessibilityState={{ checked: tosAccepted }}>
             <Switch value={tosAccepted} onValueChange={setTosAccepted} trackColor={{ true: '#6B705C' }} />
             <Text style={styles.checkboxText}>
               I accept the{' '}
@@ -88,7 +88,7 @@ export function ConsentScreen({ onAccept, tosVersion, privacyVersion }: ConsentS
             </Text>
           </View>
 
-          <View style={styles.checkboxRow}>
+          <View style={styles.checkboxRow} accessible accessibilityRole="switch" accessibilityLabel="Accept Privacy Policy" accessibilityState={{ checked: privacyAccepted }}>
             <Switch value={privacyAccepted} onValueChange={setPrivacyAccepted} trackColor={{ true: '#6B705C' }} />
             <Text style={styles.checkboxText}>
               I accept the{' '}
@@ -99,7 +99,7 @@ export function ConsentScreen({ onAccept, tosVersion, privacyVersion }: ConsentS
             </Text>
           </View>
 
-          <View style={styles.checkboxRow}>
+          <View style={styles.checkboxRow} accessible accessibilityRole="switch" accessibilityLabel="Acknowledge AI disclosure" accessibilityState={{ checked: aiDisclosure }}>
             <Switch value={aiDisclosure} onValueChange={setAiDisclosure} trackColor={{ true: '#6B705C' }} />
             <Text style={styles.checkboxText}>
               I understand Relio uses AI and is NOT a licensed therapist
@@ -112,6 +112,10 @@ export function ConsentScreen({ onAccept, tosVersion, privacyVersion }: ConsentS
         style={[styles.acceptButton, !allAccepted && styles.buttonDisabled]}
         onPress={handleAccept}
         disabled={!allAccepted}
+        accessibilityLabel="I agree, continue to next step"
+        accessibilityRole="button"
+        accessibilityState={{ disabled: !allAccepted }}
+        accessibilityHint="Accepts terms, privacy policy, and AI disclosure"
       >
         <Text style={styles.acceptButtonText}>I Agree — Continue</Text>
       </TouchableOpacity>

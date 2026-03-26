@@ -162,6 +162,20 @@ app.use('/api/v1/invite', authMiddleware, inviteRouter);
 // Account Management API (Sprint 10: #125, #126 — auth rate limited #128)
 app.use('/api/v1/account', authMiddleware, authRateLimit, accountRouter);
 
+// Reviewer Seed Data (Issue #151, #168 — only in dev/staging)
+app.get('/api/v1/seed/reviewer', (req: express.Request, res: express.Response) => {
+  if (process.env.NODE_ENV === 'production' && !process.env.ALLOW_SEED) {
+    res.status(403).json({ error: 'Seed endpoint disabled in production' });
+    return;
+  }
+  import('./seed-data.js').then(({ seedReviewerData, getDemoCredentials }) => {
+    seedReviewerData();
+    res.json(getDemoCredentials());
+  }).catch(() => {
+    res.status(500).json({ error: 'Failed to load seed module' });
+  });
+});
+
 // Push Token Registration (Sprint 10: #132)
 app.post('/api/v1/push/register', authMiddleware, (req: express.Request, res: express.Response) => {
   const schema = z.object({

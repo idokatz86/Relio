@@ -143,6 +143,9 @@ export function CrisisScreen({ severity, onAcknowledge }: CrisisScreenProps) {
             key={resource.name}
             style={styles.resourceCard}
             onPress={() => handleCall(resource.url)}
+            accessibilityLabel={`Call ${resource.name}: ${resource.description}`}
+            accessibilityRole="button"
+            accessibilityHint="Opens phone dialer or external link"
           >
             <Text style={styles.resourceName}>{resource.name}</Text>
             <Text style={styles.resourceDesc}>{resource.description}</Text>
@@ -155,6 +158,9 @@ export function CrisisScreen({ severity, onAcknowledge }: CrisisScreenProps) {
           <TouchableOpacity
             style={styles.checkboxRow}
             onPress={() => setAcknowledged(!acknowledged)}
+            accessibilityRole="checkbox"
+            accessibilityState={{ checked: acknowledged }}
+            accessibilityLabel="I acknowledge the crisis resources above"
           >
             <View style={[styles.checkbox, acknowledged && styles.checkboxChecked]}>
               {acknowledged && <Text style={styles.checkmark}>✓</Text>}
@@ -168,6 +174,9 @@ export function CrisisScreen({ severity, onAcknowledge }: CrisisScreenProps) {
             style={[styles.continueButton, !acknowledged && styles.continueButtonDisabled]}
             onPress={onAcknowledge}
             disabled={!acknowledged}
+            accessibilityLabel="Return to chat"
+            accessibilityRole="button"
+            accessibilityState={{ disabled: !acknowledged }}
           >
             <Text style={styles.continueButtonText}>{content.returnButton}</Text>
           </TouchableOpacity>
