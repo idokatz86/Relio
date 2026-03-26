@@ -19,7 +19,7 @@
   },
   "dependencies": {
     "@azure/identity": "^4.13.0",
-    "@github/copilot-sdk": "^0.1.0",
+    "@github/copilot-sdk": "^0.2.0",
     "cors": "^2.8.6",
     "dotenv": "^16.4.7",
     "express": "^4.22.1",
