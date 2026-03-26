@@ -28,19 +28,17 @@ const REVENUECAT_ANDROID_KEY = process.env.EXPO_PUBLIC_REVENUECAT_ANDROID_KEY ||
 
 // Entitlement identifiers (must match RevenueCat dashboard)
 export const ENTITLEMENTS = {
-  PREMIUM_SOLO: 'premium_solo',       // $9.99/mo
-  PREMIUM_COUPLES: 'premium_couples', // $14.99/mo
-  PREMIUM_PLUS: 'premium_plus',       // $24.99/mo
+  PREMIUM_COUPLES: 'premium_couples', // $19.99/mo
+  PREMIUM_PLUS: 'premium_plus',       // $29.99/mo
 } as const;
 
 // Product identifiers (must match App Store Connect + Google Play Console)
 export const PRODUCTS = {
-  SOLO_MONTHLY: 'relio_solo_monthly',           // $9.99/mo
-  COUPLES_MONTHLY: 'relio_couples_monthly',     // $14.99/mo
-  PLUS_MONTHLY: 'relio_plus_monthly',           // $24.99/mo
+  COUPLES_MONTHLY: 'relio_couples_monthly',     // $19.99/mo
+  PLUS_MONTHLY: 'relio_plus_monthly',           // $29.99/mo
 } as const;
 
-export type SubscriptionTier = 'free' | 'solo' | 'couples' | 'plus';
+export type SubscriptionTier = 'free' | 'couples' | 'plus';
 
 export interface SubscriptionState {
   tier: SubscriptionTier;
@@ -135,7 +133,6 @@ function getActiveTier(customerInfo: CustomerInfo): SubscriptionTier {
 
   if (active[ENTITLEMENTS.PREMIUM_PLUS]) return 'plus';
   if (active[ENTITLEMENTS.PREMIUM_COUPLES]) return 'couples';
-  if (active[ENTITLEMENTS.PREMIUM_SOLO]) return 'solo';
   return 'free';
 }
 
@@ -143,13 +140,13 @@ function getActiveTier(customerInfo: CustomerInfo): SubscriptionTier {
 
 export function canAccess(feature: string, tier: SubscriptionTier): boolean {
   const access: Record<string, SubscriptionTier[]> = {
-    'private_journal': ['free', 'solo', 'couples', 'plus'],
-    'attachment_quiz': ['free', 'solo', 'couples', 'plus'],
-    'ai_coaching': ['solo', 'couples', 'plus'],
+    'private_journal': ['free', 'couples', 'plus'],
+    'attachment_quiz': ['free', 'couples', 'plus'],
+    'ai_coaching': ['couples', 'plus'],
     'shared_chat': ['couples', 'plus'],
     'crisis_support': ['plus'],
     'priority_response': ['plus'],
-    'psychoeducation': ['free', 'solo', 'couples', 'plus'],
+    'psychoeducation': ['free', 'couples', 'plus'],
   };
 
   const allowed = access[feature];
