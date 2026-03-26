@@ -20,14 +20,7 @@
     },
     "production": {
       "distribution": "store",
-      "autoIncrement": true,
-      "ios": {
-        "buildNumber": "1"
-      },
-      "android": {
-        "buildType": "app-bundle",
-        "versionCode": 1
-      }
+      "autoIncrement": true
     }
   },
   "submit": {

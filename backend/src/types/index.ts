@@ -30,7 +30,10 @@ export type AgentName =
   | 'orchestrator'
   | 'communication-coach'
   | 'individual-profiler'
-  | 'phase-dating';
+  | 'phase-dating'
+  | 'relationship-dynamics'
+  | 'psychoeducation'
+  | 'progress-tracker';
 
 /** Model assignment per agent */
 export interface AgentModelConfig {

@@ -125,6 +125,28 @@ const AGENT_MODEL_CONFIG: Record<AgentName, AgentModelConfig> = {
     temperature: 0.4,
     maxTokens: 800,
   },
+  'relationship-dynamics': {
+    agent: 'relationship-dynamics',
+    githubModel: 'openai/gpt-4o',
+    azureModel: 'gpt-41-mini',
+    anthropicModel: 'claude-sonnet-4.6',
+    temperature: 0.3,
+    maxTokens: 800,
+  },
+  'psychoeducation': {
+    agent: 'psychoeducation',
+    githubModel: 'openai/gpt-4o',
+    azureModel: 'gpt-41-mini',
+    temperature: 0.5,
+    maxTokens: 600,
+  },
+  'progress-tracker': {
+    agent: 'progress-tracker',
+    githubModel: 'openai/gpt-4o',
+    azureModel: 'gpt-41-mini',
+    temperature: 0.2,
+    maxTokens: 500,
+  },
 };
 
 /**
