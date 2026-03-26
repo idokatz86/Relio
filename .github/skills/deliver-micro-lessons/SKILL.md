@@ -6,7 +6,11 @@ Increase clinical literacy regarding the user's specific relationship dynamics w
 ## Standard Delivery
 1. Check current `attachment_baseline` from Tier 2 state.
 2. If `avoidant`, select a 30-second low-friction reading on "The urge to pull away."
-3. Present it to the user privately in a Tier 1 context as an optional resource.
+3. Present it to the user privately in a Tier 1 context as an optional resource — in casual, warm language:
+   - EN: "Hey, this might be helpful — it's a quick read about [topic]. No pressure, just something to think about."
+   - HE: "תשמע/י, יש פה משהו קצר ומעניין על [נושא]. שווה להציץ, בלי לחץ."
+   - NEVER present lessons like homework assignments. They're offerings, not requirements.
+   - For Hebrew: use `israeli-hebrew-tone-guide` — spoken register, תכלס, no formal phrasing.
 
 ## Digital Boundaries & Social Media Lessons
 4. When Tier 2 state includes `DIGITAL_FRICTION` tag or proactive engagement detects screen-time conflict patterns:

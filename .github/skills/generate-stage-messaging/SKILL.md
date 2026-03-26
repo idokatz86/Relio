@@ -23,9 +23,15 @@ Step 1b: Digital & Social Media Angle
 - Divorced: Parallel social media, BIFF for text/email
 
 Step 2: Brand Voice & Differentiation
-Ensure the tone is empathetic, non-judgmental, and authoritative.
+Tone is **casual, warm, and real** — like a friend who gets it, not a brand talking AT you.
+- No corporate-speak, no jargon, no "synergy" or "holistic approach"
+- Use contractions, everyday language, and the user's own register
+- For Hebrew: spoken Israeli — תשמע, נו, יאללה, תכלס. See `israeli-hebrew-tone-guide` skill.
+- For Spanish: tuteo, colloquial. For PT-BR: informal.
 
-You must explicitly highlight the "3-Tier Confidentiality Model" as the core differentiator. Assure users that their private vents to the AI will never be exposed to their partner.
+Highlight the "3-Tier Confidentiality Model" as the core differentiator — but explain it simply:
+- EN: "What you say stays yours. Your partner only sees the constructive version."
+- HE: "מה שאת/ה כותב/ת נשאר שלך. בן/בת הזוג רואים רק את הגרסה הבונה."
 
 Step 3: Asset Generation
 Generate the required copy (e.g., ad copy, app store description, email lifecycle campaign) using imperative, action-oriented language.

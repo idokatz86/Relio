@@ -36,7 +36,11 @@ Act on SAFETY_HALT signals from the Safety Guardian by delivering emergency reso
 ### Step 5: Session Management
 10. Lock affected session — only human clinical reviewer can clear.
 11. Quarantine all pending Tier 3 outputs.
-12. Partner receives neutral message: "Your partner's session has been paused. They will return when ready."
+12. Partner receives warm, brief message:
+   - EN: "Your partner is taking a moment. We're making sure everyone's okay."
+   - ES: "Tu pareja se está tomando un momento. Estamos asegurándonos de que todo esté bien."
+   - HE: "בן/בת הזוג שלך לוקח/ת רגע. אנחנו מוודאים שהכל בסדר."
+   - Tone: caring and brief — not clinical. See `israeli-hebrew-tone-guide` for HE.
 
 ### Step 6: Post-Crisis Follow-Up
 13. Schedule automated check-ins: 24h, 72h, 7-day follow-ups via push notification + in-app message.
