@@ -7,6 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [3.2.0] - 2026-03-26
+### Added — P2: Phase Agents (Married, Pre-Divorced, Divorced)
+- **Phase-Married Agent** (`phase-married.ts`) — Gottman's Sound Relationship House framework: Love Maps, Fondness & Admiration, Turning Towards, perpetual conflict dialogue, shared meaning rituals. Casual friend-who-gets-it tone.
+- **Phase-Pre-Divorced Agent** (`phase-pre-divorced.ts`) — De-escalation, flooding detection handoff, 20-minute timeout coordination, logistical mediation with non-partisan reframing, grief processing, digital flooding management (late-night spirals, text walls, old screenshot resurfacing).
+- **Phase-Divorced Agent** (`phase-divorced.ts`) — BIFF response method (Brief, Informative, Friendly, Firm), Gray Rock protocol, parallel parenting support, Tier 1 venting firewall (hostile content blocked from transmission), child-focused reframing, parental alienation detection.
+- **Orchestrator upgraded** — relationship stage detection (dating/married/pre-divorced/divorced) with contextual routing to appropriate phase agent. New `relationshipStage` field in routing result.
+- **Pipeline upgraded to 7-step** — PII Redactor → Safety Guardian → (Orchestrator ‖ Profiler ‖ Dynamics) → Phase Agent → Coach → PII Validator. Phase guidance now feeds into Communication Coach as additional context.
+- **LLM Gateway**: 3 new model configs (phase-married, phase-pre-divorced, phase-divorced) — all GPT-4.1-mini
+- **AgentName type** expanded: `phase-married`, `phase-pre-divorced`, `phase-divorced`
+
 ## [3.1.0] - 2026-03-26
 ### Added — Sprint 14: New Agents, Pipeline Upgrade & Production Deploy
 - **Relationship Dynamics Agent** (`relationship-dynamics.ts`) — Four Horsemen live detection, pursue-withdraw/attack-attack/withdraw-withdraw cycle identification, DIGITAL_FRICTION tagging, phubbing detection, Surface vs Depth analysis, repair attempt flagging

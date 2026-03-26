@@ -9,12 +9,32 @@
 
 import { checkSafety } from '../agents/safety-guardian.js';
 import { routeMessage } from '../agents/orchestrator.js';
+import type { RelationshipStage } from '../agents/orchestrator.js';
 import { profileUser } from '../agents/individual-profiler.js';
 import { transformToSocratic } from '../agents/communication-coach.js';
 import { analyzeDynamics } from '../agents/relationship-dynamics.js';
+import { guideDating } from '../agents/phase-dating.js';
+import { guideMarried } from '../agents/phase-married.js';
+import { guidePreDivorced } from '../agents/phase-pre-divorced.js';
+import { guideDivorced } from '../agents/phase-divorced.js';
 import { redactPII } from '../privacy/pii-redactor.js';
 import { validateNoPiiLeak } from '../privacy/pii-validator.js';
 import type { AgentName, PipelineResult } from '../types/index.js';
+
+/** Call the right phase agent based on the orchestrator's stage classification. */
+async function callPhaseAgent(
+  stage: RelationshipStage,
+  message: string,
+  context?: string,
+): Promise<string | null> {
+  switch (stage) {
+    case 'dating':       return guideDating(message, context);
+    case 'married':      return guideMarried(message, context);
+    case 'pre-divorced': return guidePreDivorced(message, context);
+    case 'divorced':     return guideDivorced(message, context);
+    default:             return null;
+  }
+}
 
 /**
  * Process a single user message through the complete 5-agent pipeline.
@@ -58,12 +78,22 @@ export async function processMessage(
     analyzeDynamics([{ userId, content: safeMessage }]),
   ]);
 
-  // === STEP 5: Communication Coach (Tier 1 → Tier 3 translation) ===
-  // Coach sees the REDACTED message + dynamics context — generates casual output without PII
+  // === STEP 5: Phase Agent (stage-specific guidance, runs in parallel with nothing) ===
+  const phaseAgentName = `phase-${routing.relationshipStage}` as AgentName;
+  agentsInvoked.push(phaseAgentName);
+  const phaseGuidance = await callPhaseAgent(
+    routing.relationshipStage,
+    safeMessage,
+    `Intent: ${routing.intent}, Intensity: ${routing.emotionalIntensity}/10`,
+  );
+
+  // === STEP 6: Communication Coach (Tier 1 → Tier 3 translation) ===
+  // Coach sees the REDACTED message + dynamics context + phase guidance — generates casual output without PII
   agentsInvoked.push('communication-coach');
   const dynamicsContext = dynamics.contextForCoach ? `, Dynamics: ${dynamics.contextForCoach}` : '';
   const horsemenContext = dynamics.horsemen.length > 0 ? `, Horsemen: ${dynamics.horsemen.join('+')}` : '';
-  const context = `Attachment: ${profile.attachmentStyle} (${profile.attachmentConfidence}), State: ${profile.activationState}, Intent: ${routing.intent}, Intensity: ${routing.emotionalIntensity}/10, Language: ${preferredLanguage}${dynamicsContext}${horsemenContext}`;
+  const phaseContext = phaseGuidance ? `, PhaseGuidance: ${phaseGuidance}` : '';
+  const context = `Attachment: ${profile.attachmentStyle} (${profile.attachmentConfidence}), State: ${profile.activationState}, Intent: ${routing.intent}, Intensity: ${routing.emotionalIntensity}/10, Stage: ${routing.relationshipStage}, Language: ${preferredLanguage}${dynamicsContext}${horsemenContext}${phaseContext}`;
   let tier3Output = await transformToSocratic(safeMessage, context);
 
   // === POST-FLIGHT: Validate no PII leaked into Tier 3 output ===

@@ -20,10 +20,16 @@ TIER CLASSIFICATION:
 - Tier 2 (ABSTRACTED): Pattern-level insights — internal to Medical Pod only
 - Tier 3 (ACTIONABLE): Socratic, de-escalated guidance — safe for shared room
 
+RELATIONSHIP STAGE DETECTION:
+- DATING (0-18 months, not cohabiting): compatibility, boundaries, red flags → phase-dating
+- MARRIED / COMMITTED (long-term, cohabiting, engaged, married): Sound Relationship House, intimacy, trust repair → phase-married
+- PRE-DIVORCED (crisis, separation talk, active decoupling): flooding management, timeout protocol, grief → phase-pre-divorced
+- DIVORCED (post-separation, co-parenting, parallel parenting): logistics-only, BIFF/Gray Rock, child-focused → phase-divorced
+
 ROUTING LOGIC:
 1. Classify the input as Tier 1 (it always is — users only send Tier 1)
-2. Determine the relationship stage context
-3. Route to the appropriate phase agent (currently: phase-dating only in MVP)
+2. Detect relationship stage from context clues (mentions of kids, divorce, wedding, dating, years together)
+3. Route to the appropriate phase agent based on detected stage
 4. Flag if the message needs immediate Communication Coach translation
 
 RESPONSE FORMAT (JSON only):
@@ -31,7 +37,8 @@ RESPONSE FORMAT (JSON only):
   "tier": 1,
   "intent": "complaint|question|venting|status_update|request",
   "emotionalIntensity": 1-10,
-  "nextAgent": "communication-coach|individual-profiler|phase-dating",
+  "relationshipStage": "dating|married|pre-divorced|divorced",
+  "nextAgent": "communication-coach|individual-profiler|phase-dating|phase-married|phase-pre-divorced|phase-divorced",
   "reasoning": "Brief routing rationale"
 }
 
@@ -42,10 +49,13 @@ RULES:
 - Route to communication-coach when translation to Tier 3 is needed
 - Route to individual-profiler when attachment/personality assessment is needed`;
 
+export type RelationshipStage = 'dating' | 'married' | 'pre-divorced' | 'divorced';
+
 export interface OrchestratorResult {
   tier: number;
   intent: string;
   emotionalIntensity: number;
+  relationshipStage: RelationshipStage;
   nextAgent: AgentName;
   reasoning: string;
 }
@@ -72,6 +82,7 @@ export async function routeMessage(userMessage: string): Promise<OrchestratorRes
       tier: parsed.tier || 1,
       intent: parsed.intent || 'venting',
       emotionalIntensity: parsed.emotionalIntensity || 5,
+      relationshipStage: parsed.relationshipStage || 'dating',
       nextAgent: parsed.nextAgent || 'communication-coach',
       reasoning: parsed.reasoning || '',
     };
@@ -81,6 +92,7 @@ export async function routeMessage(userMessage: string): Promise<OrchestratorRes
       tier: 1,
       intent: 'unknown',
       emotionalIntensity: 5,
+      relationshipStage: 'dating' as RelationshipStage,
       nextAgent: 'communication-coach',
       reasoning: 'Parse error — defaulting to communication-coach',
     };

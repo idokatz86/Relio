@@ -31,6 +31,9 @@ export type AgentName =
   | 'communication-coach'
   | 'individual-profiler'
   | 'phase-dating'
+  | 'phase-married'
+  | 'phase-pre-divorced'
+  | 'phase-divorced'
   | 'relationship-dynamics'
   | 'psychoeducation'
   | 'progress-tracker';
