@@ -209,6 +209,56 @@ app.post('/api/v1/feedback', authMiddleware, async (req: express.Request, res: e
   res.status(201).json({ id: entry.id, received: true });
 });
 
+// ── Psychoeducation Micro-Lessons ────────────────────────────
+app.get('/api/v1/psychoeducation/lesson', authMiddleware, async (req: express.Request, res: express.Response) => {
+  try {
+    const { generateMicroLesson } = await import('../agents/psychoeducation.js');
+    const stage = (req.query.stage as string) || 'dating';
+    const language = (req.query.language as string) || 'en';
+    const digitalFriction = req.query.digitalFriction === 'true';
+    const phubbing = req.query.phubbing === 'true';
+    const attachmentStyle = (req.query.attachmentStyle as string) || undefined;
+
+    const lesson = await generateMicroLesson(
+      stage as any,
+      { digitalFriction, phubbing, attachmentStyle },
+      language,
+    );
+    res.json(lesson);
+  } catch (err) {
+    console.error('[Psychoeducation] Error:', err);
+    res.status(500).json({ error: 'Failed to generate lesson' });
+  }
+});
+
+// ── Progress Tracker ─────────────────────────────────────────
+app.get('/api/v1/progress', authMiddleware, async (req: express.Request, res: express.Response) => {
+  try {
+    const { trackProgress } = await import('../agents/progress-tracker.js');
+    const language = (req.query.language as string) || 'en';
+    // For now, use in-memory stats until DB is connected
+    const { adminStats } = await import('./admin-router.js');
+    const totalInvocations = adminStats.pipelineLatencyMs.length;
+    const avgLatency = totalInvocations > 0
+      ? adminStats.pipelineLatencyMs.reduce((a: number, b: number) => a + b, 0) / totalInvocations
+      : 0;
+    const metrics = await trackProgress({
+      sessionsThisWeek: Math.ceil(totalInvocations / 7),
+      sessionsLastWeek: 0,
+      avgDurationMinutes: Math.round(avgLatency / 60000),
+      horsemenCounts: { criticism: 0, contempt: 0, defensiveness: 0, stonewalling: 0 },
+      prevHorsemenCounts: { criticism: 0, contempt: 0, defensiveness: 0, stonewalling: 0 },
+      repairAttempts: 0,
+      totalConflicts: adminStats.safetyEvents.length,
+      safetyHalts: adminStats.safetyHaltsToday,
+    }, language);
+    res.json(metrics);
+  } catch (err) {
+    console.error('[Progress] Error:', err);
+    res.status(500).json({ error: 'Failed to generate progress metrics' });
+  }
+});
+
 // REST endpoint for single message processing (Issue #67: auth required)
 app.post('/api/v1/mediate', authMiddleware, async (req: express.Request, res: express.Response) => {
   // Input validation with Zod (Issue #76)

@@ -11,6 +11,7 @@ import { checkSafety } from '../agents/safety-guardian.js';
 import { routeMessage } from '../agents/orchestrator.js';
 import { profileUser } from '../agents/individual-profiler.js';
 import { transformToSocratic } from '../agents/communication-coach.js';
+import { analyzeDynamics } from '../agents/relationship-dynamics.js';
 import { redactPII } from '../privacy/pii-redactor.js';
 import { validateNoPiiLeak } from '../privacy/pii-validator.js';
 import type { AgentName, PipelineResult } from '../types/index.js';
@@ -48,18 +49,21 @@ export async function processMessage(
     };
   }
 
-  // === STEPS 2 & 3: Orchestrator + Profiler (PARALLEL — no data dependency) ===
+  // === STEPS 2, 3 & 4: Orchestrator + Profiler + Dynamics (PARALLEL — no data dependency) ===
   // These agents see the REDACTED message (no PII)
-  agentsInvoked.push('orchestrator', 'individual-profiler');
-  const [routing, profile] = await Promise.all([
+  agentsInvoked.push('orchestrator', 'individual-profiler', 'relationship-dynamics');
+  const [routing, profile, dynamics] = await Promise.all([
     routeMessage(safeMessage),
     profileUser(userId, safeMessage),
+    analyzeDynamics([{ userId, content: safeMessage }]),
   ]);
 
-  // === STEP 4: Communication Coach (Tier 1 → Tier 3 translation) ===
-  // Coach sees the REDACTED message — generates Socratic output without PII
+  // === STEP 5: Communication Coach (Tier 1 → Tier 3 translation) ===
+  // Coach sees the REDACTED message + dynamics context — generates casual output without PII
   agentsInvoked.push('communication-coach');
-  const context = `Attachment: ${profile.attachmentStyle} (${profile.attachmentConfidence}), State: ${profile.activationState}, Intent: ${routing.intent}, Intensity: ${routing.emotionalIntensity}/10, Language: ${preferredLanguage}`;
+  const dynamicsContext = dynamics.contextForCoach ? `, Dynamics: ${dynamics.contextForCoach}` : '';
+  const horsemenContext = dynamics.horsemen.length > 0 ? `, Horsemen: ${dynamics.horsemen.join('+')}` : '';
+  const context = `Attachment: ${profile.attachmentStyle} (${profile.attachmentConfidence}), State: ${profile.activationState}, Intent: ${routing.intent}, Intensity: ${routing.emotionalIntensity}/10, Language: ${preferredLanguage}${dynamicsContext}${horsemenContext}`;
   let tier3Output = await transformToSocratic(safeMessage, context);
 
   // === POST-FLIGHT: Validate no PII leaked into Tier 3 output ===
