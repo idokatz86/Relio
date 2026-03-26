@@ -7,6 +7,44 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [3.1.0] - 2026-03-26
+### Added — Sprint 14: New Agents, Pipeline Upgrade & Production Deploy
+- **Relationship Dynamics Agent** (`relationship-dynamics.ts`) — Four Horsemen live detection, pursue-withdraw/attack-attack/withdraw-withdraw cycle identification, DIGITAL_FRICTION tagging, phubbing detection, Surface vs Depth analysis, repair attempt flagging
+- **Psychoeducation Agent** (`psychoeducation.ts`) — Stage-specific micro-lesson generation (dating/married/pre-divorced/divorced), digital boundaries modules, casual tone in all 4 languages, exercise generation
+- **Progress Tracker Agent** (`progress-tracker.ts`) — Conflict frequency, resolution time, positive:negative ratio, horsemen trends, repair attempt rate, non-shaming weekly summary in casual tone
+- **Pipeline upgraded to 6-step, 10-agent system** — PII Redactor → Safety Guardian → (Orchestrator ‖ Profiler ‖ Dynamics) → Coach → PII Validator. Dynamics context (horsemen, cycle) now feeds into Communication Coach for smarter responses.
+- **New API endpoints**:
+  - `GET /api/v1/psychoeducation/lesson` — personalized micro-lessons by stage, language, dynamics
+  - `GET /api/v1/progress` — weekly progress metrics with casual summary
+- **LLM Gateway**: 3 new model configs (relationship-dynamics, psychoeducation, progress-tracker) — all GPT-4.1-mini for cost optimization
+- **AgentName type** expanded: `relationship-dynamics`, `psychoeducation`, `progress-tracker`
+
+### Changed — Casual Tone Overhaul
+- **Communication Coach prompt** — formal Socratic → casual friend-mediating tone. Horseman-aware differentiation stays in reasoning; output sounds like a caring friend, not a textbook.
+- **Phase-Crisis pause messages** — clinical ("prefrontal cortex offline") → warm casual ("things got heated, totally normal") in EN/ES/PT/HE
+- **Emergency Response tone** — hotline-script → genuine warmth ("you don't have to deal with this alone")
+- **9 user-facing skills updated** with casual tone + Hebrew glossary reference: socratic-translation, enforce-conflict-timeout, execute-emergency-response, establish-parallel-parenting, neutral-logistics-mediation, deliver-micro-lessons, audit-relationship-house, generate-health-report, generate-stage-messaging
+- **Israeli Hebrew Tone Guide** — new skill (`israeli-hebrew-tone-guide/SKILL.md`) with 100+ everyday expressions, cultural mediation rules, gender conjugation, Arabic-origin words (יאללה, חלאס, סבבה)
+- **Communication Coach Hebrew register** — full inline guide with DO/DON'T table, 4 authentic example outputs in spoken Israeli register
+
+### Fixed
+- **Mobile consent API** — ConsentScreen + AgeVerifyScreen wired to actual backend endpoints (`acceptConsent()`, `verifyAge()`)
+- **Mobile API client** — added `acceptConsent`, `verifyAge`, `createInvite`, `acceptInvite` methods
+- **Hebrew locale casualized** — consent, chat, crisis, settings strings updated (e.g., "יאללה, מסכים/ה — קדימה")
+- **npm audit** — flatted prototype pollution + picomatch ReDoS fixed
+- **eas.json** — removed invalid `versionCode`/`buildNumber` fields
+
+### Infrastructure
+- **Azure PostgreSQL started** — `relio-postgres-dev` running in Sweden Central (was stopped for cost savings)
+- **Merged to main** — production deployment triggered via CD pipeline
+- **PRD v3.0.0** — unified update from all 3 pods + CSO review
+- **Customer Journey** — 10-phase HTML document + Mermaid diagram created
+
+### Docs
+- CHANGELOG.md, README.md, PRD.md updated to v3.0.0
+- Customer journey PDF at `docs/customer-journey.html`
+- Israeli Hebrew tone guide at `.github/skills/israeli-hebrew-tone-guide/SKILL.md`
+
 ## [3.0.0] - 2026-03-24
 ### Added — Sprint 13: Data Layer, Privacy & Scale
 - **PostgreSQL Data Layer** — Full production-ready persistence layer replacing all in-memory Maps (#65)
