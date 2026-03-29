@@ -35,6 +35,8 @@ import { LanguagePickerScreen } from '../screens/LanguagePickerScreen';
 import { InvitePartnerScreen } from '../screens/InvitePartnerScreen';
 import { AcceptInviteScreen } from '../screens/AcceptInviteScreen';
 import { NPSSurveyScreen } from '../screens/NPSSurveyScreen';
+import { SoloTranslateScreen } from '../screens/SoloTranslateScreen';
+import { InsightsScreen } from '../screens/InsightsScreen';
 
 // ── Type Definitions ─────────────────────────────────────
 export type AuthStackParamList = {
@@ -53,8 +55,10 @@ export type OnboardingStackParamList = {
 };
 
 export type MainTabParamList = {
-  Chat: undefined;
+  Translate: undefined;
   Journal: undefined;
+  Insights: undefined;
+  Chat: undefined;
   Settings: undefined;
 };
 
@@ -107,13 +111,11 @@ function OnboardingStack() {
         gestureEnabled: false, // Prevent swiping back during onboarding
       }}
     >
+      <OnboardingStackNav.Screen name="PrivacyExplainer" component={PrivacyExplainerScreen as any} />
       <OnboardingStackNav.Screen name="Consent" component={ConsentScreen as any} />
       <OnboardingStackNav.Screen name="AgeVerify" component={AgeVerifyScreen as any} />
-      <OnboardingStackNav.Screen name="PrivacyExplainer" component={PrivacyExplainerScreen as any} />
       <OnboardingStackNav.Screen name="Onboarding" component={OnboardingScreen as any} />
-      <OnboardingStackNav.Screen name="Psychoeducation" component={PsychoeducationCards as any} />
       <OnboardingStackNav.Screen name="AttachmentQuiz" component={AttachmentQuizScreen as any} />
-      <OnboardingStackNav.Screen name="Paywall" component={PaywallScreen as any} />
     </OnboardingStackNav.Navigator>
   );
 }
@@ -139,12 +141,12 @@ function MainTabs() {
       }}
     >
       <MainTab.Screen
-        name="Chat"
-        component={SharedChatScreen as any}
+        name="Translate"
+        component={SoloTranslateScreen as any}
         options={{
-          tabBarLabel: 'Chat',
-          tabBarIcon: ({ color }) => <Text style={{ fontSize: 22, color }}>💬</Text>,
-          tabBarAccessibilityLabel: 'Shared chat room',
+          tabBarLabel: 'Translate',
+          tabBarIcon: ({ color }) => <Text style={{ fontSize: 22, color }}>✨</Text>,
+          tabBarAccessibilityLabel: 'Solo translation - say it here first',
         }}
       />
       <MainTab.Screen
@@ -154,6 +156,24 @@ function MainTabs() {
           tabBarLabel: 'Journal',
           tabBarIcon: ({ color }) => <Text style={{ fontSize: 22, color }}>📓</Text>,
           tabBarAccessibilityLabel: 'Private journal',
+        }}
+      />
+      <MainTab.Screen
+        name="Chat"
+        component={SharedChatScreen as any}
+        options={{
+          tabBarLabel: 'Chat',
+          tabBarIcon: ({ color }) => <Text style={{ fontSize: 22, color }}>💬</Text>,
+          tabBarAccessibilityLabel: 'Shared chat room with partner',
+        }}
+      />
+      <MainTab.Screen
+        name="Insights"
+        component={InsightsScreen as any}
+        options={{
+          tabBarLabel: 'Insights',
+          tabBarIcon: ({ color }) => <Text style={{ fontSize: 22, color }}>📊</Text>,
+          tabBarAccessibilityLabel: 'Communication pattern insights',
         }}
       />
       <MainTab.Screen

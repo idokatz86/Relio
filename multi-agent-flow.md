@@ -1,6 +1,6 @@
 # Relio Multi-Agent Flow Diagram
 
-Below is the Flow Diagram encompassing all 38 agents in the Relio architecture, including the 7-step mediation pipeline and 4 phase agents covering the full relationship lifecycle. 
+Below is the Flow Diagram encompassing all 38 agents in the Relio architecture, including the 7-step mediation pipeline, 4 phase agents, and the Solo Venting Mode (Sprint 15-17).
 
 **Excalidraw Instructions:**
 To view and edit this natively in Excalidraw:
@@ -28,7 +28,7 @@ graph TD
     CEO -->|Directs Mediation Vision| CPO[chief-psychology-officer]
     
     %% --------------------------------
-    %% 7-Step Mediation Pipeline (v3.3)
+    %% 7-Step Mediation Pipeline (v4.0)
     %% --------------------------------
     subgraph Pipeline["7-Step Mediation Pipeline"]
         direction LR
@@ -52,6 +52,27 @@ graph TD
         P5 --> P6
         P2 -->|HALT| EMERG[Emergency Response] ::: medical
     end
+
+    %% --------------------------------
+    %% Solo Venting Mode (Sprint 15-17)
+    %% --------------------------------
+    subgraph SoloMode["Solo Venting Mode (v4.0)"]
+        direction LR
+        SOLO_IN[User Types Frustration] ::: sys
+        SOLO_PIPE[Pipeline Translation] ::: pipeline
+        SOLO_OUT[Tier 3 Output] ::: sys
+        SOLO_COPY[Copy / Share / Send] ::: sys
+        SOLO_ATTACH[Attachment Profiling] ::: medical
+        SOLO_PATTERN[Pattern Tracking] ::: medical
+
+        SOLO_IN --> SOLO_PIPE
+        SOLO_PIPE --> SOLO_OUT
+        SOLO_OUT --> SOLO_COPY
+        SOLO_PIPE --> SOLO_ATTACH
+        SOLO_PIPE --> SOLO_PATTERN
+    end
+
+    SOLO_PIPE -.->|Uses| Pipeline
 
     %% --------------------------------
     %% Phase Routing (4 lifecycle stages)

@@ -450,6 +450,57 @@ export function recordPipelineMetrics(latencyMs: number, agentsInvoked: string[]
   }
 }
 
+// ── Solo Translation Metrics (Issue #201 — Sprint 15) ────────
+interface SoloTranslationEvent {
+  userId: string;
+  tier: string;
+  language: string;
+  copied: boolean;
+  shared: boolean;
+  processingTimeMs: number;
+  timestamp: string;
+}
+
+const soloMetrics = {
+  translationsThisWeek: 0,
+  uniqueUsersThisWeek: new Set<string>(),
+  events: [] as SoloTranslationEvent[],
+};
+
+export function recordSoloTranslation(
+  userId: string,
+  tier: string,
+  language: string,
+  processingTimeMs: number,
+): void {
+  soloMetrics.translationsThisWeek++;
+  soloMetrics.uniqueUsersThisWeek.add(userId);
+  soloMetrics.events.push({
+    userId,
+    tier,
+    language,
+    copied: false,
+    shared: false,
+    processingTimeMs,
+    timestamp: new Date().toISOString(),
+  });
+  // Keep last 5000 events
+  if (soloMetrics.events.length > 5000) {
+    soloMetrics.events.shift();
+  }
+}
+
+export function getSoloMetrics() {
+  return {
+    translationsThisWeek: soloMetrics.translationsThisWeek,
+    uniqueUsersThisWeek: soloMetrics.uniqueUsersThisWeek.size,
+    avgTranslationsPerUser: soloMetrics.uniqueUsersThisWeek.size > 0
+      ? soloMetrics.translationsThisWeek / soloMetrics.uniqueUsersThisWeek.size
+      : 0,
+    totalEvents: soloMetrics.events.length,
+  };
+}
+
 export function recordSafetyEvent(severity: string, halt: boolean): void {
   adminStats.safetyEvents.push({
     severity,

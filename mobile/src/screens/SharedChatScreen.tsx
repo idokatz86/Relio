@@ -10,7 +10,7 @@
  * - "Mediating..." indicator while pipeline processes
  */
 
-import React, { useState, useRef, useCallback } from 'react';
+import React, { useState, useRef, useCallback, useEffect } from 'react';
 import {
   View,
   Text,
@@ -23,7 +23,7 @@ import {
   ActivityIndicator,
 } from 'react-native';
 import { colors, spacing, typography, borderRadius, shadows } from '../theme';
-import { sendMessage } from '../services/api';
+import { sendMessage, getTrialStatus, startTrial, type TrialStatus } from '../services/api';
 import { saveJournalEntry } from '../services/secure-storage';
 import type { ChatMessage, JournalEntry } from '../types';
 
@@ -37,7 +37,24 @@ export function SharedChatScreen({ userId, onSafetyHalt, onOpenJournal }: Shared
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [inputText, setInputText] = useState('');
   const [isProcessing, setIsProcessing] = useState(false);
+  const [trial, setTrial] = useState<TrialStatus | null>(null);
   const flatListRef = useRef<FlatList>(null);
+
+  // Load trial status on mount
+  useEffect(() => {
+    getTrialStatus()
+      .then(setTrial)
+      .catch(() => setTrial(null));
+  }, []);
+
+  // Auto-start trial for eligible users
+  useEffect(() => {
+    if (trial?.eligible) {
+      startTrial()
+        .then((result) => setTrial(result))
+        .catch(() => {});
+    }
+  }, [trial?.eligible]);
 
   const handleSend = useCallback(async () => {
     const text = inputText.trim();
@@ -157,6 +174,23 @@ export function SharedChatScreen({ userId, onSafetyHalt, onOpenJournal }: Shared
         </TouchableOpacity>
       </View>
 
+      {/* Trial Banner */}
+      {trial?.active && (
+        <View style={styles.trialBanner} accessibilityLabel={`Free trial: ${trial.daysRemaining} days remaining`}>
+          <Text style={styles.trialText}>
+            🎁 Free trial — {trial.daysRemaining} day{trial.daysRemaining !== 1 ? 's' : ''} left
+            {trial.sessionsRemaining != null && ` · ${trial.sessionsRemaining} session${trial.sessionsRemaining !== 1 ? 's' : ''} remaining`}
+          </Text>
+        </View>
+      )}
+      {trial && !trial.active && !trial.eligible && (
+        <View style={[styles.trialBanner, styles.trialExpired]}>
+          <Text style={styles.trialText}>
+            Trial ended · <Text style={styles.trialUpgrade}>Upgrade to Plus — $4.99/mo</Text>
+          </Text>
+        </View>
+      )}
+
       {/* Messages */}
       <FlatList
         ref={flatListRef}
@@ -224,6 +258,27 @@ const styles = StyleSheet.create({
   },
   headerSubtitle: {
     ...typography.caption,
+    color: colors.textSecondary,
+  },
+  trialBanner: {
+    backgroundColor: colors.primaryLight + '30',
+    paddingHorizontal: spacing.md,
+    paddingVertical: spacing.sm,
+    alignItems: 'center',
+  },
+  trialExpired: {
+    backgroundColor: colors.safetyWarning + '20',
+  },
+  trialText: {
+    ...typography.bodySmall,
+    color: colors.primary,
+    fontWeight: '600',
+  },
+  trialUpgrade: {
+    color: colors.secondary,
+    fontWeight: '700',
+    textDecorationLine: 'underline',
+  },
     color: colors.textSecondary,
     marginTop: 2,
   },

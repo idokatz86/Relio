@@ -27,18 +27,21 @@ const REVENUECAT_IOS_KEY = process.env.EXPO_PUBLIC_REVENUECAT_IOS_KEY || '';
 const REVENUECAT_ANDROID_KEY = process.env.EXPO_PUBLIC_REVENUECAT_ANDROID_KEY || '';
 
 // Entitlement identifiers (must match RevenueCat dashboard)
+// Sprint 15 pricing pivot (Issue #198): Free/$4.99/$9.99
 export const ENTITLEMENTS = {
-  PREMIUM_COUPLES: 'premium_couples', // $19.99/mo
-  PREMIUM_PLUS: 'premium_plus',       // $29.99/mo
+  PREMIUM_PLUS: 'premium_plus',       // $4.99/mo — unlimited translations + patterns
+  PREMIUM_PRO: 'premium_pro',         // $9.99/mo — + attachment profiling, priority
 } as const;
 
 // Product identifiers (must match App Store Connect + Google Play Console)
 export const PRODUCTS = {
-  COUPLES_MONTHLY: 'relio_couples_monthly',     // $19.99/mo
-  PLUS_MONTHLY: 'relio_plus_monthly',           // $29.99/mo
+  PLUS_MONTHLY: 'relio_plus_monthly_499',     // $4.99/mo
+  PLUS_ANNUAL: 'relio_plus_annual_4999',      // $49.99/yr (save 17%)
+  PRO_MONTHLY: 'relio_pro_monthly_999',       // $9.99/mo
+  PRO_ANNUAL: 'relio_pro_annual_9999',        // $99.99/yr (save 17%)
 } as const;
 
-export type SubscriptionTier = 'free' | 'couples' | 'plus';
+export type SubscriptionTier = 'free' | 'plus' | 'pro';
 
 export interface SubscriptionState {
   tier: SubscriptionTier;
@@ -131,8 +134,8 @@ export async function getSubscriptionState(): Promise<SubscriptionState> {
 function getActiveTier(customerInfo: CustomerInfo): SubscriptionTier {
   const active = customerInfo.entitlements.active;
 
+  if (active[ENTITLEMENTS.PREMIUM_PRO]) return 'pro';
   if (active[ENTITLEMENTS.PREMIUM_PLUS]) return 'plus';
-  if (active[ENTITLEMENTS.PREMIUM_COUPLES]) return 'couples';
   return 'free';
 }
 
@@ -140,13 +143,16 @@ function getActiveTier(customerInfo: CustomerInfo): SubscriptionTier {
 
 export function canAccess(feature: string, tier: SubscriptionTier): boolean {
   const access: Record<string, SubscriptionTier[]> = {
-    'private_journal': ['free', 'couples', 'plus'],
-    'attachment_quiz': ['free', 'couples', 'plus'],
-    'ai_coaching': ['couples', 'plus'],
-    'shared_chat': ['couples', 'plus'],
-    'crisis_support': ['plus'],
-    'priority_response': ['plus'],
-    'psychoeducation': ['free', 'couples', 'plus'],
+    'private_journal': ['free', 'plus', 'pro'],
+    'attachment_quiz': ['free', 'plus', 'pro'],
+    'solo_translate': ['free', 'plus', 'pro'],      // free = 5/week limit
+    'unlimited_translate': ['plus', 'pro'],
+    'pattern_tracking': ['plus', 'pro'],
+    'partner_invite': ['plus', 'pro'],
+    'shared_chat': ['plus', 'pro'],
+    'attachment_profiling': ['pro'],
+    'priority_response': ['pro'],
+    'psychoeducation': ['free', 'plus', 'pro'],
   };
 
   const allowed = access[feature];

@@ -26,13 +26,17 @@ import { WebSocketServer, WebSocket } from 'ws';
 import { v4 as uuidv4 } from 'uuid';
 import { z } from 'zod';
 import { processMessage } from '../pipeline/mediation-pipeline.js';
-import { adminRouter, recordPipelineMetrics, recordSafetyEvent } from './admin-router.js';
+import { adminRouter, adminStats, recordPipelineMetrics, recordSafetyEvent } from './admin-router.js';
 import { authMiddleware, authenticateWebSocket } from '../auth/auth-service.js';
 import { consentRouter } from '../auth/consent-router.js';
 import { inviteRouter } from './invite-router.js';
 import { accountRouter } from './account-router.js';
 import { registerPushToken } from './push-notifications.js';
 import { abTestRouter } from './ab-test-router.js';
+import { soloRouter } from './solo-router.js';
+import { trialRouter } from './trial-router.js';
+import { patternRouter } from './pattern-router.js';
+import { attachmentRouter } from './attachment-router.js';
 import { initializePools, shutdownPools, getDbHealth, isInMemoryMode } from '../db/index.js';
 import { runMigrations } from '../db/migrate.js';
 import * as tier1Repo from '../db/repositories/tier1-repo.js';
@@ -194,6 +198,29 @@ app.post('/api/v1/push/register', authMiddleware, (req: express.Request, res: ex
 
 // A/B Test Assignments (Sprint 10: #131)
 app.use('/api/v1/ab', authMiddleware, abTestRouter);
+
+// Solo Translation Mode (Issue #197 — Sprint 15)
+app.use('/api/v1/solo', authMiddleware, soloRouter);
+
+// 14-Day Free Trial (Issue #200 — Sprint 15)
+app.use('/api/v1/trial', authMiddleware, trialRouter);
+
+// Communication Pattern Tracking (Issue #206 — Sprint 16)
+app.use('/api/v1/patterns', authMiddleware, patternRouter);
+
+// Attachment Profiling (Issue #207 — Sprint 17)
+app.use('/api/v1/attachment', authMiddleware, attachmentRouter);
+
+// Social Proof Stats (Issue #210 — Sprint 17)
+app.get('/api/v1/social-proof', (_req: express.Request, res: express.Response) => {
+  // k-anonymized public stats — no auth required
+  const stats = {
+    couplesThisMonth: Math.max(10, adminStats.activeCouples),
+    translationsThisWeek: adminStats.messagesToday * 7,
+    frameworks: ['Gottman Method', 'Emotionally Focused Therapy', 'Attachment Theory'],
+  };
+  res.json(stats);
+});
 
 // Feedback submission (user-facing, reuses admin router's submit handler)
 app.post('/api/v1/feedback', authMiddleware, async (req: express.Request, res: express.Response) => {

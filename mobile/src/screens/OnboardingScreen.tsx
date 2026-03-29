@@ -47,25 +47,25 @@ export function OnboardingScreen({ onComplete }: OnboardingScreenProps) {
     return (
       <ScrollView style={styles.container} contentContainerStyle={styles.content}>
         <Text style={styles.logo}>Relio</Text>
-        <Text style={styles.tagline}>AI-powered relationship mediation</Text>
+        <Text style={styles.tagline}>Think clearly before you speak</Text>
 
         <View style={styles.featureList}>
           <View style={styles.feature}>
-            <Text style={styles.featureEmoji}>🛡️</Text>
+            <Text style={styles.featureEmoji}>🔒</Text>
             <View style={styles.featureContent}>
-              <Text style={styles.featureTitle}>Your words are private</Text>
+              <Text style={styles.featureTitle}>Say it here first</Text>
               <Text style={styles.featureDesc}>
-                What you say is never shared directly with your partner.
+                Type what you really feel — privately. Only you see this.
               </Text>
             </View>
           </View>
 
           <View style={styles.feature}>
-            <Text style={styles.featureEmoji}>🤖</Text>
+            <Text style={styles.featureEmoji}>✨</Text>
             <View style={styles.featureContent}>
-              <Text style={styles.featureTitle}>AI transforms your message</Text>
+              <Text style={styles.featureTitle}>Get the right words</Text>
               <Text style={styles.featureDesc}>
-                Relio converts raw feelings into constructive questions.
+                We help you say it so your partner can actually hear it.
               </Text>
             </View>
           </View>
@@ -73,9 +73,9 @@ export function OnboardingScreen({ onComplete }: OnboardingScreenProps) {
           <View style={styles.feature}>
             <Text style={styles.featureEmoji}>💬</Text>
             <View style={styles.featureContent}>
-              <Text style={styles.featureTitle}>Partner sees the best version</Text>
+              <Text style={styles.featureTitle}>Copy, share, or send</Text>
               <Text style={styles.featureDesc}>
-                Your partner receives an empathetic, Socratic question instead.
+                Use the better version however you want — text, in person, or in-app.
               </Text>
             </View>
           </View>

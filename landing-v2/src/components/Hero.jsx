@@ -25,11 +25,11 @@ export default function Hero() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 1, ease: "easeOut" }}
         >
-          Love isn't broken.
+          Think clearly
           <br />
-          <span className="text-sage-500">It's just waiting</span>
+          <span className="text-sage-500">before you speak.</span>
           <br />
-          to be rediscovered.
+          Speak so they hear.
         </motion.h1>
 
         <motion.p
@@ -38,9 +38,9 @@ export default function Hero() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 1, delay: 0.3, ease: "easeOut" }}
         >
-          In a world of swipe-left and delete, Relio is the bridge to staying
-          and repairing. Relationships are deep, and they are fixable with the
-          right tools.
+          Type what you really feel — privately. Relio helps you find the right words 
+          so your partner can actually hear you. No more holding back, no more arguments
+          that go nowhere.
         </motion.p>
 
         <motion.div
@@ -55,7 +55,7 @@ export default function Hero() {
                        hover:bg-sage-500 transition-colors duration-300 text-lg
                        shadow-lg shadow-sage-400/20 hover:shadow-sage-500/30"
           >
-            Join the Waitlist
+            Try It Free
           </a>
         </motion.div>
       </div>

@@ -7,6 +7,38 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [4.0.0] - 2026-03-29
+### Added — Sprints 15-17: Survey-Driven Pivot + Solo Mode + Market Validation
+
+#### Sprint 15 — "Survey Pivot" (P0)
+- **Solo Venting Mode** (#197) — `POST /api/v1/solo/translate` endpoint + `SoloTranslateScreen.tsx`. User types raw frustration, gets Tier 3 constructive output with Copy/Share buttons. No partner account required. Free tier: 5 translations/week.
+- **Pricing Pivot** (#198) — Killed $19.99/$29.99 tiers. New: Free (5/week) → Plus $4.99/mo → Pro $9.99/mo. RevenueCat products + PaywallScreen updated.
+- **Privacy-First Onboarding** (#199) — PrivacyExplainer now FIRST screen. Removed Paywall + Psychoeducation from mandatory flow. Users start free.
+- **ICP Repositioning** (#196) — Tagline changed to "Think clearly before you speak." Landing page hero + OnboardingScreen rewritten. Killed "AI mediator" framing.
+- **North Star Metric** (#201) — `recordSoloTranslation()` tracking: weekly translations, unique users, avg per user.
+- **14-Day Free Trial** (#200) — `POST /api/v1/trial/start`, `GET /api/v1/trial/status`. No credit card. 5 SharedChat sessions. Trial banner on SharedChatScreen.
+- **Market Validation Survey Analysis** — 101 EN responses analyzed. Full report at `docs/market-validation-survey-report.md` + PDF. ChatGPT conversion strategy at `docs/chatgpt-conversion-strategy.md` + PDF.
+
+#### Sprint 16 — "Beta & Partner Loop"
+- **Partner Invite Flow** (#204) — Anonymous share message: "Your space is completely private — I can never see what you write." Partner invite prompt after 3rd solo translation.
+- **Communication Pattern Tracking** (#206) — `GET /api/v1/patterns/weekly` + `/trends`. Weekly summary, conflict themes, Horseman detection, intensity trends. `InsightsScreen.tsx` with 4-week chart.
+
+#### Sprint 17 — "Retention & Series A Prep"
+- **Attachment Profiling** (#207) — `GET /api/v1/attachment/profile`. Persistent attachment assessment from translation history. Min 5 translations. Educational content per style. Gated to Pro.
+- **Social Proof** (#210) — `GET /api/v1/social-proof` (public, no auth). k-anonymized stats + framework badges.
+- **Annual Pricing** (#211) — `relio_plus_annual_4999` ($49.99/yr, save 17%), `relio_pro_annual_9999` ($99.99/yr).
+- **Sprint 15-17 Test Suite** — 20 tests covering solo translation, trial, patterns, attachment, social proof, canary leak prevention.
+
+### Changed
+- **Navigation** — Solo Translate (✨) is now the PRIMARY tab. Tab order: Translate → Journal → Insights → Chat → Settings.
+- **Subscription tiers** — `premium_couples` → `premium_plus` ($4.99/mo), `premium_pro` ($9.99/mo). Old `premium_solo`/`premium_couples`/`premium_plus` entitlements removed.
+- **Feature gating** — New gates: `solo_translate`, `unlimited_translate`, `pattern_tracking`, `attachment_profiling`, `partner_invite`.
+- **OnboardingScreen** — "AI-powered relationship mediation" → "Think clearly before you speak"
+- **Landing Hero** — "Love isn't broken" → "Think clearly before you speak. Speak so they hear."
+
+### Deployed
+- Backend deployed to Azure Container Apps (Sweden Central) — image `relioacr.azurecr.io/relio-backend:sprint17`
+
 ## [3.3.0] - 2026-03-26
 ### Added — App Store Submission Critical Path
 - **Clerk OIDC auth flow** (#152) — `@clerk/clerk-expo` integration, `AuthProvider` context, `clerkTokenCache` for secure token persistence, Clerk session synced to secure storage

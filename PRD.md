@@ -1,12 +1,12 @@
 # Relio — Unified Product Requirements Document
 
-**Version:** v3.0.0
-**Date:** March 26, 2026
+**Version:** v4.0.0
+**Date:** March 29, 2026
 **Authors:** All 38 agents across Medical Pod (`chief-psychology-officer`), Tech Pod (`chief-technology-officer`), and Ops Pod (`chief-executive-officer`)
 **Classification:** Confidential — Board & Executive Leadership
-**Status:** Sprint 13 complete. DB persistence live. PII redaction live. 156 tests. Casual tone overhaul deployed. CI/CD green. Only 2 issues remain (#73 iOS TestFlight, #89 Clinical co-founder).
+**Status:** Sprint 17 complete. Solo venting mode live. Pricing pivoted to Free/$4.99/$9.99. Market validation survey analyzed (101 responses). 176 tests. Deployed to ACA sprint17.
 
-> **Supersedes:** PRD v1.0.0–v2.3.0, PRD-medical-pod.md v1.3.0, PRD-tech-pod.md v1.3.0, PRD-ops-pod.md v1.3.0
+> **Supersedes:** PRD v1.0.0–v3.0.0
 
 ---
 

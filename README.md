@@ -18,35 +18,33 @@ Relio is powered by **38 specialized AI agents** distributed across three pods, 
 - **Operations Pod (9 agents):** CEO, CRO, CFO, CMO, CCO, CAO, CLO, CPO, CSO. Manages business strategy, legal disclaimers, partnership evaluations, and AI-first lean operations.
 - **Tech Pod (15 agents):** CTO, Backend Developer, Cloud Architect, GitHub Architect, Mobile Dev, Mobile QA, Fullstack QA, Penetration Tester, UI/UX Expert, CISO, DPO, App Store Certifier, Skills Builder, Scrum Master, VP R&D. Constructs Azure-native infrastructure, secure WebSockets, CI/CD governance, and adversarial red-teaming.
 
-## Key Capabilities (v3.3.0)
+## Key Capabilities (v4.0.0)
 
+- **Solo Venting Mode** — "Say it here first" — type raw frustration, get constructive Tier 3 translation. Copy/Share to partner. No partner account needed. Free: 5/week, Plus: unlimited.
 - **7-Step, 13-Agent Pipeline** — PII Redactor → Safety Guardian → (Orchestrator ‖ Profiler ‖ Dynamics) → Phase Agent → Communication Coach → PII Validator
 - **13 AI Agents in Code** — Safety Guardian, Orchestrator, Communication Coach, Individual Profiler, Phase-Dating, Phase-Married, Phase-Pre-Divorced, Phase-Divorced, Phase-Crisis, Relationship Dynamics, Psychoeducation, Progress Tracker, Emergency Response
-- **Full Relationship Lifecycle** — Dating → Married → Pre-Divorced → Divorced. Orchestrator auto-detects stage and routes to the right phase agent.
+- **Attachment Style Profiling** — Persistent assessment from translation history (min 5 data points). Anxious/Avoidant/Secure/Disorganized + sub-states.
+- **Communication Pattern Tracking** — Weekly conflict themes, intensity trends, Gottman Horseman detection, week-over-week improvement.
+- **14-Day Free Trial** — SharedChat mediation trial (5 sessions, no credit card). Auto-downgrade to free tier.
+- **Full Relationship Lifecycle** — Dating → Married → Pre-Divorced → Divorced. Orchestrator auto-detects stage.
 - **Backend LIVE on Azure OpenAI GPT-4.1** — Container Apps (Sweden Central, EU data residency)
 - **PostgreSQL Persistence** — Dual-pool data layer (Tier 1 RLS-isolated + Tier 3 shared), 4 repository modules, idempotent migrations, in-memory fallback for dev
-- **PII Redaction Pipeline** — Pre-flight regex detection (names, emails, phones, addresses, SSNs, URLs) + post-flight validation ensuring zero PII in Tier 3 output
-- **Canary Leak Prevention** — 44 automated tests proving Tier 1 data never leaks to Tier 3 (REST, WebSocket, admin, headers, deep JSON scan)
-- **WebSocket Relay** — Redis pub/sub for cross-replica Tier 3 fan-out, graceful fallback to local broadcast
-- **Clerk OIDC Auth** — `@clerk/clerk-expo` with `AuthProvider` context, secure token cache, Apple/Google/Email sign-in
-- **React Navigation** — AuthStack → OnboardingStack → MainTabs (chat/journal/settings) + modal screens. Deep linking for `relio://invite/:code`
-- **Full i18n (4 Languages)** — English, Spanish, Portuguese (BR), Hebrew (RTL) — all screens, casual Israeli register
-- **Multi-Language Safety** — Crisis detection in EN/ES/PT/HE via regex pre-screen + LLM, locale-aware emergency resources (US/BR/IL)
-- **GDPR Compliance** — Account deletion via `DELETE /api/v1/account` (Apple 5.1.1v), 24h grace + cascade purge, data export (JSON), consent re-prompt
-- **Legal** — Terms of Service v1.0, Privacy Policy v1.0 hosted at myrelio.io/terms + myrelio.io/privacy
-- **Partner Invite System** — Invite codes, QR generation, deep links, couple pairing API, push notifications
-- **17 Mobile Screens** — BiometricLock, Login, Consent, AgeVerify, Onboarding, PrivacyExplainer, AttachmentQuiz, PsychoeducationCards, Paywall, InvitePartner, AcceptInvite, SharedChat, PrivateJournal, Crisis, Settings, LanguagePicker, NPSSurvey
-- **RevenueCat Subscriptions** — $19.99/mo Couples + $29.99/mo Premium+, feature gating, restore purchases
-- **Sentry Crash Reporting** — PII-scrubbed crash reports, screen transition breadcrumbs
-- **Accessibility** — VoiceOver + TalkBack props on all interactive elements (a11y audit complete)
-- **Backoffice Admin Dashboard** — 10 admin API endpoints + 7-page React frontend with k-anonymity
-- **Security** — JWT auth, OWASP checklist, Zod validation, Helmet, auth rate limiting, CORS, fail-closed Safety Guardian, circuit breaker, PII redaction
-- **156 Automated Tests** — Canary leak (44), integration (20), PII (18), WS relay (13), safety multilang (50), pipeline (3), canary (8)
-- **Reviewer Demo** — `GET /api/v1/seed/reviewer` returns demo credentials for App Store review
-- **Domain** — myrelio.io (live)
-- **Clinical Agents** — Phase-crisis flooding detection + 20-min pause, CPsychO meta-audit (bias, scope, parasocial risk)
+- **PII Redaction Pipeline** — Pre-flight regex detection + post-flight validation ensuring zero PII in Tier 3 output
+- **Canary Leak Prevention** — 44 automated tests proving Tier 1 data never leaks to Tier 3
+- **WebSocket Relay** — Redis pub/sub for cross-replica Tier 3 fan-out
+- **Clerk OIDC Auth** — `@clerk/clerk-expo` with `AuthProvider` context, Apple/Google/Email sign-in
+- **React Navigation** — AuthStack → OnboardingStack → MainTabs (Translate/Journal/Insights/Chat/Settings) + modal screens
+- **Full i18n (4 Languages)** — English, Spanish, Portuguese (BR), Hebrew (RTL)
+- **Multi-Language Safety** — Crisis detection in EN/ES/PT/HE via regex + LLM, locale-aware emergency resources
+- **GDPR Compliance** — Account deletion (Apple 5.1.1v), 24h grace + cascade purge, data export, consent re-prompt
+- **19 Mobile Screens** — BiometricLock, Login, Consent, AgeVerify, Onboarding, PrivacyExplainer, AttachmentQuiz, PsychoeducationCards, Paywall, InvitePartner, AcceptInvite, SharedChat, PrivateJournal, Crisis, Settings, LanguagePicker, NPSSurvey, SoloTranslate, Insights
+- **RevenueCat Subscriptions** — Free / $4.99/mo Plus / $9.99/mo Pro + annual plans ($49.99/$99.99)
+- **Social Proof API** — Public endpoint with k-anonymized stats + clinical framework badges
+- **Market Validation** — 101 EN survey responses analyzed. ChatGPT conversion strategy. 16 survey-driven issues across 3 sprints.
+- **Security** — JWT auth, OWASP checklist, Zod validation, Helmet, rate limiting, CORS, fail-closed Safety Guardian, PII redaction
+- **176 Automated Tests** — Canary leak (44), integration (20), PII (18), WS relay (13), safety multilang (50), pipeline (3), canary (8), sprint 15-17 (20)
 
-## Sprint Status (v3.3.0)
+## Sprint Status (v4.0.0)
 
 | Sprint | Issues | Closed | Open | Focus |
 |--------|--------|--------|------|-------|

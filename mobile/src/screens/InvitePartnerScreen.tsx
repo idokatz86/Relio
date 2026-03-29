@@ -55,8 +55,8 @@ export function InvitePartnerScreen({ userId, onPartnerJoined, onBack }: InviteP
   const handleShare = async () => {
     if (!inviteCode) return;
     await Share.share({
-      message: `Join me on Relio — a private space for better communication.\n\nUse code: ${inviteCode}\n\nOr tap: ${deepLink}`,
-      title: 'Relio Invite',
+      message: `I'm using a tool to help me communicate better with you. Your space is completely private — I can never see what you write.\n\nTap to join: ${deepLink}\n\nOr use code: ${inviteCode}`,
+      title: 'Join me on Relio',
     });
   };
 

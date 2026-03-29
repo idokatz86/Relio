@@ -188,6 +188,199 @@ export async function checkHealth(): Promise<boolean> {
   }
 }
 
+// ── Trial API (Issue #200 — Sprint 15) ───────────────────────
+
+export interface TrialStatus {
+  active: boolean;
+  daysRemaining: number;
+  sessionsRemaining: number;
+  startedAt: string | null;
+  expiresAt: string | null;
+  eligible: boolean;
+}
+
+/**
+ * Start 14-day free SharedChat trial.
+ */
+export async function startTrial(): Promise<TrialStatus & { started: boolean }> {
+  const headers = await authHeaders();
+  const response = await fetch(`${API_BASE}/api/v1/trial/start`, {
+    method: 'POST',
+    headers,
+  });
+  return response.json();
+}
+
+/**
+ * Get current trial status.
+ */
+export async function getTrialStatus(): Promise<TrialStatus> {
+  const headers = await authHeaders();
+  const response = await fetch(`${API_BASE}/api/v1/trial/status`, { headers });
+  if (!response.ok) throw new Error(`Trial status error: ${response.status}`);
+  return response.json();
+}
+
+// ── Solo Translation API (Issue #197 — Sprint 15) ────────────
+
+export interface SoloTranslation {
+  translated: boolean;
+  safetyHalt: boolean;
+  id?: string;
+  tier3Output: string | null;
+  severity?: string;
+  processingTimeMs: number;
+  usage?: {
+    used: number;
+    limit: number | null;
+    remaining: number | null;
+    tier: string;
+  };
+}
+
+export interface TranslationHistoryItem {
+  id: string;
+  tier1Input: string;
+  tier3Output: string;
+  language: string;
+  createdAt: string;
+}
+
+export interface UsageStatus {
+  used: number;
+  limit: number | null;
+  remaining: number | null;
+  tier: string;
+  resetsAt: string;
+}
+
+/**
+ * Translate raw frustration (Tier 1) into constructive message (Tier 3).
+ * Free users: 5/week. Paid users: unlimited.
+ */
+export async function translateSolo(
+  message: string,
+  preferredLanguage: string = 'en',
+): Promise<SoloTranslation> {
+  const headers = await authHeaders();
+  const response = await fetch(`${API_BASE}/api/v1/solo/translate`, {
+    method: 'POST',
+    headers,
+    body: JSON.stringify({ message, preferredLanguage }),
+  });
+
+  if (response.status === 429) {
+    const data = await response.json();
+    return {
+      translated: false,
+      safetyHalt: false,
+      tier3Output: null,
+      processingTimeMs: 0,
+      usage: data,
+    };
+  }
+
+  if (!response.ok) {
+    throw new Error(`Translation error: ${response.status}`);
+  }
+
+  return response.json();
+}
+
+/**
+ * Get past translation history.
+ */
+export async function getTranslationHistory(): Promise<{ translations: TranslationHistoryItem[]; total: number }> {
+  const headers = await authHeaders();
+  const response = await fetch(`${API_BASE}/api/v1/solo/history`, { headers });
+  if (!response.ok) throw new Error(`History error: ${response.status}`);
+  return response.json();
+}
+
+/**
+ * Get current week's usage status.
+ */
+export async function getUsageStatus(): Promise<UsageStatus> {
+  const headers = await authHeaders();
+  const response = await fetch(`${API_BASE}/api/v1/solo/usage`, { headers });
+  if (!response.ok) throw new Error(`Usage error: ${response.status}`);
+  return response.json();
+}
+
+// ── Pattern Tracking API (Issue #206 — Sprint 16) ────────────
+
+export interface WeeklyPattern {
+  week: string;
+  summary: string;
+  themes: string[];
+  avgIntensity: number;
+  horsemen: string[];
+  translationCount: number;
+  improvement: number | null;
+}
+
+export interface TrendData {
+  trends: Array<{
+    week: string;
+    translationCount: number;
+    avgIntensity: number;
+    themes: string[];
+    horsemen: string[];
+  }>;
+  totalWeeks: number;
+}
+
+export async function getWeeklyPattern(): Promise<WeeklyPattern> {
+  const headers = await authHeaders();
+  const response = await fetch(`${API_BASE}/api/v1/patterns/weekly`, { headers });
+  if (!response.ok) throw new Error(`Pattern error: ${response.status}`);
+  return response.json();
+}
+
+export async function getPatternTrends(): Promise<TrendData> {
+  const headers = await authHeaders();
+  const response = await fetch(`${API_BASE}/api/v1/patterns/trends`, { headers });
+  if (!response.ok) throw new Error(`Trends error: ${response.status}`);
+  return response.json();
+}
+
+// ── Attachment Profiling API (Issue #207 — Sprint 17) ────────
+
+export interface AttachmentProfile {
+  ready: boolean;
+  translationsNeeded?: number;
+  message?: string;
+  primaryStyle?: string;
+  confidence?: number;
+  subState?: string;
+  dataPoints?: number;
+  title?: string;
+  description?: string;
+  tip?: string;
+  disclaimer?: string;
+}
+
+export async function getAttachmentProfile(): Promise<AttachmentProfile> {
+  const headers = await authHeaders();
+  const response = await fetch(`${API_BASE}/api/v1/attachment/profile`, { headers });
+  if (!response.ok) throw new Error(`Attachment error: ${response.status}`);
+  return response.json();
+}
+
+// ── Social Proof API (Issue #210 — Sprint 17) ────────────────
+
+export interface SocialProof {
+  couplesThisMonth: number;
+  translationsThisWeek: number;
+  frameworks: string[];
+}
+
+export async function getSocialProof(): Promise<SocialProof> {
+  const response = await fetch(`${API_BASE}/api/v1/social-proof`);
+  if (!response.ok) throw new Error(`Social proof error: ${response.status}`);
+  return response.json();
+}
+
 // ── WebSocket ────────────────────────────────────────────────
 
 /**
